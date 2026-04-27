@@ -154,7 +154,7 @@ export const seedWorkouts: Workout[] = [
             name: "Pancake",
             reps: "8",
             targetPse: "6",
-            videoUrl: "https://youtu.be/8BcPHWGQO44",
+            videoUrl: "https://www.youtube.com/shorts/fQVZ6nzbwV0",
           },
           {
             id: "b-flexao-lateral-sentado",
@@ -162,7 +162,7 @@ export const seedWorkouts: Workout[] = [
             reps: "8 cada lado",
             targetPse: "7",
             // Placeholder aproximado: flexão lateral de tronco.
-            videoUrl: "https://www.youtube.com/watch?v=K2VljzCC16g",
+            videoUrl: "https://www.youtube.com/shorts/AcKEB6LKWCY",
           },
         ],
       },
@@ -178,7 +178,7 @@ export const seedWorkouts: Workout[] = [
             name: "Hang Clean HBL",
             reps: "6",
             targetPse: "9",
-            videoUrl: "https://www.youtube.com/watch?v=TjTEOme9fvw",
+            videoUrl: "https://www.youtube.com/shorts/lARImTpOQ-Q",
           },
         ],
       },
@@ -194,7 +194,7 @@ export const seedWorkouts: Workout[] = [
             name: "Deadlift Unilateral",
             reps: "6 cada lado",
             targetPse: "9",
-            videoUrl: "https://youtu.be/84hrdsHgDuQ",
+            videoUrl: "https://www.youtube.com/shorts/IY6ZmuOH0SU",
           },
         ],
       },
@@ -211,7 +211,7 @@ export const seedWorkouts: Workout[] = [
             reps: "8",
             targetPse: "8",
             // Placeholder aproximado: hip thrust/elevação de quadril com carga.
-            videoUrl: "https://www.youtube.com/watch?v=LM8XHLYJoYs",
+            videoUrl: "https://www.youtube.com/shorts/zzMTVP6C14w",
           },
           {
             id: "b-barra-fixa-aberta",
@@ -219,7 +219,7 @@ export const seedWorkouts: Workout[] = [
             reps: "8",
             targetPse: "8",
             // Placeholder aproximado: pull-up/barra fixa com pegada aberta.
-            videoUrl: "https://www.youtube.com/watch?v=eGo4IYlbE5g",
+            videoUrl: "https://www.youtube.com/shorts/ZgsJza4VCww",
           },
         ],
       },
@@ -236,7 +236,7 @@ export const seedWorkouts: Workout[] = [
             reps: "8",
             targetPse: "8",
             // Placeholder aproximado: rosca bíceps no banco inclinado.
-            videoUrl: "https://www.youtube.com/watch?v=soxrZlIl35U",
+            videoUrl: "https://www.youtube.com/shorts/jHNY9ZORsHs",
           },
           {
             id: "b-flexao-pescoco",
@@ -244,7 +244,7 @@ export const seedWorkouts: Workout[] = [
             reps: "15",
             targetPse: "8",
             // Placeholder aproximado: mobilidade/fortalecimento cervical.
-            videoUrl: "https://www.youtube.com/watch?v=wjiZaCJ6tCA",
+            videoUrl: "https://www.youtube.com/shorts/DE7Ven3ojL4",
           },
         ],
       },
@@ -260,8 +260,7 @@ export const seedWorkouts: Workout[] = [
             name: "Cardio",
             time: "6min",
             targetPse: "8",
-            videoUrl:
-              "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+            videoUrl: "https://www.youtube.com/shorts/wuSgLbxezCk",
           },
         ],
       },
