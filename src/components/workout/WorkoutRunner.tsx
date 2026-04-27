@@ -814,7 +814,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
             <input
               ref={loadInputRef}
               type="text"
-              inputMode="decimal"
+              inputMode={isCurrentCardio ? "text" : "decimal"}
               autoComplete="off"
               value={currentLog?.load ?? ""}
               onChange={(event) => updateCurrentLog("load", event.target.value)}
