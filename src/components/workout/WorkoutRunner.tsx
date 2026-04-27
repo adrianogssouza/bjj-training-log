@@ -53,6 +53,48 @@ const skipReasons = [
   "Outro",
 ];
 
+const pseValidationMessage = "PSE real deve ser um número entre 0 e 10.";
+
+function parsePseValue(value: string) {
+  const normalizedValue = value.trim().replace(",", ".");
+
+  if (!/^\d+(\.\d+)?$/.test(normalizedValue)) {
+    return null;
+  }
+
+  const pse = Number.parseFloat(normalizedValue);
+
+  return Number.isFinite(pse) ? pse : null;
+}
+
+function isValidPseValue(value: string) {
+  const pse = parsePseValue(value);
+
+  return pse !== null && pse >= 0 && pse <= 10;
+}
+
+function isAllowedPseInput(value: string) {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return true;
+  }
+
+  if (!/^\d{0,2}([,.]\d*)?$/.test(trimmedValue)) {
+    return false;
+  }
+
+  const comparableValue = trimmedValue.replace(/[,.]$/, "");
+
+  if (!comparableValue) {
+    return false;
+  }
+
+  const pse = parsePseValue(comparableValue);
+
+  return pse !== null && pse >= 0 && pse <= 10;
+}
+
 function formatDuration(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -313,6 +355,18 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
       return;
     }
 
+    if (field === "reps" && value.trim().startsWith("-")) {
+      setValidationMessage(`${primaryFieldLabel} não pode ser negativo.`);
+      return;
+    }
+
+    if (field === "actualPse" && !isAllowedPseInput(value)) {
+      setValidationMessage(pseValidationMessage);
+      return;
+    }
+
+    setValidationMessage("");
+
     setSession((currentSession) => {
       const existingLog = currentSession.logs[currentStep.id];
 
@@ -375,6 +429,20 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
           ", ",
         )}.`,
       );
+      isAdvancingRef.current = false;
+      setIsAdvancing(false);
+      return;
+    }
+
+    if (currentLog?.reps.trim().startsWith("-")) {
+      setValidationMessage(`${primaryFieldLabel} não pode ser negativo.`);
+      isAdvancingRef.current = false;
+      setIsAdvancing(false);
+      return;
+    }
+
+    if (!isValidPseValue(currentLog?.actualPse ?? "")) {
+      setValidationMessage(pseValidationMessage);
       isAdvancingRef.current = false;
       setIsAdvancing(false);
       return;
