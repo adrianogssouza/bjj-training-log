@@ -154,6 +154,11 @@ export function WorkoutRunner({
     : "Ex: 24kg, BW ou elástico";
   const currentVideoUrl = currentStep?.item.videoUrl?.trim();
   const shouldAutoStart = autoStart;
+  const sessionValidationKey = `${workout.id}:${
+    shouldAutoStart ? "auto" : "manual"
+  }`;
+  const [validatedSessionKey, setValidatedSessionKey] = useState("");
+  const isSessionValidated = validatedSessionKey === sessionValidationKey;
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -209,10 +214,11 @@ export function WorkoutRunner({
         setRunnerView("overview");
       }
       setIsLoaded(true);
+      setValidatedSessionKey(sessionValidationKey);
     }, 0);
 
     return () => window.clearTimeout(timeout);
-  }, [shouldAutoStart, workout.id, workout.title]);
+  }, [sessionValidationKey, shouldAutoStart, workout.id, workout.title]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -579,7 +585,7 @@ export function WorkoutRunner({
     showActionFeedback("Exercício pulado.");
   }
 
-  if (!isLoaded) {
+  if (!isLoaded || !isSessionValidated) {
     return (
       <main className="flex flex-1 flex-col gap-5 py-8">
         <AppCard>
