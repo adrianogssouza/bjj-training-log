@@ -1154,7 +1154,7 @@ export function WorkoutRunner({
                 disabled={isPaused}
                 className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
               >
-                Pular exercício
+                Opções do exercício
               </button>
             </div>
             <button
