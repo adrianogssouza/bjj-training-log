@@ -18,7 +18,6 @@ import {
   createWorkoutSession,
   hasWorkoutSessionProgress,
   readActiveWorkoutSession,
-  readWorkoutHistory,
   removeActiveWorkoutSession,
   saveActiveWorkoutSession,
   saveWorkoutHistoryEntry,
@@ -154,14 +153,6 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       const storedSession = readActiveWorkoutSession(workout.id);
-      const workoutHistory = readWorkoutHistory();
-      const latestWorkoutHistory = workoutHistory
-        .filter((entry) => entry.workoutId === workout.id)
-        .sort(
-          (a, b) =>
-            new Date(b.completedAt).getTime() -
-            new Date(a.completedAt).getTime(),
-        )[0];
 
       if (storedSession?.finishedAt) {
         const historyEntry = createWorkoutHistoryEntry(
@@ -173,8 +164,9 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
           historyEntry,
         );
         removeActiveWorkoutSession(workout.id);
-        setCompletedSummary(createCompletedSummary(historyEntry));
-        setRunnerStatus("completed");
+        setCompletedSummary(null);
+        setSession(createWorkoutSession(workout.id));
+        setRunnerStatus("idle");
       } else if (
         storedSession &&
         (hasWorkoutSessionProgress(storedSession) ||
@@ -186,9 +178,8 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
       } else if (storedSession) {
         removeActiveWorkoutSession(workout.id);
         setRunnerStatus("idle");
-      } else if (latestWorkoutHistory) {
-        setCompletedSummary(createCompletedSummary(latestWorkoutHistory));
-        setRunnerStatus("completed");
+      } else {
+        setRunnerStatus("idle");
       }
 
       setRunnerView("overview");
@@ -681,6 +672,13 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
               >
                 Ver histórico
               </Link>
+              <button
+                type="button"
+                onClick={startNewSession}
+                className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
+              >
+                Iniciar novo treino
+              </button>
               <Link
                 href="/workouts"
                 className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
