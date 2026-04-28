@@ -107,7 +107,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
 
       <div className="sticky bottom-0 -mx-4 border-t border-zinc-800 bg-zinc-950/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:-mx-6 sm:px-6">
         <div className="mx-auto max-w-3xl">
-          <AppButton href={`/workouts/${workout.id}/start`}>
+          <AppButton href={`/workouts/${workout.id}/start?start=1`}>
             Iniciar treino
           </AppButton>
         </div>

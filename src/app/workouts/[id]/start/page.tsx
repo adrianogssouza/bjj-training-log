@@ -7,6 +7,9 @@ type StartWorkoutPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams?: Promise<{
+    start?: string;
+  }>;
 };
 
 export function generateStaticParams() {
@@ -17,8 +20,10 @@ export function generateStaticParams() {
 
 export default async function StartWorkoutPage({
   params,
+  searchParams,
 }: StartWorkoutPageProps) {
   const { id } = await params;
+  const resolvedSearchParams = await searchParams;
   const workout = seedWorkouts.find((seedWorkout) => seedWorkout.id === id);
 
   if (!workout) {
@@ -45,5 +50,10 @@ export default async function StartWorkoutPage({
     );
   }
 
-  return <WorkoutRunner workout={workout} />;
+  return (
+    <WorkoutRunner
+      workout={workout}
+      autoStart={resolvedSearchParams?.start === "1"}
+    />
+  );
 }

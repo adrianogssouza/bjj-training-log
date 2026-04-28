@@ -37,6 +37,7 @@ type RunnerStep = {
 
 type WorkoutRunnerProps = {
   workout: Workout;
+  autoStart?: boolean;
 };
 
 type FieldName = "reps" | "load" | "actualPse";
@@ -79,7 +80,10 @@ function createCompletedSummary(
   };
 }
 
-export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
+export function WorkoutRunner({
+  autoStart = false,
+  workout,
+}: WorkoutRunnerProps) {
   const router = useRouter();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const loadInputRef = useRef<HTMLInputElement>(null);
@@ -149,6 +153,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
     ? "Ex: esteira, bike, corrida, remo"
     : "Ex: 24kg, BW ou elástico";
   const currentVideoUrl = currentStep?.item.videoUrl?.trim();
+  const shouldAutoStart = autoStart;
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -165,8 +170,18 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
         );
         removeActiveWorkoutSession(workout.id);
         setCompletedSummary(null);
-        setSession(createWorkoutSession(workout.id));
-        setRunnerStatus("idle");
+
+        if (shouldAutoStart) {
+          const nextSession = createWorkoutSession(workout.id);
+
+          setSession(nextSession);
+          setElapsedSeconds(0);
+          setRunnerStatus("active");
+          setRunnerView("running");
+        } else {
+          setSession(createWorkoutSession(workout.id));
+          setRunnerStatus("idle");
+        }
       } else if (
         storedSession &&
         (hasWorkoutSessionProgress(storedSession) ||
@@ -178,16 +193,26 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
       } else if (storedSession) {
         removeActiveWorkoutSession(workout.id);
         setRunnerStatus("idle");
+      } else if (shouldAutoStart) {
+        const nextSession = createWorkoutSession(workout.id);
+
+        setCompletedSummary(null);
+        setSession(nextSession);
+        setElapsedSeconds(0);
+        setRunnerStatus("active");
+        setRunnerView("running");
       } else {
         setRunnerStatus("idle");
       }
 
-      setRunnerView("overview");
+      if (!shouldAutoStart || (storedSession && !storedSession.finishedAt)) {
+        setRunnerView("overview");
+      }
       setIsLoaded(true);
     }, 0);
 
     return () => window.clearTimeout(timeout);
-  }, [workout.id, workout.title]);
+  }, [shouldAutoStart, workout.id, workout.title]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -666,19 +691,19 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
                 </div>
               </dl>
 
-              <Link
-                href="/history"
-                className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
-              >
-                Ver histórico
-              </Link>
               <button
                 type="button"
                 onClick={startNewSession}
-                className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
+                className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
               >
                 Iniciar novo treino
               </button>
+              <Link
+                href="/history"
+                className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
+              >
+                Ver histórico
+              </Link>
               <Link
                 href="/workouts"
                 className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
