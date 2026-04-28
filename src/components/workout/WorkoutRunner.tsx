@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   Workout,
@@ -43,6 +43,7 @@ type WorkoutRunnerProps = {
 type FieldName = "reps" | "load" | "actualPse";
 type RunnerStatus = "idle" | "active" | "completed";
 type RunnerView = "overview" | "running";
+type SkipAction = "defer" | "skip";
 type CompletedSummary = {
   workoutTitle: string;
   durationSeconds: number;
@@ -100,8 +101,15 @@ export function WorkoutRunner({
     );
   }, [workout]);
 
+  const createQueuedWorkoutSession = useCallback(() => {
+    return {
+      ...createWorkoutSession(workout.id),
+      stepOrder: steps.map((step) => step.id),
+    };
+  }, [steps, workout.id]);
+
   const [session, setSession] = useState<WorkoutSession>(() =>
-    createWorkoutSession(workout.id),
+    createQueuedWorkoutSession(),
   );
   const [runnerStatus, setRunnerStatus] = useState<RunnerStatus>("idle");
   const [runnerView, setRunnerView] = useState<RunnerView>("overview");
@@ -110,6 +118,7 @@ export function WorkoutRunner({
   const [validationMessage, setValidationMessage] = useState("");
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showSkipOptions, setShowSkipOptions] = useState(false);
+  const [skipAction, setSkipAction] = useState<SkipAction | null>(null);
   const [selectedSkipReason, setSelectedSkipReason] = useState("");
   const [customSkipReason, setCustomSkipReason] = useState("");
   const [actionFeedback, setActionFeedback] = useState("");
@@ -118,12 +127,27 @@ export function WorkoutRunner({
   const [completedSummary, setCompletedSummary] =
     useState<CompletedSummary | null>(null);
 
-  const currentStep = steps[session.currentStepIndex];
+  const orderedSteps = useMemo(() => {
+    const stepById = new Map(steps.map((step) => [step.id, step]));
+    const sessionStepIds = session.stepOrder ?? steps.map((step) => step.id);
+    const orderedSessionSteps = sessionStepIds
+      .map((stepId) => stepById.get(stepId))
+      .filter((step): step is RunnerStep => Boolean(step));
+    const missingSteps = steps.filter(
+      (step) => !sessionStepIds.includes(step.id),
+    );
+
+    return [...orderedSessionSteps, ...missingSteps];
+  }, [session.stepOrder, steps]);
+
+  const currentStep = orderedSteps[session.currentStepIndex];
   const progressedCount = Object.values(session.logs).filter(
     (log) => log.completed || log.skipped,
   ).length;
   const progressPercent =
-    steps.length > 0 ? Math.round((progressedCount / steps.length) * 100) : 0;
+    orderedSteps.length > 0
+      ? Math.round((progressedCount / orderedSteps.length) * 100)
+      : 0;
   const isPaused = Boolean(session.pausedAt) && runnerStatus === "active";
   const hasPersistableSession =
     hasWorkoutSessionProgress(session) ||
@@ -177,14 +201,14 @@ export function WorkoutRunner({
         setCompletedSummary(null);
 
         if (shouldAutoStart) {
-          const nextSession = createWorkoutSession(workout.id);
+          const nextSession = createQueuedWorkoutSession();
 
           setSession(nextSession);
           setElapsedSeconds(0);
           setRunnerStatus("active");
           setRunnerView("running");
         } else {
-          setSession(createWorkoutSession(workout.id));
+          setSession(createQueuedWorkoutSession());
           setRunnerStatus("idle");
         }
       } else if (
@@ -199,7 +223,7 @@ export function WorkoutRunner({
         removeActiveWorkoutSession(workout.id);
         setRunnerStatus("idle");
       } else if (shouldAutoStart) {
-        const nextSession = createWorkoutSession(workout.id);
+        const nextSession = createQueuedWorkoutSession();
 
         setCompletedSummary(null);
         setSession(nextSession);
@@ -218,7 +242,13 @@ export function WorkoutRunner({
     }, 0);
 
     return () => window.clearTimeout(timeout);
-  }, [sessionValidationKey, shouldAutoStart, workout.id, workout.title]);
+  }, [
+    createQueuedWorkoutSession,
+    sessionValidationKey,
+    shouldAutoStart,
+    workout.id,
+    workout.title,
+  ]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -312,6 +342,7 @@ export function WorkoutRunner({
     setActionFeedback("");
     setShowCancelConfirm(false);
     setShowSkipOptions(false);
+    setSkipAction(null);
     setShowCurrentVideo(false);
     isAdvancingRef.current = false;
     setIsAdvancing(false);
@@ -324,7 +355,7 @@ export function WorkoutRunner({
   }
 
   function startNewSession() {
-    const nextSession = createWorkoutSession(workout.id);
+    const nextSession = createQueuedWorkoutSession();
 
     setCompletedSummary(null);
     setSession(nextSession);
@@ -392,7 +423,7 @@ export function WorkoutRunner({
     saveWorkoutHistoryEntry(historyEntry);
     removeActiveWorkoutSession(workout.id);
     setCompletedSummary(createCompletedSummary(historyEntry));
-    setSession(createWorkoutSession(workout.id));
+    setSession(createQueuedWorkoutSession());
     setRunnerStatus("completed");
     setRunnerView("overview");
     setElapsedSeconds(0);
@@ -434,7 +465,7 @@ export function WorkoutRunner({
     }
 
     const existingLog = session.logs[currentStep.id];
-    const isLastStep = session.currentStepIndex >= steps.length - 1;
+    const isLastStep = session.currentStepIndex >= orderedSteps.length - 1;
     const nextSession = {
       ...session,
       currentStepIndex: isLastStep
@@ -535,8 +566,36 @@ export function WorkoutRunner({
     router.push(`/workouts/${workout.id}`);
   }
 
+  function deferCurrentExercise() {
+    if (!currentStep) {
+      return;
+    }
+
+    if (session.currentStepIndex >= orderedSteps.length - 1) {
+      resetUiState();
+      setValidationMessage(
+        "Este exercício já está no final da fila. Faça agora ou escolha Não farei hoje.",
+      );
+      return;
+    }
+
+    const currentStepId = currentStep.id;
+    const nextStepOrder = orderedSteps
+      .map((step) => step.id)
+      .filter((stepId) => stepId !== currentStepId);
+
+    nextStepOrder.push(currentStepId);
+
+    setSession({
+      ...session,
+      stepOrder: nextStepOrder,
+    });
+    resetUiState();
+    showActionFeedback("Exercício movido para o final.");
+  }
+
   function skipCurrentExercise() {
-    if (!currentStep || !selectedSkipReason) {
+    if (!currentStep) {
       return;
     }
 
@@ -545,15 +604,8 @@ export function WorkoutRunner({
         ? customSkipReason.trim()
         : selectedSkipReason;
 
-    if (!skipReason) {
-      setValidationMessage(
-        "Descreva o motivo para pular este exercício ou escolha outro motivo.",
-      );
-      return;
-    }
-
     const existingLog = session.logs[currentStep.id];
-    const isLastStep = session.currentStepIndex >= steps.length - 1;
+    const isLastStep = session.currentStepIndex >= orderedSteps.length - 1;
     const nextSession = {
       ...session,
       currentStepIndex: isLastStep
@@ -569,7 +621,7 @@ export function WorkoutRunner({
           actualPse: existingLog?.actualPse ?? "",
           completed: false,
           skipped: true,
-          skipReason,
+          skipReason: skipReason || undefined,
         },
       },
     };
@@ -648,7 +700,7 @@ export function WorkoutRunner({
               </div>
               <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3">
                 <p className="text-sm font-bold text-zinc-100">
-                  {progressedCount}/{steps.length} exercícios registrados
+                  {progressedCount}/{orderedSteps.length} exercícios registrados
                 </p>
               </div>
               <button
@@ -762,7 +814,7 @@ export function WorkoutRunner({
               Progresso
             </p>
             <p className="mt-0.5 text-base font-black text-white">
-              {progressedCount}/{steps.length} exercícios
+              {progressedCount}/{orderedSteps.length} exercícios
             </p>
           </div>
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-right">
@@ -913,73 +965,108 @@ export function WorkoutRunner({
             <div className="flex flex-col gap-3">
               <div>
                 <h2 className="text-lg font-black text-white">
-                  Pular exercício
+                  O que deseja fazer?
                 </h2>
                 <p className="mt-1 text-sm leading-5 text-zinc-400">
-                  Escolha um motivo para salvar este exercício como pulado.
+                  Escolha se este exercício volta no fim da sessão ou se não
+                  será feito hoje.
                 </p>
               </div>
-              <div className="grid gap-2">
-                {skipReasons.map((reason) => (
+
+              {!skipAction ? (
+                <div className="grid gap-2">
                   <button
-                    key={reason}
+                    type="button"
+                    onClick={deferCurrentExercise}
+                    className="min-h-12 rounded-lg border border-red-400 bg-red-500 px-4 text-left text-sm font-black text-white transition-colors hover:bg-red-400"
+                  >
+                    Fazer depois
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSkipAction("skip")}
+                    className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-left text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
+                  >
+                    Não farei hoje
+                  </button>
+                  <button
                     type="button"
                     onClick={() => {
-                      setSelectedSkipReason(reason);
-                      if (reason !== "Outro") {
-                        setCustomSkipReason("");
-                      }
+                      setShowSkipOptions(false);
+                      setSkipAction(null);
                     }}
-                    className={`min-h-11 rounded-lg border px-3 text-left text-sm font-bold transition-colors ${
-                      selectedSkipReason === reason
-                        ? "border-red-400 bg-red-500/20 text-red-100"
-                        : "border-zinc-800 bg-zinc-900 text-zinc-300"
-                    }`}
+                    className="min-h-11 rounded-lg px-4 text-left text-sm font-bold text-zinc-500 transition-colors hover:text-zinc-200"
                   >
-                    {reason}
+                    Cancelar
                   </button>
-                ))}
-              </div>
-              {selectedSkipReason === "Outro" ? (
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-semibold text-zinc-300">
-                    Descreva o motivo
-                  </span>
-                  <input
-                    value={customSkipReason}
-                    onChange={(event) =>
-                      setCustomSkipReason(event.target.value)
-                    }
-                    placeholder="Ex: agenda apertada, equipamento ocupado"
-                    className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
-                  />
-                </label>
+                </div>
               ) : null}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSkipOptions(false);
-                    setSelectedSkipReason("");
-                    setCustomSkipReason("");
-                  }}
-                  className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200"
-                >
-                  Voltar
-                </button>
-                <button
-                  type="button"
-                  onClick={skipCurrentExercise}
-                  disabled={
-                    !selectedSkipReason ||
-                    (selectedSkipReason === "Outro" &&
-                      !customSkipReason.trim())
-                  }
-                  className="min-h-11 rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white disabled:cursor-not-allowed disabled:border-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500"
-                >
-                  Confirmar pulo
-                </button>
-              </div>
+
+              {skipAction === "skip" ? (
+                <>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-300">
+                      Motivo opcional
+                    </p>
+                    <div className="mt-2 grid gap-2">
+                      {skipReasons.map((reason) => (
+                        <button
+                          key={reason}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSkipReason(reason);
+                            if (reason !== "Outro") {
+                              setCustomSkipReason("");
+                            }
+                          }}
+                          className={`min-h-11 rounded-lg border px-3 text-left text-sm font-bold transition-colors ${
+                            selectedSkipReason === reason
+                              ? "border-red-400 bg-red-500/20 text-red-100"
+                              : "border-zinc-800 bg-zinc-900 text-zinc-300"
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {selectedSkipReason === "Outro" ? (
+                    <label className="flex flex-col gap-2">
+                      <span className="text-sm font-semibold text-zinc-300">
+                        Descreva o motivo
+                      </span>
+                      <input
+                        value={customSkipReason}
+                        onChange={(event) =>
+                          setCustomSkipReason(event.target.value)
+                        }
+                        placeholder="Ex: agenda apertada, equipamento ocupado"
+                        className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
+                      />
+                    </label>
+                  ) : null}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSkipAction(null);
+                        setSelectedSkipReason("");
+                        setCustomSkipReason("");
+                      }}
+                      className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={skipCurrentExercise}
+                      className="min-h-11 rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white"
+                    >
+                      Não farei hoje
+                    </button>
+                  </div>
+                </>
+              ) : null}
             </div>
           </AppCard>
         </div>
@@ -1038,7 +1125,7 @@ export function WorkoutRunner({
             >
               {isAdvancing
                 ? "Salvando..."
-                : session.currentStepIndex >= steps.length - 1
+                : session.currentStepIndex >= orderedSteps.length - 1
                   ? "Concluir treino"
                   : "Concluir e próximo"}
             </button>

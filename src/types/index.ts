@@ -54,6 +54,7 @@ export type WorkoutSession = {
   pausedAt?: string;
   totalPausedSeconds?: number;
   currentStepIndex: number;
+  stepOrder?: string[];
   logs: Record<string, WorkoutSessionLog>;
 };
 
