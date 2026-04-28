@@ -1,14 +1,23 @@
 # Backlog — BJJ Training Log
 
-## Próximas tarefas recomendadas
+## Concluído
 
 ### 05.3 — Pular exercício e retornar depois
 
-Permitir que o atleta pule um exercício durante o treino e volte nele antes de finalizar.
+Concluído na Sprint 1.
+
+- Botão atualizado para `Opções do exercício`.
+- `Fazer depois` move o exercício atual para o fim da fila da sessão.
+- `Não farei hoje` registra pulo definitivo.
+- Fila dinâmica por sessão.
+- Histórico antigo preservado.
+- Ajuste 05.3A: label do botão refinado para refletir o novo comportamento.
+
+## Próximas tarefas recomendadas
 
 ### 05.4 — Execução correta de bi-set
 
-Ajustar o fluxo de execução para refletir melhor a lógica real de bi-set no treino.
+Refinamento futuro para ajustar o fluxo de execução à lógica real de bi-set no treino.
 
 ### 05.5 — Séries feitas e observação
 

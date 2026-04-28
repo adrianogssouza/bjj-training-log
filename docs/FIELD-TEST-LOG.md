@@ -22,6 +22,7 @@
 - 05.2.1: sessão concluída não deve ser sessão ativa.
 - 05.2.2: reinício do mesmo treino após conclusão.
 - 05.2.3: flicker visual de `Treino concluído` antigo.
+- 05.3: `Opções do exercício` com `Fazer depois`, `Não farei hoje` e `Cancelar`.
 
 ## Template para próximos testes
 

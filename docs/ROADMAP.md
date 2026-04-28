@@ -2,7 +2,7 @@
 
 ## Status atual
 
-Sprint 1 concluída, MVP em produção e teste real do Treino B Abril/26 concluído.
+Sprint 1 oficialmente concluída, MVP funcional em produção e teste real do Treino B Abril/26 concluído.
 
 ## Sprint 1 concluída
 
@@ -17,19 +17,19 @@ Sprint 1 concluída, MVP em produção e teste real do Treino B Abril/26 conclu�
 - Deploy na Vercel.
 - Teste real em celular.
 - Hotfixes pós-teste real.
+- Tarefa 05.3 concluída: opções do exercício, fazer depois, não farei hoje e fila dinâmica.
 
 ## Etapa atual
 
-Pós-teste real — estabilização curta antes de Sprint 2.
+Encerramento da Sprint 1 e organização do backlog futuro.
 
 ## Próximo passo
 
-Executar melhorias pequenas baseadas no uso real, sem iniciar uma Sprint 2 pesada ainda.
+Planejar refinamentos futuros com base no teste real, sem iniciar uma Sprint 2 pesada automaticamente.
 
 ## Próximas tarefas recomendadas
 
-- 05.3 Pular exercício e retornar depois.
-- 05.4 Execução correta de bi-set.
+- 05.4 Execução correta de bi-set como refinamento futuro.
 - 05.5 Séries feitas e observação.
 - 05.6 Modo rápido vs completo.
 - 05.7 Arquitetura de histórico por exercício/carga.
@@ -50,3 +50,4 @@ Executar melhorias pequenas baseadas no uso real, sem iniciar uma Sprint 2 pesad
 - Priorizar uso real antes de novas features grandes.
 - Manter backend, login e Supabase fora do escopo atual.
 - Não refatorar arquitetura antes de validar os próximos fluxos de treino.
+- Manter a fila dinâmica local à sessão atual, sem alterar histórico antigo.

@@ -23,6 +23,8 @@ Nesta primeira versão, o foco foi validar o fluxo principal durante um treino r
 - Tela de detalhe do treino com blocos e exercícios.
 - Runner de treino com fluxo guiado.
 - Registro de exercícios concluídos e pulados.
+- Opções do exercício: fazer depois ou não fazer hoje.
+- Fila dinâmica da sessão para exercícios adiados.
 - Persistência de sessão ativa no navegador.
 - Histórico local de treinos concluídos.
 - Métricas simples de histórico: treinos, tempo total, PSE médio e exercícios registrados.
@@ -88,14 +90,13 @@ Limitações atuais:
 
 ## Status
 
-Sprint 1 concluída e em produção.
+Sprint 1 oficialmente concluída e em produção.
 
-MVP validado em teste real com o Treino B Abril/26. A fase atual é pós-teste real, com hotfixes aplicados e sem início de Sprint 2 pesada ainda.
+MVP funcional validado em teste real com o Treino B Abril/26. A fase atual é encerramento da Sprint 1 e organização do backlog futuro.
 
 ## Próximos passos
 
-- 05.3 Pular exercício e retornar depois.
-- 05.4 Execução correta de bi-set.
+- 05.4 Execução correta de bi-set como refinamento futuro.
 - 05.5 Séries feitas e observação.
 - 05.6 Modo rápido vs completo.
 - 05.7 Arquitetura de histórico por exercício/carga.
