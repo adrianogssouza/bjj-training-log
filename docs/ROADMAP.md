@@ -2,7 +2,7 @@
 
 ## Status atual
 
-Release Candidate para teste real.
+Sprint 1 concluída, MVP em produção e teste real do Treino B Abril/26 concluído.
 
 ## Sprint 1 concluída
 
@@ -15,23 +15,32 @@ Release Candidate para teste real.
 - Vídeos dos exercícios.
 - Vídeos reais do Treino B.
 - Deploy na Vercel.
+- Teste real em celular.
+- Hotfixes pós-teste real.
 
 ## Etapa atual
 
-RC-1 — checklist final antes do treino real.
+Pós-teste real — estabilização curta antes de Sprint 2.
 
 ## Próximo passo
 
-Teste real no treino de amanhã.
+Executar melhorias pequenas baseadas no uso real, sem iniciar uma Sprint 2 pesada ainda.
+
+## Próximas tarefas recomendadas
+
+- 05.3 Pular exercício e retornar depois.
+- 05.4 Execução correta de bi-set.
+- 05.5 Séries feitas e observação.
+- 05.6 Modo rápido vs completo.
+- 05.7 Arquitetura de histórico por exercício/carga.
 
 ## Sprint 2 provável
 
 - Ajustes baseados no uso real.
-- Seleção de equipamento/método no cardio.
-- Vídeos reais dos outros treinos.
 - Melhor UX de inputs no celular.
 - Estatísticas e analytics mais úteis.
 - Exportação de histórico.
+- Vídeos reais dos outros treinos.
 - Backend e sincronização futura, se fizer sentido.
 
 ## Decisões atuais
@@ -39,3 +48,5 @@ Teste real no treino de amanhã.
 - Manter MVP sem login.
 - Histórico local por dispositivo.
 - Priorizar uso real antes de novas features grandes.
+- Manter backend, login e Supabase fora do escopo atual.
+- Não refatorar arquitetura antes de validar os próximos fluxos de treino.

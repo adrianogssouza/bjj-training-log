@@ -1,6 +1,29 @@
 # Field Test Log — BJJ Training Log
 
-## Dados do teste
+## Teste real concluído
+
+- Treino realizado: Treino B Abril/26.
+- Dispositivo: celular.
+- Status: concluído.
+- Resultado: MVP validado em campo.
+
+## Resultado observado
+
+- Execução do treino funcionou.
+- Sessão foi salva corretamente.
+- Histórico local via `localStorage` funcionou.
+- Exercícios concluídos e pulados foram registrados.
+- Fallback para YouTube foi necessário e funcionou melhor que depender só do embed.
+- Foram identificados ajustes de UX mobile após uso real.
+
+## Hotfixes pós-teste
+
+- 05.2: barra inferior e fallback de vídeo.
+- 05.2.1: sessão concluída não deve ser sessão ativa.
+- 05.2.2: reinício do mesmo treino após conclusão.
+- 05.2.3: flicker visual de `Treino concluído` antigo.
+
+## Template para próximos testes
 
 - Data:
 - Local:
@@ -9,9 +32,6 @@
 - Navegador:
 - URL usada:
 - Duração do teste:
-
-## Observações
-
 - O que funcionou bem:
 - Bugs encontrados:
 - Pontos de atrito:
@@ -21,16 +41,8 @@
 - O app atrapalhou ou ajudou o treino?
 - Melhorias desejadas:
 
-## Prioridade pós-teste
+## Decisão atual
 
-- Alta:
-- Média:
-- Baixa:
-
-## Decisão
-
-Marcar uma opção após o teste:
-
-- [ ] Aprovado para seguir.
-- [ ] Precisa de correções antes da Sprint 2.
+- [x] Aprovado para seguir com melhorias incrementais.
+- [ ] Precisa de correções críticas antes de continuar.
 - [ ] Precisa repensar fluxo.

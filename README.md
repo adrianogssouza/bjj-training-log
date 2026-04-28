@@ -6,7 +6,7 @@ Aplicativo web para registrar, executar e revisar treinos de Jiu-Jitsu/BJJ.
 
 O BJJ Training Log ajuda atletas e professores a organizar sessões de treino, acompanhar a execução dos exercícios e consultar o histórico local de treinos concluídos.
 
-Nesta primeira versão, o foco é validar o fluxo principal durante um treino real: escolher um treino, executar blocos de exercícios, registrar progresso e revisar o histórico no próprio dispositivo.
+Nesta primeira versão, o foco foi validar o fluxo principal durante um treino real: escolher um treino, executar blocos de exercícios, registrar progresso e revisar o histórico no próprio dispositivo.
 
 ## Stack
 
@@ -27,7 +27,10 @@ Nesta primeira versão, o foco é validar o fluxo principal durante um treino re
 - Histórico local de treinos concluídos.
 - Métricas simples de histórico: treinos, tempo total, PSE médio e exercícios registrados.
 - Suporte a vídeos de execução por exercício.
+- Vídeos reais do Treino B Abril/26.
+- Fallback direto para YouTube quando o embed não carregar bem no mobile/5G.
 - Interface responsiva com refinamentos para uso mobile.
+- Correções pós-teste real para reinício de treino, barra inferior e validação visual de sessão.
 
 ## Como rodar localmente
 
@@ -85,14 +88,16 @@ Limitações atuais:
 
 ## Status
 
-Sprint 1 concluída.
+Sprint 1 concluída e em produção.
 
-MVP pronto para deploy na Vercel e teste real em treino.
+MVP validado em teste real com o Treino B Abril/26. A fase atual é pós-teste real, com hotfixes aplicados e sem início de Sprint 2 pesada ainda.
 
 ## Próximos passos
 
-- Publicar na Vercel.
-- Testar em treino real no celular.
-- Coletar feedback de uso.
-- Planejar Sprint 2 com base no feedback.
-- Avaliar autenticação, backend, sincronização, gráficos e edição de treinos.
+- 05.3 Pular exercício e retornar depois.
+- 05.4 Execução correta de bi-set.
+- 05.5 Séries feitas e observação.
+- 05.6 Modo rápido vs completo.
+- 05.7 Arquitetura de histórico por exercício/carga.
+
+Backend, login e Supabase seguem fora do escopo atual até haver necessidade real validada em uso.
