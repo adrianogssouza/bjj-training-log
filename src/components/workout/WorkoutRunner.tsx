@@ -23,6 +23,11 @@ import {
   saveActiveWorkoutSession,
   saveWorkoutHistoryEntry,
 } from "@/lib/workout-storage";
+import {
+  isAllowedPseInput,
+  isValidPseValue,
+  pseValidationMessage,
+} from "@/lib/workout-validation";
 import { getBlockTypeLabel, getOrderedWorkoutBlocks } from "@/lib/workouts";
 
 type RunnerStep = {
@@ -52,48 +57,6 @@ const skipReasons = [
   "Não quis fazer",
   "Outro",
 ];
-
-const pseValidationMessage = "PSE real deve ser um número entre 0 e 10.";
-
-function parsePseValue(value: string) {
-  const normalizedValue = value.trim().replace(",", ".");
-
-  if (!/^\d+(\.\d+)?$/.test(normalizedValue)) {
-    return null;
-  }
-
-  const pse = Number.parseFloat(normalizedValue);
-
-  return Number.isFinite(pse) ? pse : null;
-}
-
-function isValidPseValue(value: string) {
-  const pse = parsePseValue(value);
-
-  return pse !== null && pse >= 0 && pse <= 10;
-}
-
-function isAllowedPseInput(value: string) {
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return true;
-  }
-
-  if (!/^\d{0,2}([,.]\d*)?$/.test(trimmedValue)) {
-    return false;
-  }
-
-  const comparableValue = trimmedValue.replace(/[,.]$/, "");
-
-  if (!comparableValue) {
-    return false;
-  }
-
-  const pse = parsePseValue(comparableValue);
-
-  return pse !== null && pse >= 0 && pse <= 10;
-}
 
 function formatDuration(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);

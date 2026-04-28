@@ -1,4 +1,8 @@
 import type { WorkoutHistoryEntry, WorkoutSession } from "@/types";
+import {
+  sanitizeWorkoutHistory,
+  sanitizeWorkoutSessionPse,
+} from "@/lib/workout-validation";
 
 export const workoutStorageKeys = {
   history: "bjj-training-log:workout-history",
@@ -42,6 +46,7 @@ export function createWorkoutHistoryEntry(
   workoutTitle: string,
   completedAt: string,
 ): WorkoutHistoryEntry {
+  const sanitizedSession = sanitizeWorkoutSessionPse(session);
   const pausedSeconds = session.totalPausedSeconds ?? 0;
   const durationSeconds = Math.max(
     0,
@@ -53,8 +58,8 @@ export function createWorkoutHistoryEntry(
   );
 
   return {
-    ...session,
-    id: `${session.workoutId}:${session.startedAt}`,
+    ...sanitizedSession,
+    id: `${sanitizedSession.workoutId}:${sanitizedSession.startedAt}`,
     completedAt,
     finishedAt: completedAt,
     durationSeconds,
@@ -63,22 +68,33 @@ export function createWorkoutHistoryEntry(
 }
 
 export function readWorkoutHistory() {
-  return readJson<WorkoutHistoryEntry[]>(workoutStorageKeys.history, []);
+  const history = readJson<WorkoutHistoryEntry[]>(workoutStorageKeys.history, []);
+  const sanitizedHistory = sanitizeWorkoutHistory(history);
+
+  if (JSON.stringify(history) !== JSON.stringify(sanitizedHistory)) {
+    window.localStorage.setItem(
+      workoutStorageKeys.history,
+      JSON.stringify(sanitizedHistory),
+    );
+  }
+
+  return sanitizedHistory;
 }
 
 export function saveWorkoutHistoryEntry(entry: WorkoutHistoryEntry) {
+  const sanitizedEntry = sanitizeWorkoutSessionPse(entry);
   const history = readWorkoutHistory();
   const alreadyExists = history.some(
     (historyEntry) =>
-      historyEntry.workoutId === entry.workoutId &&
-      historyEntry.startedAt === entry.startedAt,
+      historyEntry.workoutId === sanitizedEntry.workoutId &&
+      historyEntry.startedAt === sanitizedEntry.startedAt,
   );
 
   if (alreadyExists) {
     return history;
   }
 
-  const nextHistory = [entry, ...history];
+  const nextHistory = [sanitizedEntry, ...history];
   window.localStorage.setItem(
     workoutStorageKeys.history,
     JSON.stringify(nextHistory),
@@ -99,16 +115,20 @@ export function readActiveWorkoutSession(workoutId: string) {
     readJson<WorkoutSession | null>(activeKey, null) ??
     readJson<WorkoutSession | null>(legacyKey, null);
 
-  return session?.workoutId === workoutId ? session : null;
+  return session?.workoutId === workoutId
+    ? sanitizeWorkoutSessionPse(session)
+    : null;
 }
 
 export function saveActiveWorkoutSession(session: WorkoutSession) {
+  const sanitizedSession = sanitizeWorkoutSessionPse(session);
+
   window.localStorage.setItem(
-    workoutStorageKeys.activeSession(session.workoutId),
-    JSON.stringify(session),
+    workoutStorageKeys.activeSession(sanitizedSession.workoutId),
+    JSON.stringify(sanitizedSession),
   );
   window.localStorage.removeItem(
-    workoutStorageKeys.legacySession(session.workoutId),
+    workoutStorageKeys.legacySession(sanitizedSession.workoutId),
   );
 }
 
