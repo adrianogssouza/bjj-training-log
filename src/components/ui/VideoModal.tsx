@@ -86,18 +86,28 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
         onClick={(event) => event.stopPropagation()}
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-zinc-800 bg-zinc-950 px-4 py-3">
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
               Vídeo
             </p>
             <h2 className="mt-1 break-words text-lg font-black leading-6 text-white">
               {title}
             </h2>
+            {videoSource.externalUrl ? (
+              <a
+                href={videoSource.externalUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border border-red-300 bg-red-500 px-4 text-sm font-black text-white shadow-md shadow-red-950/40 transition-colors hover:bg-red-400 sm:hidden"
+              >
+                Abrir no YouTube
+              </a>
+            ) : null}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
+            className="min-h-10 shrink-0 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
           >
             Fechar
           </button>
@@ -106,8 +116,9 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
         <div className="aspect-video max-h-[40vh] w-full bg-black">
           {hasError ? (
             <div className="flex h-full min-h-48 items-center justify-center px-4 text-center">
-              <p className="text-sm font-bold text-zinc-300">
-                Vídeo indisponível
+              <p className="text-sm font-bold leading-6 text-zinc-300">
+                O vídeo integrado não carregou. Use o botão do YouTube para
+                abrir direto no app ou navegador.
               </p>
             </div>
           ) : videoSource.kind === "youtube" ? (
@@ -133,14 +144,14 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
         </div>
         <div className="flex flex-col gap-3 border-t border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold leading-5 text-zinc-300">
-            Se o vídeo não carregar, abra no YouTube.
+            Se o vídeo integrado falhar no 5G, abra direto no YouTube.
           </p>
           {videoSource.externalUrl ? (
             <a
               href={videoSource.externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex min-h-11 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white transition-colors hover:bg-red-400"
+              className="hidden min-h-11 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white transition-colors hover:bg-red-400 sm:flex"
             >
               Abrir no YouTube
             </a>

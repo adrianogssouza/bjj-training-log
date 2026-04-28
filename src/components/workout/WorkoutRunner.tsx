@@ -708,7 +708,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-3 pb-48 pt-4">
+    <main className="flex flex-1 flex-col gap-3 pb-[calc(11rem+env(safe-area-inset-bottom))] pt-4 sm:pb-48">
       <section className="flex flex-col gap-2">
         <Link
           href={`/workouts/${workout.id}`}
@@ -999,13 +999,13 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
       ) : null}
 
       {!showSkipOptions ? (
-        <div className="sticky bottom-0 -mx-4 border-t border-zinc-800 bg-zinc-950/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2.5 backdrop-blur sm:-mx-6 sm:px-6">
-          <div className="mx-auto flex max-w-3xl flex-col gap-2">
+        <div className="sticky bottom-0 -mx-4 border-t border-zinc-800 bg-zinc-950/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
+          <div className="mx-auto flex max-w-3xl flex-col gap-1.5">
             <button
               type="button"
               onClick={completeAndGoNext}
               disabled={isPaused || isAdvancing}
-              className="flex min-h-[52px] w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 py-3 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400 disabled:cursor-not-allowed disabled:border-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:shadow-none"
+              className="flex min-h-11 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 py-2 text-center text-sm font-black text-white shadow-md shadow-red-950/30 transition-colors hover:bg-red-400 disabled:cursor-not-allowed disabled:border-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:shadow-none sm:min-h-12 sm:text-base"
             >
               {isAdvancing
                 ? "Salvando..."
@@ -1013,12 +1013,12 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
                   ? "Concluir treino"
                   : "Concluir e próximo"}
             </button>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               {isPaused ? (
                 <button
                   type="button"
                   onClick={resumeSession}
-                  className="min-h-11 rounded-lg border border-amber-300 bg-amber-300 px-4 text-sm font-black text-amber-950"
+                  className="min-h-10 rounded-lg border border-amber-300 bg-amber-300 px-3 text-sm font-black text-amber-950"
                 >
                   Retomar treino
                 </button>
@@ -1027,7 +1027,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
                   type="button"
                   onClick={pauseSession}
                   disabled={!canPauseSession}
-                  className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
+                  className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
                 >
                   Pausar treino
                 </button>
@@ -1036,7 +1036,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
                 type="button"
                 onClick={() => setShowSkipOptions(true)}
                 disabled={isPaused}
-                className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
+                className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
               >
                 Pular exercício
               </button>
@@ -1044,7 +1044,7 @@ export function WorkoutRunner({ workout }: WorkoutRunnerProps) {
             <button
               type="button"
               onClick={() => setShowCancelConfirm(true)}
-              className="min-h-9 rounded-lg px-4 text-xs font-bold text-zinc-500 transition-colors hover:text-red-200"
+              className="min-h-7 rounded-lg px-3 text-xs font-bold text-zinc-500 transition-colors hover:text-red-200"
             >
               Cancelar treino
             </button>
