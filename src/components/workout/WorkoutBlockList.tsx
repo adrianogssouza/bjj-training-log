@@ -153,9 +153,8 @@ export function WorkoutBlockList({
                               <div>
                                 <dt className="text-xs text-zinc-500">Reps</dt>
                                 <dd className="font-semibold text-zinc-100">
-                                  {isComplementary
-                                    ? "Combo"
-                                    : item.reps ?? "-"}
+                                  {item.reps ??
+                                    (isComplementary ? "Etapa" : "-")}
                                 </dd>
                               </div>
                               <div>
