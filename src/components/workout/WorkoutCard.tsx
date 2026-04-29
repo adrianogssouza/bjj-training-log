@@ -25,7 +25,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
             {isComplementary
               ? `${metadata.type} de ${metadata.category} em ${metadata.format.toLocaleLowerCase(
                   "pt-BR",
-                )} com ${metadata.blockCount} bloco guiado.`
+                )} com ${metadata.blockCount} bloco guiado e ${metadata.itemCount} etapas.`
               : `${metadata.type} com ${metadata.blockCount} blocos e ${metadata.itemCount} exercícios.`}
           </p>
         </div>

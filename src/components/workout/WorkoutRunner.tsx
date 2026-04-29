@@ -204,6 +204,10 @@ export function WorkoutRunner({
   const pseFieldLabel = isComplementaryWorkout
     ? "PSE real (opcional)"
     : "PSE real";
+  const progressUnitLabel = isComplementaryWorkout ? "etapas" : "exercícios";
+  const progressRecordLabel = isComplementaryWorkout
+    ? "etapas registradas"
+    : "exercícios registrados";
   const currentVideoUrl = currentStep?.item.videoUrl?.trim();
   const shouldAutoStart = autoStart;
   const sessionValidationKey = `${workout.id}:${
@@ -731,7 +735,7 @@ export function WorkoutRunner({
               </div>
               <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3">
                 <p className="text-sm font-bold text-zinc-100">
-                  {progressedCount}/{orderedSteps.length} exercícios registrados
+                  {progressedCount}/{orderedSteps.length} {progressRecordLabel}
                 </p>
               </div>
               <button
@@ -845,7 +849,7 @@ export function WorkoutRunner({
               Progresso
             </p>
             <p className="mt-0.5 text-base font-black text-white">
-              {progressedCount}/{orderedSteps.length} exercícios
+              {progressedCount}/{orderedSteps.length} {progressUnitLabel}
             </p>
           </div>
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-right">

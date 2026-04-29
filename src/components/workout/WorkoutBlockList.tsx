@@ -106,10 +106,10 @@ export function WorkoutBlockList({
                     </div>
                     <div className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">
                       <dt className="text-xs text-zinc-500">
-                        {isComplementary ? "Formato" : "Exercícios"}
+                        {isComplementary ? "Etapas" : "Exercícios"}
                       </dt>
                       <dd className="font-semibold text-zinc-100">
-                        {isComplementary ? "Sequência" : block.items.length}
+                        {block.items.length}
                       </dd>
                     </div>
                   </dl>
