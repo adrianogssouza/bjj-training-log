@@ -9,6 +9,7 @@ type WorkoutCardProps = {
 
 export function WorkoutCard({ workout }: WorkoutCardProps) {
   const metadata = getWorkoutMetadata(workout);
+  const isComplementary = workout.type === "complementary";
 
   return (
     <AppCard className="flex flex-col gap-5 p-5">
@@ -21,8 +22,11 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
             {workout.title}
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
-            {metadata.type} com {metadata.blockCount} blocos e{" "}
-            {metadata.itemCount} exercícios.
+            {isComplementary
+              ? `${metadata.type} de ${metadata.category} em ${metadata.format.toLocaleLowerCase(
+                  "pt-BR",
+                )} com ${metadata.blockCount} bloco guiado.`
+              : `${metadata.type} com ${metadata.blockCount} blocos e ${metadata.itemCount} exercícios.`}
           </p>
         </div>
         <p className="text-sm leading-6 text-zinc-500">

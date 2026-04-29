@@ -1,53 +1,161 @@
-# Roadmap — BJJ Training Log
+# Roadmap — APP JIU / BJJ Training Log
 
-## Status atual
+Roadmap oficial após conclusão das Sprints 1, 1.5, 1.5.1 e 1.6.
 
-Sprint 1 oficialmente concluída, MVP funcional em produção e teste real do Treino B Abril/26 concluído.
+## Estado atual
 
-## Sprint 1 concluída
+O APP JIU está funcional para rotina semanal real.
 
-- Base do app com Next.js, TypeScript e Tailwind CSS.
-- Catálogo de treinos.
-- Tela de detalhe do treino.
-- Execução guiada do treino.
-- Persistência local com `localStorage`.
+Escopo atual suportado:
+
+- Treino A Abril/26.
+- Treino B Abril/26.
+- Mobilidade.
+- Core.
+- Cardio.
+- Anti-lesão.
+- Execução guiada.
 - Histórico local.
-- Vídeos dos exercícios.
-- Vídeos reais do Treino B.
-- Deploy na Vercel.
-- Teste real em celular.
-- Hotfixes pós-teste real.
-- Tarefa 05.3 concluída: opções do exercício, fazer depois, não farei hoje e fila dinâmica.
+- Vídeos por exercício ou sequência.
+- Uso mobile-first.
 
-## Etapa atual
+## Linha do tempo concluída
 
-Encerramento da Sprint 1 e organização do backlog futuro.
+### Sprint 1 — MVP validado
 
-## Próximo passo
+Objetivo:
 
-Planejar refinamentos futuros com base no teste real, sem iniciar uma Sprint 2 pesada automaticamente.
+Validar o fluxo principal em treino real.
 
-## Próximas tarefas recomendadas
+Entregue:
 
-- 05.4 Execução correta de bi-set como refinamento futuro.
-- 05.5 Séries feitas e observação.
-- 05.6 Modo rápido vs completo.
-- 05.7 Arquitetura de histórico por exercício/carga.
+- App funcional.
+- Treinos principais.
+- Execução guiada.
+- Histórico local.
+- Vídeos.
+- Deploy.
+- Teste real.
+- Hotfixes mobile.
+- Pular exercício.
+- Fazer depois.
+- Não farei hoje.
 
-## Sprint 2 provável
+### Sprint 1.5 — Rotina semanal
 
-- Ajustes baseados no uso real.
-- Melhor UX de inputs no celular.
-- Estatísticas e analytics mais úteis.
-- Exportação de histórico.
-- Vídeos reais dos outros treinos.
-- Backend e sincronização futura, se fizer sentido.
+Objetivo:
 
-## Decisões atuais
+Expandir o app para refletir a rotina real do usuário.
 
-- Manter MVP sem login.
-- Histórico local por dispositivo.
+Entregue:
+
+- Complementares reais.
+- Vídeos oficiais dos complementares.
+- Navegação completa para complementares.
+- Home separando treinos do mês e complementares.
+
+### Sprint 1.5.1 — Home mais rápida
+
+Objetivo:
+
+Reduzir fricção antes do treino.
+
+Entregue:
+
+- CTA principal no topo.
+- Complementares compactados.
+- Menos scroll.
+- Microcopy mais direta.
+
+### Sprint 1.6 — Correções de uso real
+
+Objetivo:
+
+Corrigir inconsistências percebidas em treino complementar.
+
+Entregue:
+
+- Conclusão retorna para Home.
+- Campo de carga/método textual.
+- Complementares apresentados como sequência/circuito/combo.
+- Fluxos completos testados.
+
+## Próximas duas semanas
+
+### Foco 1 — Complementares com menos fricção
+
+Meta:
+
+Deixar Mobilidade, Core, Cardio e Anti-lesão mais rápidos de executar.
+
+Possíveis entregas:
+
+- Modo complementar simplificado.
+- PSE opcional ou menos intrusivo.
+- Concluir sequência em menos toques.
+
+### Foco 2 — Organização da lista completa
+
+Meta:
+
+Fazer `/workouts` seguir a mesma lógica clara da Home.
+
+Possíveis entregas:
+
+- Separar treinos principais e complementares.
+- Agrupar complementares por categoria.
+- Manter rotas atuais.
+
+### Foco 3 — Treino A pronto para uso real
+
+Meta:
+
+Resolver a pendência dos vídeos do Treino A antes do próximo uso real.
+
+Possíveis entregas:
+
+- Revisar URLs atuais.
+- Substituir placeholders.
+- Validar abertura de vídeos no mobile.
+
+## Depois das próximas duas semanas
+
+### Histórico mais inteligente
+
+- Separar treinos principais e complementares.
+- Mostrar tipo de sessão.
+- Melhorar leitura de carga/método.
+- Evitar métricas misturadas.
+
+### Recomendações simples
+
+- Sugerir treino do dia.
+- Permitir repetir último treino.
+- Manter sem calendário complexo no primeiro passo.
+
+### Registro mais rico
+
+- Observação curta ao concluir treino.
+- Séries feitas.
+- Notas por exercício ou sequência.
+
+## Decisões de produto
+
+- Manter mobile-first.
+- Manter dark UI atual.
 - Priorizar uso real antes de novas features grandes.
-- Manter backend, login e Supabase fora do escopo atual.
-- Não refatorar arquitetura antes de validar os próximos fluxos de treino.
-- Manter a fila dinâmica local à sessão atual, sem alterar histórico antigo.
+- Manter histórico local por enquanto.
+- Não adicionar login/backend ainda.
+- Não alterar localStorage de forma incompatível sem necessidade.
+- Não fazer refatoração ampla antes de nova rodada de uso real.
+
+## Fora do roadmap imediato
+
+- Login.
+- Supabase.
+- Backend.
+- Sincronização entre dispositivos.
+- Dashboard avançado.
+- Multiusuário/professor.
+
+Esses temas podem voltar quando o app provar necessidade real além do uso individual atual.

@@ -87,29 +87,83 @@ function MonthlyWorkoutCard({ workout }: { workout: Workout }) {
   );
 }
 
-function ComplementaryWorkoutCard({ workout }: { workout: Workout }) {
-  const itemCount = workout.blocks.reduce(
-    (total, block) => total + block.items.length,
-    0,
-  );
+function TopActionPanel({ workouts }: { workouts: Workout[] }) {
+  const primaryWorkout = workouts[0];
+  const secondaryWorkout = workouts[1];
+
+  if (!primaryWorkout) {
+    return null;
+  }
 
   return (
-    <Link
-      href={`/workouts/${workout.id}`}
-      className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-4 shadow-sm shadow-black/20 transition-colors hover:border-zinc-600 hover:bg-zinc-900/80"
-    >
-      <div className="flex min-h-24 flex-col justify-between gap-3">
+    <AppCard className="border-red-500/40 bg-red-950/20 p-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h4 className="break-words text-base font-black leading-6 text-white">
-            {workout.title}
-          </h4>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            {workout.blocks.length} bloco · {itemCount} exercício
+          <p className="text-xs font-semibold uppercase tracking-wide text-red-200">
+            Próximo passo
+          </p>
+          <h2 className="mt-1 text-xl font-black text-white">
+            Abrir treino principal
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-300">
+            Para entrar rápido no treino do mês e revisar os blocos antes de
+            começar.
           </p>
         </div>
-        <span className="text-sm font-bold text-red-200">Abrir</span>
+
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+          <Link
+            href={`/workouts/${primaryWorkout.id}`}
+            className="flex min-h-12 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-center text-sm font-black text-white shadow-md shadow-red-950/40 transition-colors hover:bg-red-400"
+          >
+            {primaryWorkout.title}
+          </Link>
+          {secondaryWorkout ? (
+            <Link
+              href={`/workouts/${secondaryWorkout.id}`}
+              className="flex min-h-12 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
+            >
+              {secondaryWorkout.title}
+            </Link>
+          ) : null}
+        </div>
       </div>
-    </Link>
+    </AppCard>
+  );
+}
+
+function ComplementaryGroupCard({
+  label,
+  workouts,
+}: {
+  label: string;
+  workouts: Workout[];
+}) {
+  return (
+    <AppCard className="p-4">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-sm font-black uppercase tracking-wide text-zinc-200">
+            {label}
+          </h3>
+          <span className="rounded-full border border-zinc-700 px-2.5 py-1 text-xs font-black text-zinc-400">
+            {workouts.length}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+          {workouts.map((workout) => (
+            <Link
+              key={workout.id}
+              href={`/workouts/${workout.id}`}
+              className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-center text-sm font-bold text-zinc-100 transition-colors hover:border-red-400 hover:text-red-100"
+            >
+              {workout.title}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </AppCard>
   );
 }
 
@@ -121,7 +175,7 @@ export default function HomePage() {
   );
 
   return (
-    <main className="flex flex-1 flex-col gap-7 pb-10 pt-6">
+    <main className="flex flex-1 flex-col gap-6 pb-10 pt-6">
       <section className="flex flex-col gap-5">
         <div className="flex flex-col gap-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-red-300">
@@ -131,11 +185,11 @@ export default function HomePage() {
             APP JIU / BJJ Training Log
           </h1>
           <p className="max-w-2xl text-base leading-7 text-zinc-300">
-            Abra o treino certo em poucos segundos: A/B para força do mês,
-            complementares para encaixar mobilidade, core, cardio e anti-lesão
-            na semana.
+            Escolha o treino do dia sem caçar link: força do mês no topo,
+            complementares logo abaixo e histórico sempre à mão.
           </p>
         </div>
+        <TopActionPanel workouts={monthlyWorkouts} />
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-red-200">
@@ -184,36 +238,28 @@ export default function HomePage() {
           <h2 className="mt-1 text-2xl font-black text-white">
             Rotina semanal
           </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-400">
+            Atalhos compactos para encaixar o extra certo no dia.
+          </p>
         </div>
 
-        {complementaryGroups.map((group) => {
-          const workouts = getWorkoutsById(group.ids);
+        <div className="grid gap-3 sm:grid-cols-2">
+          {complementaryGroups.map((group) => {
+            const workouts = getWorkoutsById(group.ids);
 
-          if (workouts.length === 0) {
-            return null;
-          }
+            if (workouts.length === 0) {
+              return null;
+            }
 
-          return (
-            <div key={group.label} className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-black uppercase tracking-wide text-zinc-300">
-                  {group.label}
-                </h3>
-                <span className="rounded-full border border-zinc-700 px-2.5 py-1 text-xs font-black text-zinc-400">
-                  {workouts.length}
-                </span>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {workouts.map((workout) => (
-                  <ComplementaryWorkoutCard
-                    key={workout.id}
-                    workout={workout}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+            return (
+              <ComplementaryGroupCard
+                key={group.label}
+                label={group.label}
+                workouts={workouts}
+              />
+            );
+          })}
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">
@@ -222,7 +268,7 @@ export default function HomePage() {
           <div>
             <p className="text-sm font-bold text-white">Lista completa</p>
             <p className="mt-1 text-sm leading-6 text-zinc-400">
-              Acesse todos os treinos, incluindo complementares.
+              Visão antiga com todos os treinos em uma lista única.
             </p>
           </div>
           <Link

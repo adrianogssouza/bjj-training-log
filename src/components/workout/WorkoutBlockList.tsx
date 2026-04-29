@@ -9,19 +9,59 @@ import { getBlockTypeLabel } from "@/lib/workouts";
 
 type WorkoutBlockListProps = {
   blocks: WorkoutBlock[];
+  categoryLabel?: string;
+  formatLabel?: string;
+  variant?: "monthly" | "complementary";
 };
 
-export function WorkoutBlockList({ blocks }: WorkoutBlockListProps) {
+function getComplementaryBlockLabel({
+  categoryLabel,
+  formatLabel,
+  type,
+}: {
+  categoryLabel?: string;
+  formatLabel?: string;
+  type: WorkoutBlock["type"];
+}) {
+  if (categoryLabel === "Anti-lesão") {
+    return "Anti-lesão / prevenção";
+  }
+
+  if (categoryLabel === "Cardio" || type === "cardio") {
+    return "Cardio guiado";
+  }
+
+  if (categoryLabel === "Core" || type === "circuit") {
+    return "Circuito / combo";
+  }
+
+  return formatLabel ?? "Sequência / combo";
+}
+
+export function WorkoutBlockList({
+  blocks,
+  categoryLabel,
+  formatLabel,
+  variant = "monthly",
+}: WorkoutBlockListProps) {
   const [selectedVideo, setSelectedVideo] = useState<{
     title: string;
     videoUrl: string;
   } | null>(null);
+  const isComplementary = variant === "complementary";
 
   return (
     <>
       <ol className="flex flex-col gap-3">
         {blocks.map((block) => {
           const isCardio = block.type === "cardio";
+          const blockTypeLabel = isComplementary
+            ? getComplementaryBlockLabel({
+                categoryLabel,
+                formatLabel,
+                type: block.type,
+              })
+            : getBlockTypeLabel(block.type);
           const cardClassName = isCardio
             ? "border-cyan-500/50 bg-cyan-950/20 p-4"
             : "p-4";
@@ -44,7 +84,7 @@ export function WorkoutBlockList({ blocks }: WorkoutBlockListProps) {
                       <p
                         className={`text-xs font-semibold uppercase tracking-wide ${typeClassName}`}
                       >
-                        {getBlockTypeLabel(block.type)}
+                        {blockTypeLabel}
                       </p>
                       <h3 className="mt-1 break-words text-[15px] font-bold leading-snug text-white sm:text-base">
                         {block.title}
@@ -65,9 +105,11 @@ export function WorkoutBlockList({ blocks }: WorkoutBlockListProps) {
                       </dd>
                     </div>
                     <div className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">
-                      <dt className="text-xs text-zinc-500">Exercícios</dt>
+                      <dt className="text-xs text-zinc-500">
+                        {isComplementary ? "Formato" : "Exercícios"}
+                      </dt>
                       <dd className="font-semibold text-zinc-100">
-                        {block.items.length}
+                        {isComplementary ? "Sequência" : block.items.length}
                       </dd>
                     </div>
                   </dl>
@@ -88,7 +130,9 @@ export function WorkoutBlockList({ blocks }: WorkoutBlockListProps) {
                           <div className="flex flex-col gap-3">
                             <div className="flex flex-col gap-2">
                               <h4 className="break-words text-[15px] font-bold leading-snug text-white">
-                                {item.name}
+                                {isComplementary
+                                  ? `${item.name} - sequência guiada`
+                                  : item.name}
                               </h4>
                               {videoUrl ? (
                                 <button
@@ -109,7 +153,9 @@ export function WorkoutBlockList({ blocks }: WorkoutBlockListProps) {
                               <div>
                                 <dt className="text-xs text-zinc-500">Reps</dt>
                                 <dd className="font-semibold text-zinc-100">
-                                  {item.reps ?? "-"}
+                                  {isComplementary
+                                    ? "Combo"
+                                    : item.reps ?? "-"}
                                 </dd>
                               </div>
                               <div>

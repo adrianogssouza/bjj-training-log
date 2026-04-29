@@ -47,6 +47,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
 
   const metadata = getWorkoutMetadata(workout);
   const blocks = getOrderedWorkoutBlocks(workout);
+  const isComplementary = workout.type === "complementary";
 
   return (
     <main className="flex flex-1 flex-col gap-5 pb-32 pt-6">
@@ -80,10 +81,20 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
               {metadata.type}
             </dd>
           </div>
+          {isComplementary ? (
+            <div className="rounded-md border border-zinc-800 bg-zinc-900 px-4 py-3">
+              <dt className="text-xs text-zinc-500">Categoria</dt>
+              <dd className="mt-1 font-semibold text-zinc-100">
+                {metadata.category}
+              </dd>
+            </div>
+          ) : null}
           <div className="rounded-md border border-zinc-800 bg-zinc-900 px-4 py-3">
-            <dt className="text-xs text-zinc-500">Exercícios</dt>
+            <dt className="text-xs text-zinc-500">
+              {isComplementary ? "Formato" : "Exercícios"}
+            </dt>
             <dd className="mt-1 font-semibold text-zinc-100">
-              {metadata.itemCount}
+              {isComplementary ? metadata.format : metadata.itemCount}
             </dd>
           </div>
           <div className="rounded-md border border-zinc-800 bg-zinc-900 px-4 py-3">
@@ -97,12 +108,21 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
 
       <section className="flex flex-col gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white">Blocos do treino</h2>
+          <h2 className="text-xl font-bold text-white">
+            {isComplementary ? "Sequência do complementar" : "Blocos do treino"}
+          </h2>
           <p className="mt-1 text-sm leading-6 text-zinc-400">
-            Ordem, tipo do bloco, exercícios combinados, volume e PSE alvo.
+            {isComplementary
+              ? "Sequência guiada por vídeo, formato do bloco e PSE alvo."
+              : "Ordem, tipo do bloco, exercícios combinados, volume e PSE alvo."}
           </p>
         </div>
-        <WorkoutBlockList blocks={blocks} />
+        <WorkoutBlockList
+          blocks={blocks}
+          categoryLabel={metadata.category}
+          formatLabel={metadata.format}
+          variant={workout.type}
+        />
       </section>
 
       <div className="sticky bottom-0 -mx-4 border-t border-zinc-800 bg-zinc-950/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:-mx-6 sm:px-6">

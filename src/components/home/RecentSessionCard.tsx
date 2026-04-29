@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { WorkoutHistoryEntry } from "@/types";
 import { AppCard } from "@/components/ui/AppCard";
+import { seedWorkouts } from "@/data/seed-workouts";
 import { readWorkoutHistory } from "@/lib/workout-storage";
 
 function formatDateTime(value: string) {
@@ -49,6 +50,9 @@ export function RecentSessionCard() {
   }, []);
 
   const latestSession = history[0];
+  const latestWorkout = latestSession
+    ? seedWorkouts.find((workout) => workout.id === latestSession.workoutId)
+    : undefined;
   const completedCount = useMemo(() => {
     if (!latestSession) {
       return 0;
@@ -102,6 +106,14 @@ export function RecentSessionCard() {
                 {completedCount}
               </p>
             </div>
+            {latestWorkout ? (
+              <Link
+                href={`/workouts/${latestWorkout.id}/start?start=1`}
+                className="col-span-2 flex min-h-12 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-center text-sm font-black text-white shadow-md shadow-red-950/30 transition-colors hover:bg-red-400"
+              >
+                Repetir último treino
+              </Link>
+            ) : null}
           </div>
         ) : (
           <p className="text-sm leading-6 text-zinc-400">

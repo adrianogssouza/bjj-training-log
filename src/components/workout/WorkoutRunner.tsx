@@ -27,7 +27,12 @@ import {
   isValidPseValue,
   pseValidationMessage,
 } from "@/lib/workout-validation";
-import { getBlockTypeLabel, getOrderedWorkoutBlocks } from "@/lib/workouts";
+import {
+  getBlockTypeLabel,
+  getOrderedWorkoutBlocks,
+  getWorkoutCategoryLabel,
+  getWorkoutFormatLabel,
+} from "@/lib/workouts";
 
 type RunnerStep = {
   id: string;
@@ -159,23 +164,46 @@ export function WorkoutRunner({
     runnerView === "running" &&
     Boolean(currentStep) &&
     !isPaused;
+  const isComplementaryWorkout = workout.type === "complementary";
   const isCurrentCardio = currentStep?.block.type === "cardio";
-  const primaryFieldLabel = isCurrentCardio
-    ? "Cardio realizado"
-    : currentStep?.item.time
-      ? "Tempo realizado"
-      : "Reps realizadas";
-  const primaryFieldPlaceholder = isCurrentCardio
-    ? "Ex: 4 rounds de 2min / 1min30s"
-    : currentStep?.item.time
-      ? "Ex: 20s"
-      : "Ex: 8";
-  const loadFieldLabel = isCurrentCardio
-    ? "Equipamento / método"
-    : "Carga usada";
-  const loadFieldPlaceholder = isCurrentCardio
-    ? "Ex: esteira, bike, corrida, remo"
-    : "Ex: 24kg, BW ou elástico";
+  const complementaryWorkoutCategory = isComplementaryWorkout
+    ? getWorkoutCategoryLabel(workout)
+    : "";
+  const complementaryWorkoutFormat = isComplementaryWorkout
+    ? getWorkoutFormatLabel(workout)
+    : "";
+  const currentBlockTypeLabel = isComplementaryWorkout
+    ? `${complementaryWorkoutCategory} · ${complementaryWorkoutFormat}`
+    : currentStep
+      ? getBlockTypeLabel(currentStep.block.type)
+      : "";
+  const primaryFieldLabel = isComplementaryWorkout
+    ? "Sequência realizada"
+    : isCurrentCardio
+      ? "Cardio realizado"
+      : currentStep?.item.time
+        ? "Tempo realizado"
+        : "Reps realizadas";
+  const primaryFieldPlaceholder = isComplementaryWorkout
+    ? "Ex: vídeo completo"
+    : isCurrentCardio
+      ? "Ex: 4 rounds de 2min / 1min30s"
+      : currentStep?.item.time
+        ? "Ex: 20s"
+        : "Ex: 8";
+  const loadFieldLabel = isComplementaryWorkout
+    ? "Observação / método"
+    : isCurrentCardio
+      ? "Equipamento / método"
+      : "Carga usada";
+  const loadFieldPlaceholder = isComplementaryWorkout
+    ? "Ex: completo, leve, sem dor"
+    : isCurrentCardio
+      ? "Ex: esteira, bike, corrida, remo"
+      : "Ex: 24kg, BW ou elástico";
+  const pseFieldLabel = isComplementaryWorkout
+    ? "PSE real (opcional)"
+    : "PSE real";
   const currentVideoUrl = currentStep?.item.videoUrl?.trim();
   const shouldAutoStart = autoStart;
   const sessionValidationKey = `${workout.id}:${
@@ -457,7 +485,10 @@ export function WorkoutRunner({
       return;
     }
 
-    if (!isValidPseValue(currentLog?.actualPse ?? "")) {
+    if (
+      currentLog?.actualPse.trim() &&
+      !isValidPseValue(currentLog.actualPse)
+    ) {
       setValidationMessage(pseValidationMessage);
       isAdvancingRef.current = false;
       setIsAdvancing(false);
@@ -513,7 +544,7 @@ export function WorkoutRunner({
       missingFields.push(primaryFieldLabel);
     }
 
-    if (!currentLog?.actualPse.trim()) {
+    if (!isComplementaryWorkout && !currentLog?.actualPse.trim()) {
       missingFields.push("PSE real");
     }
 
@@ -749,25 +780,25 @@ export function WorkoutRunner({
                 </div>
               </dl>
 
-              <button
-                type="button"
-                onClick={startNewSession}
+              <Link
+                href="/"
                 className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
               >
-                Iniciar novo treino
-              </button>
+                Voltar para Home
+              </Link>
               <Link
                 href="/history"
                 className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
               >
                 Ver histórico
               </Link>
-              <Link
-                href="/workouts"
-                className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
+              <button
+                type="button"
+                onClick={startNewSession}
+                className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
               >
-                Voltar aos treinos
-              </Link>
+                Repetir este treino
+              </button>
             </div>
           ) : null}
         </AppCard>
@@ -858,8 +889,7 @@ export function WorkoutRunner({
                 isCurrentCardio ? "text-cyan-200" : "text-red-300"
               }`}
             >
-              {getBlockTypeLabel(currentStep.block.type)} · Bloco{" "}
-              {currentStep.block.order}
+              {currentBlockTypeLabel} · Bloco {currentStep.block.order}
             </p>
             <h2 className="mt-1 break-words text-lg font-black leading-6 text-white">
               {currentStep.item.name}
@@ -910,7 +940,9 @@ export function WorkoutRunner({
             <input
               ref={firstInputRef}
               type="text"
-              inputMode={isCurrentCardio ? "text" : "numeric"}
+              inputMode={
+                isComplementaryWorkout || isCurrentCardio ? "text" : "numeric"
+              }
               autoComplete="off"
               value={currentLog?.reps ?? ""}
               onChange={(event) => updateCurrentLog("reps", event.target.value)}
@@ -926,7 +958,7 @@ export function WorkoutRunner({
             <input
               ref={loadInputRef}
               type="text"
-              inputMode={isCurrentCardio ? "text" : "decimal"}
+              inputMode="text"
               autoComplete="off"
               value={currentLog?.load ?? ""}
               onChange={(event) => updateCurrentLog("load", event.target.value)}
@@ -936,7 +968,9 @@ export function WorkoutRunner({
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-zinc-300">PSE real</span>
+            <span className="text-sm font-semibold text-zinc-300">
+              {pseFieldLabel}
+            </span>
             <input
               ref={pseInputRef}
               type="text"

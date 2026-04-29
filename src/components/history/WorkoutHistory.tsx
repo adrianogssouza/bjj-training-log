@@ -199,13 +199,29 @@ function getOverallAveragePse(history: WorkoutHistoryEntry[]) {
 }
 
 function resolveExercise(entry: WorkoutHistoryEntry, log: WorkoutSessionLog) {
-  const workout = seedWorkouts.find((item) => item.id === entry.workoutId);
+  const workout = resolveWorkout(entry);
   const block = workout?.blocks.find((item) => item.id === log.blockId);
   const exercise = block?.items.find((item) => item.id === log.itemId);
 
   return {
     blockTitle: block?.title ?? "Bloco não encontrado",
     exerciseName: exercise?.name ?? "Exercício não encontrado",
+  };
+}
+
+function resolveWorkout(entry: WorkoutHistoryEntry) {
+  return seedWorkouts.find((item) => item.id === entry.workoutId);
+}
+
+function getWorkoutTypeBadge(entry: WorkoutHistoryEntry) {
+  const workout = resolveWorkout(entry);
+  const isComplementary = workout?.type === "complementary";
+
+  return {
+    label: isComplementary ? "Complementar" : "Principal",
+    className: isComplementary
+      ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
+      : "border-red-400/40 bg-red-500/10 text-red-100",
   };
 }
 
@@ -353,6 +369,7 @@ export function WorkoutHistory() {
             averagePse,
           }) => {
             const isExpanded = expandedId === entry.id;
+            const typeBadge = getWorkoutTypeBadge(entry);
 
             return (
               <AppCard key={entry.id} className="p-4">
@@ -366,6 +383,11 @@ export function WorkoutHistory() {
                       <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
                         {formatDateTime(entry.completedAt)}
                       </p>
+                      <span
+                        className={`w-fit rounded-full border px-2.5 py-1 text-xs font-black ${typeBadge.className}`}
+                      >
+                        {typeBadge.label}
+                      </span>
                       <h2 className="text-xl font-black leading-7 text-white">
                         {entry.workoutTitle}
                       </h2>

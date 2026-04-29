@@ -21,14 +21,14 @@ export const seedWorkouts: Workout[] = [
             name: "Cócoras/Samurai",
             reps: "8",
             targetPse: "6",
-            videoUrl: "https://www.youtube.com/watch?v=ml6cT4AZdqI",
+            videoUrl: "https://www.youtube.com/shorts/feFImpiO0XU",
           },
           {
             id: "a-carregada-oh",
             name: "Carregada OH",
             time: "20s cada lado",
             targetPse: "7",
-            videoUrl: "https://youtu.be/UBMk30rjy0o",
+            videoUrl: "https://www.youtube.com/shorts/twtfttmpsyc",
           },
         ],
       },
@@ -45,7 +45,7 @@ export const seedWorkouts: Workout[] = [
             reps: "6 cada lado",
             targetPse: "9",
             // Placeholder aproximado: variação de avanço/lunge com carga.
-            videoUrl: "https://www.youtube.com/watch?v=QOVaHwm-Q6U",
+            videoUrl: "https://www.youtube.com/shorts/5tv44zvN7JQ",
           },
         ],
       },
@@ -61,7 +61,7 @@ export const seedWorkouts: Workout[] = [
             name: "Supino Inclinado HBL",
             reps: "6",
             targetPse: "9",
-            videoUrl: "https://www.youtube.com/watch?v=gRVjAtPip0Y",
+            videoUrl: "https://www.youtube.com/shorts/Y2jb9yq7VQM",
           },
         ],
       },
@@ -78,7 +78,7 @@ export const seedWorkouts: Workout[] = [
             reps: "8",
             targetPse: "8",
             // Placeholder aproximado: execução de dips/paralela.
-            videoUrl: "https://www.youtube.com/watch?v=2z8JmcrW-As",
+            videoUrl: "https://www.youtube.com/shorts/CIPJXlTlJzQ",
           },
           {
             id: "a-cadeirinha",
@@ -86,7 +86,7 @@ export const seedWorkouts: Workout[] = [
             time: "20s",
             targetPse: "8",
             // Placeholder aproximado: wall sit/cadeira isométrica.
-            videoUrl: "https://www.youtube.com/watch?v=-cdph8hv0O0",
+            videoUrl: "https://www.youtube.com/shorts/B4hLPetP5cM",
           },
         ],
       },
@@ -103,7 +103,7 @@ export const seedWorkouts: Workout[] = [
             reps: "15 cada lado",
             targetPse: "8",
             // Placeholder aproximado: elevação lateral/abdução de ombro no cabo.
-            videoUrl: "https://www.youtube.com/watch?v=PzsMitRdI_8",
+            videoUrl: "https://www.youtube.com/shorts/tYsES_zSj5A",
           },
           {
             id: "a-triceps-frances-cabo",
@@ -111,7 +111,7 @@ export const seedWorkouts: Workout[] = [
             reps: "15",
             targetPse: "8",
             // Placeholder aproximado: extensão de tríceps no cabo.
-            videoUrl: "https://www.youtube.com/watch?v=2-LAMcpzODU",
+            videoUrl: "https://www.youtube.com/shorts/ajIMk3TJ_OA",
           },
         ],
       },
@@ -127,8 +127,7 @@ export const seedWorkouts: Workout[] = [
             name: "Cardio",
             time: "2min / 1min30s",
             targetPse: "9",
-            videoUrl:
-              "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+            videoUrl: "https://www.youtube.com/shorts/wxNMn0MzuU0",
           },
         ],
       },
@@ -268,11 +267,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "mobilidade-com-peso",
-    title: "Mobilidade com Peso",
+    title: "Mobilidade com Peso Guiada",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de mobilidade com peso.",
+    description: "Sequência guiada de mobilidade com carga leve.",
     blocks: [
       {
         id: "mobilidade-com-peso-sequencia",
@@ -283,7 +282,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "mobilidade-com-peso-video-completo",
-            name: "Mobilidade com Peso",
+            name: "Mobilidade com Peso Guiada",
             time: "Vídeo completo",
             targetPse: "5",
             videoUrl: "https://www.youtube.com/watch?v=c2-Fbra9Z1M&t=239s",
@@ -295,11 +294,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "mobilidade-sem-peso",
-    title: "Mobilidade sem Peso",
+    title: "Mobilidade sem Peso Guiada",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de mobilidade sem peso.",
+    description: "Sequência guiada de mobilidade sem carga.",
     blocks: [
       {
         id: "mobilidade-sem-peso-sequencia",
@@ -310,7 +309,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "mobilidade-sem-peso-video-completo",
-            name: "Mobilidade sem Peso",
+            name: "Mobilidade sem Peso Guiada",
             time: "Vídeo completo",
             targetPse: "4",
             videoUrl: "https://www.youtube.com/watch?v=eKlO-7GtBqQ&t=515s",
@@ -322,11 +321,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "mobilidade-3",
-    title: "Mobilidade 3",
+    title: "Mobilidade Geral Guiada",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de mobilidade.",
+    description: "Sequência geral de mobilidade para encaixar na semana.",
     blocks: [
       {
         id: "mobilidade-3-sequencia",
@@ -337,7 +336,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "mobilidade-3-video-completo",
-            name: "Mobilidade 3",
+            name: "Mobilidade Geral Guiada",
             time: "Vídeo completo",
             targetPse: "5",
             videoUrl: "https://www.youtube.com/watch?v=e3V83yp3u98&t=182s",
@@ -349,11 +348,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "core-1",
-    title: "Core 1",
+    title: "Core 1 - Controle",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de core.",
+    description: "Sequência guiada de core com foco em controle e estabilidade.",
     blocks: [
       {
         id: "core-1-sequencia",
@@ -364,7 +363,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "core-1-video-completo",
-            name: "Core 1",
+            name: "Core 1 - Controle",
             time: "Vídeo completo",
             targetPse: "7",
             videoUrl: "https://www.youtube.com/watch?v=MtsqH-liroA&t=534s",
@@ -376,11 +375,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "core-2",
-    title: "Core 2",
+    title: "Core 2 - Resistência",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de core.",
+    description: "Sequência guiada de core com foco em resistência de tronco.",
     blocks: [
       {
         id: "core-2-sequencia",
@@ -391,7 +390,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "core-2-video-completo",
-            name: "Core 2",
+            name: "Core 2 - Resistência",
             time: "Vídeo completo",
             targetPse: "7",
             videoUrl: "https://www.youtube.com/watch?v=OXrovylyZAk",
@@ -403,11 +402,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-1",
-    title: "Cardio 1",
+    title: "Cardio 1 - Leve",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado leve para encaixar sem pesar a semana.",
     blocks: [
       {
         id: "cardio-1-sequencia",
@@ -418,7 +417,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-1-video-completo",
-            name: "Cardio 1",
+            name: "Cardio 1 - Leve",
             time: "Vídeo completo",
             targetPse: "7",
             videoUrl: "https://www.youtube.com/watch?v=LFPsmpxOEXo&t=33s",
@@ -430,11 +429,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-2",
-    title: "Cardio 2",
+    title: "Cardio 2 - Base",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado de base para condicionamento geral.",
     blocks: [
       {
         id: "cardio-2-sequencia",
@@ -445,7 +444,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-2-video-completo",
-            name: "Cardio 2",
+            name: "Cardio 2 - Base",
             time: "Vídeo completo",
             targetPse: "7",
             videoUrl: "https://www.youtube.com/watch?v=H5-XC6_ROZk&t=31s",
@@ -457,11 +456,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-3",
-    title: "Cardio 3",
+    title: "Cardio 3 - Moderado",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado em ritmo moderado.",
     blocks: [
       {
         id: "cardio-3-sequencia",
@@ -472,7 +471,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-3-video-completo",
-            name: "Cardio 3",
+            name: "Cardio 3 - Moderado",
             time: "Vídeo completo",
             targetPse: "8",
             videoUrl: "https://www.youtube.com/watch?v=OQDfR8YPxOU&t=4s",
@@ -484,11 +483,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-4",
-    title: "Cardio 4",
+    title: "Cardio 4 - Condicionamento",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado para condicionamento.",
     blocks: [
       {
         id: "cardio-4-sequencia",
@@ -499,7 +498,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-4-video-completo",
-            name: "Cardio 4",
+            name: "Cardio 4 - Condicionamento",
             time: "Vídeo completo",
             targetPse: "8",
             videoUrl: "https://www.youtube.com/watch?v=L_oYngbAwCk&t=34s",
@@ -511,11 +510,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-5",
-    title: "Cardio 5",
+    title: "Cardio 5 - Forte",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado de intensidade mais alta.",
     blocks: [
       {
         id: "cardio-5-sequencia",
@@ -526,7 +525,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-5-video-completo",
-            name: "Cardio 5",
+            name: "Cardio 5 - Forte",
             time: "Vídeo completo",
             targetPse: "8",
             videoUrl: "https://www.youtube.com/watch?v=S5csKnuU5Qs&t=39s",
@@ -538,11 +537,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "cardio-6",
-    title: "Cardio 6",
+    title: "Cardio 6 - Finalizador",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar de cardio.",
+    description: "Cardio guiado curto para finalizar a sessão.",
     blocks: [
       {
         id: "cardio-6-sequencia",
@@ -553,7 +552,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "cardio-6-video-completo",
-            name: "Cardio 6",
+            name: "Cardio 6 - Finalizador",
             time: "Vídeo completo",
             targetPse: "8",
             videoUrl: "https://www.youtube.com/watch?v=LseztLoFhVg",
@@ -565,11 +564,11 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: "anti-lesao",
-    title: "Anti-lesão",
+    title: "Anti-lesão - Prevenção",
     month: "Abril",
     year: 2026,
     type: "complementary",
-    description: "Complementar anti-lesão.",
+    description: "Sequência guiada de prevenção e cuidado articular.",
     blocks: [
       {
         id: "anti-lesao-sequencia",
@@ -580,7 +579,7 @@ export const seedWorkouts: Workout[] = [
         items: [
           {
             id: "anti-lesao-video-completo",
-            name: "Anti-lesão",
+            name: "Anti-lesão - Prevenção",
             time: "Vídeo completo",
             targetPse: "5",
             videoUrl: "https://www.youtube.com/watch?v=ChMCRY8cE6U&t=1s",

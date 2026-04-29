@@ -1,12 +1,21 @@
-# BJJ Training Log
+# APP JIU / BJJ Training Log
 
-Aplicativo web para registrar, executar e revisar treinos de Jiu-Jitsu/BJJ.
+Aplicativo web mobile-first para organizar, executar e revisar a rotina semanal real de treino do usuário.
 
-## Objetivo
+O projeto começou como um log simples de treinos de Jiu-Jitsu/BJJ e evoluiu para um painel prático de treino: Treino A, Treino B, complementares e histórico local.
 
-O BJJ Training Log ajuda atletas e professores a organizar sessões de treino, acompanhar a execução dos exercícios e consultar o histórico local de treinos concluídos.
+## Estado oficial
 
-Nesta primeira versão, o foco foi validar o fluxo principal durante um treino real: escolher um treino, executar blocos de exercícios, registrar progresso e revisar o histórico no próprio dispositivo.
+Sprint 1, Sprint 1.5, Sprint 1.5.1 e Sprint 1.6 estão concluídas.
+
+O app está funcional, validado em uso real e preparado para a rotina semanal atual:
+
+- Treino A Abril/26
+- Treino B Abril/26
+- Mobilidade
+- Core
+- Cardio
+- Anti-lesão
 
 ## Stack
 
@@ -15,56 +24,30 @@ Nesta primeira versão, o foco foi validar o fluxo principal durante um treino r
 - TypeScript
 - Tailwind CSS
 - ESLint
-- LocalStorage para persistência local
+- `localStorage` para persistência local
+- Deploy Vercel
 
-## Features atuais
+## Funcionalidades atuais
 
-- Listagem de treinos disponíveis.
-- Tela de detalhe do treino com blocos e exercícios.
-- Runner de treino com fluxo guiado.
-- Registro de exercícios concluídos e pulados.
-- Opções do exercício: fazer depois ou não fazer hoje.
-- Fila dinâmica da sessão para exercícios adiados.
-- Persistência de sessão ativa no navegador.
-- Histórico local de treinos concluídos.
-- Métricas simples de histórico: treinos, tempo total, PSE médio e exercícios registrados.
-- Suporte a vídeos de execução por exercício.
-- Vídeos reais do Treino B Abril/26.
-- Fallback direto para YouTube quando o embed não carregar bem no mobile/5G.
-- Interface responsiva com refinamentos para uso mobile.
-- Correções pós-teste real para reinício de treino, barra inferior e validação visual de sessão.
-
-## Como rodar localmente
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
-Rode o servidor de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-Acesse:
-
-```bash
-http://localhost:3000
-```
-
-Valide build de produção:
-
-```bash
-npm run build
-```
-
-Execute lint:
-
-```bash
-npm run lint
-```
+- Home redesenhada como painel de decisão rápida.
+- CTA principal para abrir Treino A.
+- Treino B como alternativa imediata.
+- Treinos do mês em cards prioritários.
+- Complementares agrupados por categoria.
+- Rotas dinâmicas para todos os treinos e complementares.
+- Tela de detalhe com blocos, sequência, PSE alvo e vídeos.
+- Execução guiada com pausa, retomada e fila dinâmica.
+- Opções do exercício:
+  - Fazer depois
+  - Não farei hoje
+- Campo de carga/método flexível com texto livre.
+- Conclusão de treino com ação principal para voltar à Home.
+- Histórico local com sessões concluídas.
+- Métricas simples no histórico.
+- Vídeos oficiais dos complementares.
+- Vídeos reais do Treino B.
+- Suporte a vídeos por exercício ou sequência.
+- Interface mobile-first com refinamentos pós-teste real.
 
 ## Rotas principais
 
@@ -73,6 +56,19 @@ npm run lint
 - `/workouts/[id]`
 - `/workouts/[id]/start`
 - `/history`
+
+## Dados de treino
+
+Os treinos e complementares ficam em:
+
+```text
+src/data/seed-workouts.ts
+```
+
+Tipos atuais:
+
+- `monthly`: Treino A e Treino B
+- `complementary`: Mobilidade, Core, Cardio e Anti-lesão
 
 ## Persistência local
 
@@ -84,21 +80,72 @@ O app usa `localStorage`, sem backend nesta fase.
 
 Limitações atuais:
 
-- O histórico fica apenas no navegador/dispositivo atual.
-- Limpar os dados do navegador remove os registros.
-- Ainda não há conta de usuário, sincronização em nuvem, filtros avançados ou dashboard analítico.
+- Histórico fica apenas no navegador/dispositivo atual.
+- Limpar dados do navegador remove os registros.
+- Ainda não há login, backend, sincronização em nuvem ou conta de usuário.
 
-## Status
+## Como rodar localmente
 
-Sprint 1 oficialmente concluída e em produção.
+Instale dependências:
 
-MVP funcional validado em teste real com o Treino B Abril/26. A fase atual é encerramento da Sprint 1 e organização do backlog futuro.
+```bash
+npm install
+```
 
-## Próximos passos
+Rode em desenvolvimento:
 
-- 05.4 Execução correta de bi-set como refinamento futuro.
-- 05.5 Séries feitas e observação.
-- 05.6 Modo rápido vs completo.
-- 05.7 Arquitetura de histórico por exercício/carga.
+```bash
+npm run dev
+```
 
-Backend, login e Supabase seguem fora do escopo atual até haver necessidade real validada em uso.
+Acesse:
+
+```bash
+http://localhost:3000
+```
+
+Valide lint:
+
+```bash
+npm run lint
+```
+
+Valide build:
+
+```bash
+npm run build
+```
+
+## Sprints concluídas
+
+### Sprint 1
+
+MVP funcional com treinos principais, execução guiada, histórico local, vídeos e validação em treino real.
+
+### Sprint 1.5
+
+Expansão da rotina semanal com complementares reais: Mobilidade, Core, Cardio e Anti-lesão.
+
+### Sprint 1.5.1
+
+Polimento da Home para reduzir scroll, priorizar CTA principal e melhorar decisão rápida antes do treino.
+
+### Sprint 1.6
+
+Correções vindas de teste real:
+
+- Conclusão de treino volta para Home.
+- Campo de carga aceita texto livre.
+- Complementares aparecem como sequência/circuito/combo, não como exercício simples isolado.
+
+## Próxima direção
+
+As próximas duas semanas devem priorizar ajustes de uso real, não uma expansão pesada:
+
+- Simplificar execução de complementares.
+- Separar `/workouts` por categorias.
+- Resolver vídeos pendentes do Treino A.
+- Melhorar histórico por tipo de treino.
+- Criar atalho para repetir último treino.
+
+Backend, login e Supabase seguem fora do escopo até haver necessidade real validada.

@@ -10,8 +10,8 @@ export default function WorkoutsPage() {
         </p>
         <h1 className="text-3xl font-black text-white">Treinos disponíveis</h1>
         <p className="max-w-xl text-base leading-7 text-zinc-300">
-          Escolha um treino para ver blocos combinados, exercícios, volume e PSE
-          alvo.
+          Escolha um treino para ver blocos combinados, sequências guiadas,
+          volume e PSE alvo.
         </p>
       </section>
 

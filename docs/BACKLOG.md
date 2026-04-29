@@ -1,35 +1,175 @@
-# Backlog — BJJ Training Log
+# Backlog — APP JIU / BJJ Training Log
+
+Backlog priorizado com base no uso real das próximas duas semanas.
 
 ## Concluído
 
-### 05.3 — Pular exercício e retornar depois
+### Sprint 1
 
-Concluído na Sprint 1.
+- MVP funcional.
+- Treino A e Treino B.
+- Execução guiada.
+- Histórico local.
+- Vídeos por exercício.
+- Pular exercício.
+- Fazer depois.
+- Não farei hoje.
+- Deploy e teste real.
 
-- Botão atualizado para `Opções do exercício`.
-- `Fazer depois` move o exercício atual para o fim da fila da sessão.
-- `Não farei hoje` registra pulo definitivo.
-- Fila dinâmica por sessão.
-- Histórico antigo preservado.
-- Ajuste 05.3A: label do botão refinado para refletir o novo comportamento.
+### Sprint 1.5
 
-## Próximas tarefas recomendadas
+- Complementares reais adicionados.
+- Vídeos oficiais dos complementares.
+- Home reorganizada para rotina semanal.
+- Navegação completa para complementares.
 
-### 05.4 — Execução correta de bi-set
+### Sprint 1.5.1
 
-Refinamento futuro para ajustar o fluxo de execução à lógica real de bi-set no treino.
+- Home compactada.
+- CTA principal no topo.
+- Complementares agrupados.
+- Scroll reduzido.
+- Microcopy ajustada.
 
-### 05.5 — Séries feitas e observação
+### Sprint 1.6
 
-Registrar séries efetivamente realizadas e observações rápidas por exercício.
+- Pós-conclusão volta para Home.
+- Campo de carga/método aceita texto livre.
+- Complementares apresentados como sequência, circuito, combo ou cardio guiado.
+- Fluxos completos testados nos treinos principais e complementares.
 
-### 05.6 — Modo rápido vs completo
+## Prioridade alta — próximas duas semanas
 
-Separar uma experiência rápida para treino real de uma experiência mais completa para registro detalhado.
+### 1. Simplificar execução de complementares
 
-### 05.7 — Histórico por exercício/carga
+Problema real:
 
-Evoluir o histórico para análise por exercício, carga/método e progressão.
+Complementares com vídeo único não precisam necessariamente do mesmo nível de registro de um treino principal.
+
+Proposta:
+
+- Criar modo de execução complementar mais leve.
+- Reduzir fricção para concluir sequência.
+- Avaliar se PSE continua obrigatório ou vira opcional.
+
+Modelo ideal:
+
+- GPT-5 High
+
+### 2. Organizar `/workouts` por categorias
+
+Problema real:
+
+A Home está organizada, mas `/workouts` ainda pode misturar treinos principais e complementares.
+
+Proposta:
+
+- Seção Treinos do mês.
+- Seção Mobilidade.
+- Seção Core.
+- Seção Cardio.
+- Seção Anti-lesão.
+
+Modelo ideal:
+
+- GPT-5 Medium
+
+### 3. Resolver vídeos pendentes do Treino A
+
+Problema real:
+
+Treino A ainda tem vídeos aproximados/placeholders conhecidos.
+
+Proposta:
+
+- Revisar todos os vídeos do Treino A.
+- Substituir placeholders por vídeos reais.
+- Manter URLs no schema atual.
+
+Modelo ideal:
+
+- GPT-5 Medium
+
+## Prioridade média
+
+### 4. Histórico por tipo de treino
+
+Problema real:
+
+Treinos principais e complementares entram no mesmo histórico, mas têm natureza diferente.
+
+Proposta:
+
+- Exibir tipo de treino no histórico.
+- Separar métricas de treino principal e complementar.
+- Evitar distorção de indicadores.
+
+Modelo ideal:
+
+- GPT-5 High
+
+### 5. Atalho para repetir último treino
+
+Problema real:
+
+Usuário pode querer repetir rapidamente o último treino feito.
+
+Proposta:
+
+- Mostrar último treino na Home.
+- Adicionar CTA para abrir esse treino.
+
+Modelo ideal:
+
+- GPT-5 Medium
+
+### 6. Recomendação semanal simples
+
+Problema real:
+
+O app ainda não sugere o treino do dia.
+
+Proposta:
+
+- Começar com recomendação simples e manual.
+- Exemplo: `Hoje: Core` ou `Hoje: Mobilidade`.
+- Evitar calendário complexo por enquanto.
+
+Modelo ideal:
+
+- GPT-5 Medium
+
+## Prioridade baixa
+
+### 7. Melhorar nomes dos complementares
+
+Problema real:
+
+Nomes como `Core 1` e `Cardio 3` são funcionais, mas pouco descritivos.
+
+Proposta:
+
+- Renomear com base no objetivo real.
+- Exemplo: `Core anti-rotação`, `Cardio intervalado leve`, etc.
+
+Modelo ideal:
+
+- GPT-5 Low
+
+### 8. Observações rápidas por sessão
+
+Problema real:
+
+Ainda não existe campo simples para anotar sensação geral.
+
+Proposta:
+
+- Adicionar nota curta na conclusão.
+- Manter opcional.
+
+Modelo ideal:
+
+- GPT-5 Medium
 
 ## Fora do escopo atual
 
@@ -37,6 +177,7 @@ Evoluir o histórico para análise por exercício, carga/método e progressão.
 - Supabase.
 - Backend.
 - Sincronização entre dispositivos.
+- Dashboard analítico avançado.
 - Refatoração ampla de arquitetura.
 
-Esses itens devem ser reavaliados apenas depois de mais uso real.
+Esses itens só devem voltar ao backlog quando o uso real exigir.
