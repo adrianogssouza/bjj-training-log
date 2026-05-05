@@ -1,14 +1,12 @@
 # Changelog — APP JIU / BJJ Training Log
 
-Registro interno das entregas concluídas até o estado atual do projeto.
+Registro interno das entregas concluídas até **Sprint 1.8.1-HOTFIX**.
 
 ## Sprint 1 — MVP funcional
 
 Status: concluída.
 
-Principais entregas:
-
-- Criação do app com Next.js, TypeScript e Tailwind CSS.
+- App com Next.js, TypeScript e Tailwind CSS.
 - Home inicial.
 - Catálogo de treinos.
 - Treino A Abril/26.
@@ -25,109 +23,151 @@ Principais entregas:
 - Fallback para abrir vídeo no YouTube.
 - Deploy Vercel.
 - Teste real em celular.
-
-Correções pós-teste da Sprint 1:
-
-- Sessão fantasma ao abrir treino sem progresso real.
-- Sessão concluída não fica mais como sessão ativa.
-- Reinício do mesmo treino após conclusão.
-- Ajustes mobile na barra inferior.
-- Ajustes de vídeo no mobile/5G.
-- Fluxo `Opções do exercício`.
-- `Fazer depois` move exercício para o fim da fila.
-- `Não farei hoje` registra pulo definitivo.
+- Pular exercício.
+- Fazer depois.
+- Não farei hoje.
 - Fila dinâmica por sessão com `stepOrder`.
 
 ## Sprint 1.5 — Rotina semanal real
 
 Status: concluída.
 
-Principais entregas:
-
-- Adição de complementares reais ao seed:
-  - Mobilidade com Peso
-  - Mobilidade sem Peso
-  - Mobilidade 3
-  - Core 1
-  - Core 2
-  - Cardio 1
-  - Cardio 2
-  - Cardio 3
-  - Cardio 4
-  - Cardio 5
-  - Cardio 6
-  - Anti-lesão
 - Complementares adicionados como `type: "complementary"`.
-- URLs oficiais dos vídeos dos complementares adicionadas em `items[].videoUrl`.
-- Rotas dinâmicas passaram a abrir complementares em `/workouts/[id]`.
-- Home redesenhada para rotina semanal:
-  - Treinos do mês
-  - Complementares
-  - Última sessão / histórico
-- Cards abrem diretamente o detalhe do treino.
-
-Validações:
-
-- `npm run lint`
-- `npm run build`
-- QA visual no navegador.
-- Abertura de rotas dos complementares.
+- Categorias reais:
+  - Mobilidade
+  - Core
+  - Cardio
+  - Anti-lesão
+- URLs oficiais dos vídeos dos complementares em `items[].videoUrl`.
+- Rotas dinâmicas abrindo complementares em `/workouts/[id]`.
+- Home redesenhada com treinos do mês, complementares e histórico.
 
 ## Sprint 1.5.1 — Polimento da Home
 
 Status: concluída.
 
-Principais entregas:
-
-- CTA principal no topo para Treino A.
+- CTA principal no topo.
 - Treino B como alternativa imediata.
 - Complementares compactados por categoria.
 - Redução de scroll na Home.
 - Microcopy melhorada para uso antes do treino.
-- Visual dark e mobile-first mantidos.
-
-Validações:
-
-- `npm run lint`
-- `npm run build`
-- QA visual no in-app browser.
 
 ## Sprint 1.6 — Correções vindas de teste real
 
 Status: concluída.
 
-Principais entregas:
-
-- Ao concluir qualquer treino, a ação principal agora volta para Home `/`.
+- Conclusão de treino volta para Home `/`.
 - `Ver histórico` permanece como ação secundária.
-- `Repetir este treino` fica disponível após conclusão.
+- `Repetir este treino` disponível após conclusão.
 - Campo de carga/método aceita texto livre.
-- Complementares deixam de parecer exercício único simples.
-- Complementares passam a ser apresentados como:
-  - Sequência / combo
-  - Circuito / combo
-  - Cardio guiado
-- Tela de detalhe usa `Sequência do complementar` para treinos complementares.
-- Métrica de complementares mostra `Formato / Sequência`.
+- Complementares apresentados como sequência/circuito/combo/cardio guiado.
 
-Fluxos completos testados:
+## Sprint 1.7 — Documentação oficial
 
-- Treino A Abril/26.
-- Treino B Abril/26.
-- Mobilidade com Peso.
-- Core 1.
-- Cardio 1.
-- Anti-lesão.
+Status: concluída.
 
-Validações:
+- README, changelog, backlog e roadmap atualizados.
+- Estado oficial do projeto documentado.
 
-- `npm run lint`
-- `npm run build`
-- Conclusão de treino retornando para Home.
-- Apresentação correta dos complementares.
+## Sprint 1.8 — Conveniência e clareza
 
-## Estado atual oficial
+Status: concluída.
 
-O APP JIU está funcional para uso semanal real com treinos principais e complementares.
+- Complementares com modo rápido.
+- Badge Principal/Complementar no histórico.
+- Botão repetir último treino na Home.
+- Complementares com nomes mais claros.
 
-Ainda não há backend, login ou sincronização. A estratégia continua sendo priorizar uso real antes de adicionar infraestrutura.
+## Sprint 1.8.1 — Vídeos reais do Treino A
+
+Status: concluída.
+
+- Treino A recebeu 9 vídeos reais.
+- Ordem dos exercícios preservada.
+- Sem alteração de runner, histórico ou rotas.
+
+## Sprint 1.8.1-QA — QA ampla
+
+Status: concluída.
+
+- Bateria de testes simulando usuário real.
+- Home, Treino A, Treino B, complementares, histórico, persistência, navegação e vídeos testados.
+- Bugs, riscos e melhorias futuras registrados.
+
+## Sprint 1.8.1-FIX — Correções pós-teste manual
+
+Status: concluída.
+
+- Corrigida inconsistência dos vídeos reais do Treino A.
+- Corrigida apresentação semântica de Anti-lesão.
+- Complementares ajustados para não parecerem exercício simples isolado.
+
+## Sprint 1.8.1-BLOCKER — Execução real dos complementares
+
+Status: concluída.
+
+- Mobilidade, Core e Anti-lesão passaram a executar por múltiplas etapas.
+- Progresso deixou de ser `0/1` para complementares multi-exercício.
+- Conclusão só ocorre após tratar as etapas reais.
+- Cardio preservado como unidade única guiada.
+
+## Sprint 1.8.1-REAL — Exercícios reais dos complementares
+
+Status: concluída.
+
+- PDFs oficiais usados como fonte dos complementares.
+- Mobilidade com Peso: 8 exercícios reais.
+- Mobilidade sem Peso: 8 exercícios reais.
+- Mobilidade 3: 8 exercícios reais.
+- Core 1: 8 exercícios reais.
+- Core 2: 8 exercícios reais.
+- Anti-lesão: 12 exercícios reais.
+- Nomes mínimos/fictícios removidos.
+- Reps, tempo, observações e PSE aplicados quando presentes nos PDFs.
+
+## Sprint 1.8.1-QA2 — QA oficial rígida
+
+Status: concluída.
+
+- QA rígida executada sem alteração de código.
+- Validado:
+  - Home.
+  - CTA principal.
+  - Repetir último treino.
+  - Treino A.
+  - Treino B.
+  - Mobilidade com Peso.
+  - Mobilidade sem Peso.
+  - Mobilidade 3.
+  - Core 1.
+  - Core 2.
+  - Anti-lesão.
+  - Cardio.
+  - Histórico.
+  - Persistência.
+  - Vídeos/modal.
+  - Semântica das categorias.
+- Recomendação final: pronto com ressalvas.
+- Bug real registrado: timer herdado ao reiniciar treino.
+
+## Sprint 1.8.1-HOTFIX — Timer herdado
+
+Status: concluída.
+
+- Corrigido fluxo em que `?start=1` podia restaurar sessão ativa antiga.
+- Sessão iniciada pelo CTA agora começa com progresso e timer zerados.
+- Botão `Reiniciar treino` remove a sessão persistida antes de começar novamente.
+- Fluxo manual de continuar sessão ativa foi preservado.
+- Validação local:
+  - `npm run lint`.
+  - `npm run build`.
+  - Navegador local com sessão ativa anterior.
+  - Entrada por `?start=1`.
+  - Continuação manual.
+  - Reinício pelo botão do runner.
+
+## Estado Atual Oficial
+
+Etapa atual: **testes da semana**.
+
+O APP JIU está funcional para uso semanal real. A próxima ação técnica prevista é a **Sprint 1.8.2** para melhorar a leitura do histórico local sem alterar a essência do app.

@@ -1,6 +1,12 @@
 # Backlog — APP JIU / BJJ Training Log
 
-Backlog priorizado com base no uso real das próximas duas semanas.
+Backlog priorizado com base no uso real e na QA oficial até **Sprint 1.8.1-QA2**.
+
+## Estado Atual
+
+Etapa atual: **testes da semana**.
+
+Não abrir nova sprint até haver novo retorno de uso real, salvo hotfix crítico.
 
 ## Concluído
 
@@ -18,7 +24,7 @@ Backlog priorizado com base no uso real das próximas duas semanas.
 
 ### Sprint 1.5
 
-- Complementares reais adicionados.
+- Complementares adicionados.
 - Vídeos oficiais dos complementares.
 - Home reorganizada para rotina semanal.
 - Navegação completa para complementares.
@@ -36,142 +42,147 @@ Backlog priorizado com base no uso real das próximas duas semanas.
 - Pós-conclusão volta para Home.
 - Campo de carga/método aceita texto livre.
 - Complementares apresentados como sequência, circuito, combo ou cardio guiado.
-- Fluxos completos testados nos treinos principais e complementares.
 
-## Prioridade alta — próximas duas semanas
+### Sprint 1.7
 
-### 1. Simplificar execução de complementares
+- Documentação oficial reescrita para o estado real da época.
 
-Problema real:
+### Sprint 1.8
 
-Complementares com vídeo único não precisam necessariamente do mesmo nível de registro de um treino principal.
+- Modo rápido em complementares.
+- Badge Principal/Complementar no histórico.
+- Repetir último treino na Home.
+- Complementares com nomes mais claros.
 
-Proposta:
+### Sprint 1.8.1
 
-- Criar modo de execução complementar mais leve.
-- Reduzir fricção para concluir sequência.
-- Avaliar se PSE continua obrigatório ou vira opcional.
+- Vídeos reais do Treino A.
 
-Modelo ideal:
+### Sprint 1.8.1-QA
 
-- GPT-5 High
+- QA ampla antes de teste manual.
 
-### 2. Organizar `/workouts` por categorias
+### Sprint 1.8.1-FIX
 
-Problema real:
+- Ajustes pós-teste manual.
+- Treino A com vídeos reais refletindo corretamente.
+- Anti-lesão com categoria/label coerente.
+- Complementares com apresentação menos enganosa.
 
-A Home está organizada, mas `/workouts` ainda pode misturar treinos principais e complementares.
+### Sprint 1.8.1-BLOCKER
 
-Proposta:
+- Complementares multi-exercício passaram a executar por etapas.
+- Mobilidade, Core e Anti-lesão deixaram de ser `0/1`.
+- Cardio preservado como unidade única guiada.
 
-- Seção Treinos do mês.
-- Seção Mobilidade.
-- Seção Core.
-- Seção Cardio.
-- Seção Anti-lesão.
+### Sprint 1.8.1-REAL
 
-Modelo ideal:
+- PDFs oficiais usados como fonte.
+- Exercícios reais aplicados em Mobilidade, Core e Anti-lesão.
+- Nomes fictícios removidos.
 
-- GPT-5 Medium
+### Sprint 1.8.1-QA2
 
-### 3. Resolver vídeos pendentes do Treino A
+- QA rígida oficial executada.
+- Produto pronto com ressalvas.
+- Bug de timer herdado registrado.
 
-Problema real:
+### Sprint 1.8.1-HOTFIX
 
-Treino A ainda tem vídeos aproximados/placeholders conhecidos.
+- Timer herdado ao reiniciar treino corrigido.
+- `?start=1` passa a criar sessão nova mesmo quando existe sessão ativa antiga.
+- Botão `Reiniciar treino` limpa a sessão persistida antes de começar de novo.
+- Validação local em navegador confirmou progresso zerado e timer fresco.
 
-Proposta:
+## Prioridade Alta
 
-- Revisar todos os vídeos do Treino A.
-- Substituir placeholders por vídeos reais.
-- Manter URLs no schema atual.
+### 1. Filtro no histórico
 
-Modelo ideal:
+Problema:
 
-- GPT-5 Medium
-
-## Prioridade média
-
-### 4. Histórico por tipo de treino
-
-Problema real:
-
-Treinos principais e complementares entram no mesmo histórico, mas têm natureza diferente.
+Histórico mistura muitos registros principais, complementares, antigos e novos.
 
 Proposta:
 
-- Exibir tipo de treino no histórico.
-- Separar métricas de treino principal e complementar.
-- Evitar distorção de indicadores.
-
-Modelo ideal:
-
-- GPT-5 High
-
-### 5. Atalho para repetir último treino
-
-Problema real:
-
-Usuário pode querer repetir rapidamente o último treino feito.
-
-Proposta:
-
-- Mostrar último treino na Home.
-- Adicionar CTA para abrir esse treino.
+- Filtro Principal/Complementar.
+- Futuro filtro por treino e período.
 
 Modelo ideal:
 
 - GPT-5 Medium
 
-### 6. Recomendação semanal simples
+### 2. Aviso de registros antigos
 
-Problema real:
+Problema:
 
-O app ainda não sugere o treino do dia.
+Registros antigos de complementares podem aparecer com `1` ou `6` concluídos, enquanto o modelo novo usa `8` ou `12`.
 
 Proposta:
 
-- Começar com recomendação simples e manual.
-- Exemplo: `Hoje: Core` ou `Hoje: Mobilidade`.
-- Evitar calendário complexo por enquanto.
+- Indicar que registros antigos seguem modelo anterior.
+- Evitar interpretação errada de métricas.
 
 Modelo ideal:
 
 - GPT-5 Medium
 
-## Prioridade baixa
+## Prioridade Média
 
-### 7. Melhorar nomes dos complementares
+### 3. Melhorar `Carregando histórico...`
 
-Problema real:
+Problema:
 
-Nomes como `Core 1` e `Cardio 3` são funcionais, mas pouco descritivos.
+Estado transitório aparece na Home/Histórico antes da hidratação do `localStorage`.
 
 Proposta:
 
-- Renomear com base no objetivo real.
-- Exemplo: `Core anti-rotação`, `Cardio intervalado leve`, etc.
+- Melhorar skeleton/copy.
+- Evitar aparência de app travado.
 
 Modelo ideal:
 
 - GPT-5 Low
 
-### 8. Observações rápidas por sessão
+### 4. Métricas separadas entre histórico antigo e novo
 
-Problema real:
+Problema:
 
-Ainda não existe campo simples para anotar sensação geral.
+Métricas agregadas misturam registros criados em modelos diferentes.
 
 Proposta:
 
-- Adicionar nota curta na conclusão.
-- Manter opcional.
+- Separar ou sinalizar métricas pós-modelagem real.
+- Preservar histórico antigo sem migração destrutiva.
+
+Modelo ideal:
+
+- GPT-5 High
+
+## Prioridade Baixa
+
+### 5. Refinos de microcopy pós-teste semanal
+
+- Ajustar textos conforme feedback real.
+- Melhorar nomes curtos sem alterar dados oficiais.
+
+Modelo ideal:
+
+- GPT-5 Low
+
+### 6. Observações rápidas por sessão
+
+- Campo opcional de sensação geral.
+- Pode entrar apenas se uso real pedir.
 
 Modelo ideal:
 
 - GPT-5 Medium
 
-## Fora do escopo atual
+## Base de QA
+
+Bugs novos encontrados em QA ou uso real devem ser adicionados em `docs/QA.md` e avaliados para priorização neste backlog.
+
+## Fora do Escopo Atual
 
 - Login.
 - Supabase.
@@ -179,5 +190,3 @@ Modelo ideal:
 - Sincronização entre dispositivos.
 - Dashboard analítico avançado.
 - Refatoração ampla de arquitetura.
-
-Esses itens só devem voltar ao backlog quando o uso real exigir.

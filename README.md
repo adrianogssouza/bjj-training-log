@@ -2,20 +2,29 @@
 
 Aplicativo web mobile-first para organizar, executar e revisar a rotina semanal real de treino do usuário.
 
-O projeto começou como um log simples de treinos de Jiu-Jitsu/BJJ e evoluiu para um painel prático de treino: Treino A, Treino B, complementares e histórico local.
+O projeto começou como um log simples de treinos de Jiu-Jitsu/BJJ e evoluiu para um painel prático de treino: Treino A, Treino B, complementares, execução guiada e histórico local.
 
-## Estado oficial
+## Estado Oficial
 
-Sprint 1, Sprint 1.5, Sprint 1.5.1 e Sprint 1.6 estão concluídas.
+Etapa atual: **testes da semana**.
 
-O app está funcional, validado em uso real e preparado para a rotina semanal atual:
+Sprints concluídas:
 
-- Treino A Abril/26
-- Treino B Abril/26
-- Mobilidade
-- Core
-- Cardio
-- Anti-lesão
+- Sprint 1
+- Sprint 1.5
+- Sprint 1.5.1
+- Sprint 1.6
+- Sprint 1.7
+- Sprint 1.8
+- Sprint 1.8.1
+- Sprint 1.8.1-QA
+- Sprint 1.8.1-FIX
+- Sprint 1.8.1-BLOCKER
+- Sprint 1.8.1-REAL
+- Sprint 1.8.1-QA2
+- Sprint 1.8.1-HOTFIX
+
+O app está funcional, publicado na Vercel e em fase de uso real semanal antes da próxima rodada de implementação.
 
 ## Stack
 
@@ -27,29 +36,30 @@ O app está funcional, validado em uso real e preparado para a rotina semanal at
 - `localStorage` para persistência local
 - Deploy Vercel
 
-## Funcionalidades atuais
+## Funcionalidades Atuais
 
-- Home redesenhada como painel de decisão rápida.
-- CTA principal para abrir Treino A.
-- Treino B como alternativa imediata.
-- Treinos do mês em cards prioritários.
-- Complementares agrupados por categoria.
-- Rotas dinâmicas para todos os treinos e complementares.
-- Tela de detalhe com blocos, sequência, PSE alvo e vídeos.
+- Home como painel de decisão rápida.
+- CTA principal para treino do mês.
+- Treino A Abril/26 e Treino B Abril/26.
+- Complementares reais:
+  - Mobilidade
+  - Core
+  - Cardio
+  - Anti-lesão
+- Complementares com exercícios reais extraídos dos PDFs oficiais.
 - Execução guiada com pausa, retomada e fila dinâmica.
 - Opções do exercício:
   - Fazer depois
   - Não farei hoje
 - Campo de carga/método flexível com texto livre.
-- Conclusão de treino com ação principal para voltar à Home.
-- Histórico local com sessões concluídas.
-- Métricas simples no histórico.
-- Vídeos oficiais dos complementares.
+- Conclusão de treino com retorno principal para Home.
+- Histórico local com badges Principal/Complementar.
+- Vídeos reais do Treino A.
 - Vídeos reais do Treino B.
-- Suporte a vídeos por exercício ou sequência.
-- Interface mobile-first com refinamentos pós-teste real.
+- Vídeos oficiais dos complementares.
+- Interface dark, mobile-first.
 
-## Rotas principais
+## Rotas Principais
 
 - `/`
 - `/workouts`
@@ -57,7 +67,7 @@ O app está funcional, validado em uso real e preparado para a rotina semanal at
 - `/workouts/[id]/start`
 - `/history`
 
-## Dados de treino
+## Dados de Treino
 
 Os treinos e complementares ficam em:
 
@@ -70,7 +80,7 @@ Tipos atuais:
 - `monthly`: Treino A e Treino B
 - `complementary`: Mobilidade, Core, Cardio e Anti-lesão
 
-## Persistência local
+## Persistência Local
 
 O app usa `localStorage`, sem backend nesta fase.
 
@@ -84,7 +94,32 @@ Limitações atuais:
 - Limpar dados do navegador remove os registros.
 - Ainda não há login, backend, sincronização em nuvem ou conta de usuário.
 
-## Como rodar localmente
+## Correções Recentes
+
+- Sprint 1.8.1-HOTFIX: corrigido timer herdado ao reiniciar treino.
+
+## Melhorias Pendentes Registradas
+
+- Filtro no histórico.
+- Aviso de registros antigos.
+- Melhoria visual de `Carregando histórico...`.
+- Métricas separadas entre histórico antigo e novo.
+
+## Documentação de Projeto
+
+- Estado atual: `docs/STATUS.md`
+- Roadmap: `docs/ROADMAP.md`
+- Backlog: `docs/BACKLOG.md`
+- Changelog: `docs/CHANGELOG.md`
+- Base oficial de QA: `docs/QA.md`
+- Guia de testes: `docs/TESTING.md`
+- Log de campo: `docs/FIELD-TEST-LOG.md`
+
+## Regra de QA
+
+Bugs novos encontrados em QA ou uso real devem alimentar a base de QA futura em `docs/QA.md` e, quando aplicável, virar item priorizado em `docs/BACKLOG.md`.
+
+## Como Rodar Localmente
 
 Instale dependências:
 
@@ -115,37 +150,3 @@ Valide build:
 ```bash
 npm run build
 ```
-
-## Sprints concluídas
-
-### Sprint 1
-
-MVP funcional com treinos principais, execução guiada, histórico local, vídeos e validação em treino real.
-
-### Sprint 1.5
-
-Expansão da rotina semanal com complementares reais: Mobilidade, Core, Cardio e Anti-lesão.
-
-### Sprint 1.5.1
-
-Polimento da Home para reduzir scroll, priorizar CTA principal e melhorar decisão rápida antes do treino.
-
-### Sprint 1.6
-
-Correções vindas de teste real:
-
-- Conclusão de treino volta para Home.
-- Campo de carga aceita texto livre.
-- Complementares aparecem como sequência/circuito/combo, não como exercício simples isolado.
-
-## Próxima direção
-
-As próximas duas semanas devem priorizar ajustes de uso real, não uma expansão pesada:
-
-- Simplificar execução de complementares.
-- Separar `/workouts` por categorias.
-- Resolver vídeos pendentes do Treino A.
-- Melhorar histórico por tipo de treino.
-- Criar atalho para repetir último treino.
-
-Backend, login e Supabase seguem fora do escopo até haver necessidade real validada.

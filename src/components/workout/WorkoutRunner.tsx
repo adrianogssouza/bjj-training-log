@@ -243,6 +243,15 @@ export function WorkoutRunner({
           setSession(createQueuedWorkoutSession());
           setRunnerStatus("idle");
         }
+      } else if (shouldAutoStart) {
+        const nextSession = createQueuedWorkoutSession();
+
+        removeActiveWorkoutSession(workout.id);
+        setCompletedSummary(null);
+        setSession(nextSession);
+        setElapsedSeconds(0);
+        setRunnerStatus("active");
+        setRunnerView("running");
       } else if (
         storedSession &&
         (hasWorkoutSessionProgress(storedSession) ||
@@ -254,19 +263,11 @@ export function WorkoutRunner({
       } else if (storedSession) {
         removeActiveWorkoutSession(workout.id);
         setRunnerStatus("idle");
-      } else if (shouldAutoStart) {
-        const nextSession = createQueuedWorkoutSession();
-
-        setCompletedSummary(null);
-        setSession(nextSession);
-        setElapsedSeconds(0);
-        setRunnerStatus("active");
-        setRunnerView("running");
       } else {
         setRunnerStatus("idle");
       }
 
-      if (!shouldAutoStart || (storedSession && !storedSession.finishedAt)) {
+      if (!shouldAutoStart) {
         setRunnerView("overview");
       }
       setIsLoaded(true);
@@ -389,13 +390,13 @@ export function WorkoutRunner({
   function startNewSession() {
     const nextSession = createQueuedWorkoutSession();
 
+    removeActiveWorkoutSession(workout.id);
     setCompletedSummary(null);
     setSession(nextSession);
     setRunnerStatus("active");
     setRunnerView("running");
     setElapsedSeconds(0);
     resetUiState();
-    removeActiveWorkoutSession(workout.id);
   }
 
   function updateCurrentLog(field: FieldName, value: string) {
