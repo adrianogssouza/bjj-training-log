@@ -5,7 +5,7 @@ import { RecentSessionCard } from "@/components/home/RecentSessionCard";
 import { seedWorkouts } from "@/data/seed-workouts";
 import type { Workout } from "@/types";
 
-const monthlyWorkoutIds = ["treino-a-abril-26", "treino-b-abril-26"];
+const monthlyWorkoutIds = ["treino-a-prime-ciclo-3", "treino-b-prime-ciclo-3"];
 const complementaryGroups = [
   {
     label: "Mobilidade",
@@ -179,7 +179,7 @@ export default function HomePage() {
       <section className="flex flex-col gap-5">
         <div className="flex flex-col gap-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-red-300">
-            Abril/26
+            Ciclo 3 · 06/09–11/10
           </p>
           <h1 className="text-[34px] font-black leading-10 tracking-normal text-white">
             APP JIU / BJJ Training Log
@@ -220,7 +220,7 @@ export default function HomePage() {
             Treinos do mês
           </p>
           <h2 className="mt-1 text-2xl font-black text-white">
-            Abril/26
+            Ciclo 3 · 06/09–11/10
           </h2>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
