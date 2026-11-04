@@ -10,7 +10,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppSelect } from "@/components/ui/AppSelect";
 import { readWorkoutHistory } from "@/lib/workout-storage";
-import { loadBikeData, type BikeData, type BikeSession } from "@/lib/bike-cardio";
+import { loadBikeData, readableDate, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { seedWorkouts } from "@/data/seed-workouts";
 import type { WorkoutHistoryEntry, WorkoutSessionLog } from "@/types";
 
@@ -23,7 +23,8 @@ interface UnifiedHistoryItem {
   categoryLabel: "Principal" | "Complementar" | "Bike";
   categoryBadgeVariant: AppBadgeVariant;
   title: string;
-  timestamp: number;
+  effectiveDate: string; // "YYYY-MM-DD"
+  secondarySortKey: number;
   formattedDate: string;
   durationSeconds: number;
   formattedDuration: string;
@@ -127,7 +128,11 @@ export function WorkoutHistory() {
     for (const entry of history) {
       const workout = seedWorkouts.find((w) => w.id === entry.workoutId);
       const isMonthly = workout?.type === "monthly" || entry.workoutId.startsWith("treino-");
-      const timestamp = new Date(entry.completedAt || entry.startedAt).getTime() || 0;
+      const dt = new Date(entry.completedAt || entry.startedAt);
+      const secondarySortKey = Number.isFinite(dt.getTime()) ? dt.getTime() : 0;
+      const effectiveDate = Number.isFinite(dt.getTime())
+        ? `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`
+        : "";
 
       list.push({
         id: entry.id,
@@ -135,7 +140,8 @@ export function WorkoutHistory() {
         categoryLabel: isMonthly ? "Principal" : "Complementar",
         categoryBadgeVariant: isMonthly ? "primary" : "neutral",
         title: entry.workoutTitle,
-        timestamp,
+        effectiveDate,
+        secondarySortKey,
         formattedDate: formatHistoryDate(entry.completedAt || entry.startedAt),
         durationSeconds: entry.durationSeconds,
         formattedDuration: formatDuration(entry.durationSeconds),
@@ -147,7 +153,10 @@ export function WorkoutHistory() {
     // Bike sessions
     if (bikeData && bikeData.sessions) {
       for (const session of bikeData.sessions) {
-        const timestamp = new Date(session.recordedAt || session.date).getTime() || new Date(session.date).getTime() || 0;
+        const effectiveDate = session.date; // effective workout date "YYYY-MM-DD"
+        const secondarySortKey = session.recordedAt
+          ? (new Date(session.recordedAt).getTime() || 0)
+          : 0;
         const isCompleted = session.status === "completed";
 
         list.push({
@@ -156,8 +165,9 @@ export function WorkoutHistory() {
           categoryLabel: "Bike",
           categoryBadgeVariant: "success",
           title: "Cardio na Bike",
-          timestamp,
-          formattedDate: formatHistoryDate(session.recordedAt || session.date),
+          effectiveDate,
+          secondarySortKey,
+          formattedDate: readableDate(session.date),
           durationSeconds: session.minutes * 60,
           formattedDuration: `${session.minutes} min`,
           status: isCompleted ? "completed" : "skipped",
@@ -166,17 +176,29 @@ export function WorkoutHistory() {
       }
     }
 
-    // Sort descending by timestamp
-    return list.sort((a, b) => b.timestamp - a.timestamp);
+    // Sort: primary effectiveDate descending, secondary recordedAt / completion time descending
+    return list.sort((a, b) => {
+      if (a.effectiveDate !== b.effectiveDate) {
+        return b.effectiveDate.localeCompare(a.effectiveDate);
+      }
+      return b.secondarySortKey - a.secondarySortKey;
+    });
   }, [history, bikeData]);
 
   // Apply filters
   const filteredItems = useMemo(() => {
-    const now = referenceNow;
-    let periodCutoff = 0;
-    if (selectedPeriod === "7d") periodCutoff = now - 7 * 86400000;
-    else if (selectedPeriod === "30d") periodCutoff = now - 30 * 86400000;
-    else if (selectedPeriod === "90d") periodCutoff = now - 90 * 86400000;
+    const now = new Date(referenceNow);
+    let periodDays = 0;
+    if (selectedPeriod === "7d") periodDays = 7;
+    else if (selectedPeriod === "30d") periodDays = 30;
+    else if (selectedPeriod === "90d") periodDays = 90;
+
+    let cutoffDateStr = "";
+    if (periodDays > 0) {
+      const cutoff = new Date(now);
+      cutoff.setDate(cutoff.getDate() - periodDays);
+      cutoffDateStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, "0")}-${String(cutoff.getDate()).padStart(2, "0")}`;
+    }
 
     const term = searchQuery.trim().toLowerCase();
 
@@ -186,8 +208,8 @@ export function WorkoutHistory() {
       if (selectedCategory === "complementares" && item.type !== "complementary") return false;
       if (selectedCategory === "bike" && item.type !== "bike") return false;
 
-      // Period filter
-      if (periodCutoff > 0 && item.timestamp < periodCutoff) return false;
+      // Period filter based on effectiveDate
+      if (cutoffDateStr && item.effectiveDate < cutoffDateStr) return false;
 
       // Text search filter
       if (term) {

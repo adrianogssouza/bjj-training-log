@@ -12,7 +12,7 @@ import { AppCard } from "@/components/ui/AppCard";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppButton } from "@/components/ui/AppButton";
 
-function Login({ api }: { api: SupabaseClient }) {
+export function Login({ api }: { api: SupabaseClient }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -56,7 +56,7 @@ function Login({ api }: { api: SupabaseClient }) {
             autoComplete="current-password"
             required
             value={password}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <AppButton type="submit" variant="primary" fullWidth loading={busy}>
             {busy ? "Entrando…" : "Entrar"}

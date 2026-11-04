@@ -21,9 +21,11 @@ export function BikeCardioHomeCard() {
     }
     read();
     window.addEventListener("bjj-bike-updated", read);
+    window.addEventListener("bjj-cloud-updated", read);
     window.addEventListener("storage", read);
     return () => {
       window.removeEventListener("bjj-bike-updated", read);
+      window.removeEventListener("bjj-cloud-updated", read);
       window.removeEventListener("storage", read);
     };
   }, []);

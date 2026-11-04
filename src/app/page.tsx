@@ -20,10 +20,12 @@ export default function HomePage() {
     }
     load();
     window.addEventListener("bjj-storage-updated", load);
+    window.addEventListener("bjj-bike-updated", load);
     window.addEventListener("bjj-cloud-updated", load);
     window.addEventListener("storage", load);
     return () => {
       window.removeEventListener("bjj-storage-updated", load);
+      window.removeEventListener("bjj-bike-updated", load);
       window.removeEventListener("bjj-cloud-updated", load);
       window.removeEventListener("storage", load);
     };
