@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import "./setup-dom";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BikeCardioDashboard } from "../src/components/bike/BikeCardioDashboard";
 import { BIKE_STORAGE_KEY } from "../src/lib/bike-cardio";
 
-test("renderiza perfeitamente o dashboard com largura de iPhone (375px)", async () => {
-  // Simula dimensões de tela do iPhone (375x667 ou 390x844)
+test("renderiza perfeitamente o dashboard com largura de iPhone (375px) e navegação por abas", async () => {
+  // Simula dimensões de tela do iPhone (375x812)
   Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 375 });
   Object.defineProperty(window, "innerHeight", { writable: true, configurable: true, value: 812 });
 
@@ -54,32 +54,64 @@ test("renderiza perfeitamente o dashboard com largura de iPhone (375px)", async 
   assert.ok(await screen.findByText("Cardio na Bike"));
   assert.ok(screen.getByText("Programa exclusivo · bicicleta ergométrica"));
 
-  // Resumo
+  // Resumo de topo
   assert.ok(screen.getByText("Tempo acumulado"));
   assert.ok(screen.getByText("25 min"));
   assert.ok(screen.getByText("Último peso"));
   assert.ok(screen.getByText("106,6 kg"));
 
-  // Semanas (1 a 6)
-  assert.ok(screen.getByText("Sem. 1"));
-  assert.ok(screen.getByText("Sem. 6"));
-
-  // Estrutura do treino
+  // Aba 'Hoje': Destaque de Treino de Hoje e estrutura da sessão
+  assert.ok(screen.getByText(/Treino de Hoje · Bike/));
   assert.ok(screen.getByText("Aquecimento"));
   assert.ok(screen.getByText("Parte principal"));
   assert.ok(screen.getByText("Desaquecimento"));
+  assert.ok(screen.getByText("▶ Iniciar treino guiado"));
+  assert.ok(screen.getByText("Registrar treino já realizado"));
 
-  // Formulário de registro
-  assert.ok(screen.getByText("Registrar sessão"));
-  assert.ok(screen.getByText("Salvar registro da bike"));
+  // Formulário de Registro Rápido
+  assert.ok(screen.getByText("Registro Rápido"));
+  assert.ok(screen.getByText("Salvar treino"));
 
-  // Histórico
+  // Testar início do modo guiado
+  fireEvent.click(screen.getByText("▶ Iniciar treino guiado"));
+  assert.ok(screen.getByText(/Modo Guiado · Bike/));
+  assert.ok(screen.getByText("Etapa Atual:"));
+  assert.ok(screen.getByText("⏸ Pausar"));
+
+  // Pausar e retomar no cronômetro
+  fireEvent.click(screen.getByText("⏸ Pausar"));
+  assert.ok(screen.getByText("▶ Retomar pedal"));
+  fireEvent.click(screen.getByText("▶ Retomar pedal"));
+
+  // Encerrar o treino guiado
+  fireEvent.click(screen.getByText(/Encerrar e salvar/));
+  // Volta para a tela de registro com a notificação
+  assert.ok(await screen.findByText(/Treino guiado finalizado/));
+
+  // Navegar para aba 'Plano 6 Sem.'
+  fireEvent.click(screen.getByText("Plano 6 Sem."));
+  assert.ok(screen.getByText("Sem. 1"));
+  assert.ok(screen.getByText("Sem. 6"));
+
+  // Navegar para aba 'Evolução'
+  fireEvent.click(screen.getByText("Evolução"));
+  assert.ok(screen.getByText("Evolução do Volume Semanal"));
+  assert.ok(screen.getByText("Indicadores Gerais"));
+
+  // Navegar para aba 'Histórico'
+  fireEvent.click(screen.getByText("Histórico (1)"));
   assert.ok(screen.getByText("Teste iPhone"));
 
-  // Medidas
+  // Navegar para aba 'Medidas'
+  fireEvent.click(screen.getByText("Medidas"));
   assert.ok(screen.getByText("Bioimpedância RelaxFit"));
 
-  // Backups
+  // Navegar para aba 'Dicas'
+  fireEvent.click(screen.getByText("Dicas"));
+  assert.ok(screen.getByText("1. Como ajustar a intensidade da bicicleta"));
+
+  // Navegar para aba 'Backup'
+  fireEvent.click(screen.getByText("Backup"));
   assert.ok(screen.getByText("Exportar backup JSON"));
   assert.ok(screen.getByText("Exportar sessões CSV"));
   assert.ok(screen.getByText("Importar backup JSON"));
