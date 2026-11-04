@@ -144,6 +144,28 @@ export function clearWorkoutHistory() {
   window.localStorage.removeItem(workoutStorageKeys.history);
 }
 
+export function readActiveWorkoutSessions(): WorkoutSession[] {
+  if (account) {
+    return Object.values(account.read().activeSessions).map(sanitizeWorkoutSessionPse);
+  }
+  const sessions: WorkoutSession[] = [];
+  const ids = new Set<string>();
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      const match = key?.match(/^bjj-training-log:(?:active-session|session):(.+)$/);
+      if (match) ids.add(match[1]);
+    }
+  } catch {
+    // ignore
+  }
+  for (const id of ids) {
+    const s = readActiveWorkoutSession(id);
+    if (s) sessions.push(s);
+  }
+  return sessions;
+}
+
 export function readActiveWorkoutSession(workoutId: string) {
   if (account) return account.read().activeSessions[workoutId] ?? null;
   const activeKey = workoutStorageKeys.activeSession(workoutId);
