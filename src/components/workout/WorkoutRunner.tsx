@@ -12,12 +12,17 @@ import type {
   WorkoutSession,
 } from "@/types";
 import { AppCard } from "@/components/ui/AppCard";
+import { AppModal } from "@/components/ui/AppModal";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppBadge } from "@/components/ui/AppBadge";
+import { AppProgress } from "@/components/ui/AppProgress";
 import { VideoModal } from "@/components/ui/VideoModal";
 import {
   createWorkoutHistoryEntry,
   createWorkoutSession,
   hasWorkoutSessionProgress,
   readActiveWorkoutSession,
+  readWorkoutHistory,
   removeActiveWorkoutSession,
   saveActiveWorkoutSession,
   saveWorkoutHistoryEntry,
@@ -53,6 +58,7 @@ type CompletedSummary = {
   workoutTitle: string;
   durationSeconds: number;
   completedCount: number;
+  skippedCount?: number;
 };
 
 const skipReasons = [
@@ -82,6 +88,9 @@ function createCompletedSummary(
     durationSeconds: historyEntry.durationSeconds,
     completedCount: Object.values(historyEntry.logs).filter(
       (log) => log.completed,
+    ).length,
+    skippedCount: Object.values(historyEntry.logs).filter(
+      (log) => log.skipped,
     ).length,
   };
 }
@@ -153,6 +162,24 @@ export function WorkoutRunner({
     orderedSteps.length > 0
       ? Math.round((progressedCount / orderedSteps.length) * 100)
       : 0;
+
+  const previousExecutionLog = useMemo(() => {
+    if (!currentStep) return null;
+    const history = readWorkoutHistory();
+    for (const entry of history) {
+      if (entry.workoutId === workout.id && entry.logs) {
+        const log = entry.logs[currentStep.id];
+        if (log && !log.skipped && (log.reps || log.load || log.actualPse)) {
+          return log;
+        }
+      }
+    }
+    return null;
+  }, [workout.id, currentStep]);
+
+  const nextStepIndex = session.currentStepIndex + 1;
+  const nextStep =
+    nextStepIndex < orderedSteps.length ? orderedSteps[nextStepIndex] : null;
   const isPaused = Boolean(session.pausedAt) && runnerStatus === "active";
   const currentLog = currentStep ? session.logs[currentStep.id] : undefined;
   const canPauseSession =
@@ -712,107 +739,121 @@ export function WorkoutRunner({
           </div>
         </section>
 
-        <AppCard className="p-4">
+        <AppCard className="p-5">
           {runnerStatus === "idle" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-xl font-black text-white">
+                <h2 className="text-[20px] font-bold text-[#F4F4F5]">
                   Pronto para começar
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                <p className="mt-1 text-[14px] text-[#A1A1AA]">
                   Nenhuma sessão ativa foi encontrada neste dispositivo.
                 </p>
               </div>
-              <button
-                type="button"
+              <AppButton
                 onClick={startNewSession}
-                className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
+                variant="primary"
+                fullWidth
               >
                 Iniciar treino
-              </button>
+              </AppButton>
             </div>
           ) : null}
 
           {runnerStatus === "active" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-xl font-black text-white">
+                <h2 className="text-[20px] font-bold text-[#F4F4F5]">
                   Treino em andamento
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                <p className="mt-1 text-[14px] text-[#A1A1AA]">
                   Continue de onde parou ou reinicie a sessão atual.
                 </p>
               </div>
-              <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3">
-                <p className="text-sm font-bold text-zinc-100">
+              <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-4 py-3">
+                <p className="text-[14px] font-bold text-[#F4F4F5]">
                   {progressedCount}/{orderedSteps.length} {progressRecordLabel}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setRunnerView("running")}
-                className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
-              >
-                Continuar treino
-              </button>
-              <button
-                type="button"
-                onClick={startNewSession}
-                className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
-              >
-                Reiniciar treino
-              </button>
+              <div className="space-y-2">
+                <AppButton
+                  onClick={() => setRunnerView("running")}
+                  variant="primary"
+                  fullWidth
+                >
+                  Continuar treino
+                </AppButton>
+                <AppButton
+                  onClick={startNewSession}
+                  variant="secondary"
+                  fullWidth
+                >
+                  Reiniciar treino
+                </AppButton>
+              </div>
             </div>
           ) : null}
 
           {runnerStatus === "completed" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-red-300">
+                <p className="text-[13px] font-semibold uppercase tracking-wide text-[#6EE7B7]">
                   Sessão salva
                 </p>
-                <h2 className="mt-1 text-2xl font-black text-white">
+                <h2 className="mt-1 text-[24px] font-extrabold text-[#F4F4F5]">
                   Treino concluído
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                <p className="mt-1 text-[14px] text-[#A1A1AA]">
                   {completedSummary?.workoutTitle ?? workout.title}
                 </p>
               </div>
 
-              <dl className="grid grid-cols-2 gap-2 text-sm">
-                <div className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">
-                  <dt className="text-xs text-zinc-500">Tempo total</dt>
-                  <dd className="font-semibold text-zinc-100">
+              <dl className="grid grid-cols-2 gap-3 text-[14px]">
+                <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
+                  <dt className="text-[12px] text-[#A1A1AA]">Tempo total</dt>
+                  <dd className="mt-0.5 font-bold text-[#F4F4F5]">
                     {formatDuration(completedSummary?.durationSeconds ?? 0)}
                   </dd>
                 </div>
-                <div className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">
-                  <dt className="text-xs text-zinc-500">Concluídos</dt>
-                  <dd className="font-semibold text-zinc-100">
+                <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
+                  <dt className="text-[12px] text-[#A1A1AA]">Concluídos</dt>
+                  <dd className="mt-0.5 font-bold text-[#6EE7B7]">
                     {completedSummary?.completedCount ?? 0}
                   </dd>
                 </div>
+                {Boolean(completedSummary?.skippedCount) && (
+                  <div className="col-span-2 rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
+                    <dt className="text-[12px] text-[#A1A1AA]">Pulados</dt>
+                    <dd className="mt-0.5 font-bold text-[#FBBF24]">
+                      {completedSummary?.skippedCount}
+                    </dd>
+                  </div>
+                )}
               </dl>
 
-              <Link
-                href="/"
-                className="flex min-h-14 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-5 text-center text-base font-bold text-white shadow-lg shadow-red-950/40 transition-colors hover:bg-red-400"
-              >
-                Voltar para Home
-              </Link>
-              <Link
-                href="/history"
-                className="flex min-h-11 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
-              >
-                Ver histórico
-              </Link>
-              <button
-                type="button"
-                onClick={startNewSession}
-                className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-center text-sm font-bold text-zinc-200 transition-colors hover:border-zinc-500"
-              >
-                Repetir este treino
-              </button>
+              <div className="space-y-2 pt-2">
+                <AppButton
+                  href="/"
+                  variant="primary"
+                  fullWidth
+                >
+                  Voltar para Hoje
+                </AppButton>
+                <AppButton
+                  href="/history"
+                  variant="secondary"
+                  fullWidth
+                >
+                  Ver histórico
+                </AppButton>
+                <AppButton
+                  onClick={startNewSession}
+                  variant="ghost"
+                  fullWidth
+                >
+                  Repetir este treino
+                </AppButton>
+              </div>
             </div>
           ) : null}
         </AppCard>
@@ -871,12 +912,7 @@ export function WorkoutRunner({
             </p>
           </div>
         </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-800">
-          <div
-            className="h-full rounded-full bg-red-500 transition-all"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+        <AppProgress value={progressPercent} color="primary" className="mt-3" />
         {actionFeedback ? (
           <div className="mt-3 rounded-lg border border-emerald-300/30 bg-emerald-300/10 px-3 py-2">
             <p className="text-sm font-bold text-emerald-100">
@@ -905,7 +941,7 @@ export function WorkoutRunner({
             >
               {currentBlockTypeLabel} · Bloco {currentStep.block.order}
             </p>
-            <h2 className="mt-1 break-words text-lg font-black leading-6 text-white">
+            <h2 className="mt-1 break-words text-[20px] font-bold leading-[28px] text-white">
               {currentStep.item.name}
             </h2>
             <p className="mt-1 break-words text-sm leading-5 text-zinc-400">
@@ -937,18 +973,49 @@ export function WorkoutRunner({
             </div>
             <div className="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-2">
               <dt className="text-xs text-zinc-500">PSE alvo</dt>
-              <dd className="mt-1 inline-flex min-h-6 items-center rounded-full bg-red-500/20 px-2.5 text-xs font-black text-red-200 ring-1 ring-red-500/40">
-                {currentStep.item.targetPse ?? "-"}
+              <dd className="mt-0.5">
+                <AppBadge variant="primary">
+                  {currentStep.item.targetPse ?? "-"}
+                </AppBadge>
               </dd>
             </div>
           </dl>
         </div>
       </AppCard>
 
-      <AppCard className="p-3">
-        <div className="flex flex-col gap-3">
+      {/* Referência anterior (Última execução) */}
+      {previousExecutionLog && (
+        <AppCard variant="secondary" className="p-3 border-[#3F3F46] bg-[#18181B] space-y-2">
+          <p className="text-[12px] font-bold uppercase tracking-wider text-[#A1A1AA]">
+            Última execução
+          </p>
+          <dl className="grid grid-cols-3 gap-2 text-[13px]">
+            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[#A1A1AA]">Reps / Tempo</dt>
+              <dd className="font-semibold text-[#F4F4F5]">
+                {previousExecutionLog.reps || "-"}
+              </dd>
+            </div>
+            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[#A1A1AA]">Carga</dt>
+              <dd className="font-semibold text-[#F4F4F5]">
+                {previousExecutionLog.load || "-"}
+              </dd>
+            </div>
+            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[#A1A1AA]">PSE</dt>
+              <dd className="font-semibold text-[#F4F4F5]">
+                {previousExecutionLog.actualPse || "-"}
+              </dd>
+            </div>
+          </dl>
+        </AppCard>
+      )}
+
+      <AppCard className="p-4">
+        <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-zinc-300">
+            <span className="text-[14px] font-medium text-[#F4F4F5]">
               {primaryFieldLabel}
             </span>
             <input
@@ -961,12 +1028,12 @@ export function WorkoutRunner({
               value={currentLog?.reps ?? ""}
               onChange={(event) => updateCurrentLog("reps", event.target.value)}
               placeholder={primaryFieldPlaceholder}
-              className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
+              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
             />
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-zinc-300">
+            <span className="text-[14px] font-medium text-[#F4F4F5]">
               {loadFieldLabel}
             </span>
             <input
@@ -977,12 +1044,12 @@ export function WorkoutRunner({
               value={currentLog?.load ?? ""}
               onChange={(event) => updateCurrentLog("load", event.target.value)}
               placeholder={loadFieldPlaceholder}
-              className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
+              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
             />
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-zinc-300">
+            <span className="text-[14px] font-medium text-[#F4F4F5]">
               {pseFieldLabel}
             </span>
             <input
@@ -995,226 +1062,234 @@ export function WorkoutRunner({
                 updateCurrentLog("actualPse", event.target.value)
               }
               placeholder="0 a 10"
-              className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
+              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
             />
           </label>
         </div>
       </AppCard>
 
+      {/* Próximo exercício */}
+      <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3 text-[14px]">
+        <p className="text-[12px] font-semibold uppercase tracking-wider text-[#A1A1AA]">
+          Próximo exercício
+        </p>
+        <p className="mt-0.5 font-bold text-[#F4F4F5]">
+          {nextStep ? nextStep.item.name : "Último exercício do treino"}
+        </p>
+      </div>
+
       {validationMessage ? (
-        <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3">
-          <p className="text-sm font-bold text-red-100">{validationMessage}</p>
+        <div className="rounded-[10px] border border-[#B91C1C] bg-[#450A0A]/40 p-3">
+          <p className="text-[14px] font-medium text-[#FCA5A5]">{validationMessage}</p>
         </div>
       ) : null}
 
-      {showSkipOptions ? (
-        <div className="fixed inset-0 z-30 flex items-end bg-black/75 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center sm:justify-center">
-          <AppCard className="max-h-[88vh] w-full max-w-md overflow-y-auto p-3">
-            <div className="flex flex-col gap-3">
+      <AppModal
+        isOpen={showSkipOptions}
+        onClose={() => {
+          setShowSkipOptions(false);
+          setSkipAction(null);
+        }}
+        title="Opções do exercício"
+        description="Escolha se este exercício volta no fim da sessão ou se não será feito hoje."
+        maxWidth="max-w-[460px]"
+      >
+        <div className="space-y-4">
+          {!skipAction ? (
+            <div className="grid gap-2">
+              <AppButton
+                type="button"
+                variant="primary"
+                onClick={deferCurrentExercise}
+                fullWidth
+              >
+                Fazer depois
+              </AppButton>
+              <AppButton
+                type="button"
+                variant="secondary"
+                onClick={() => setSkipAction("skip")}
+                fullWidth
+              >
+                Não farei hoje
+              </AppButton>
+              <AppButton
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setShowSkipOptions(false);
+                  setSkipAction(null);
+                }}
+                fullWidth
+              >
+                Cancelar
+              </AppButton>
+            </div>
+          ) : (
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-black text-white">
-                  O que deseja fazer?
-                </h2>
-                <p className="mt-1 text-sm leading-5 text-zinc-400">
-                  Escolha se este exercício volta no fim da sessão ou se não
-                  será feito hoje.
+                <p className="text-[14px] font-medium text-[#F4F4F5]">
+                  Motivo opcional
                 </p>
-              </div>
-
-              {!skipAction ? (
-                <div className="grid gap-2">
-                  <button
-                    type="button"
-                    onClick={deferCurrentExercise}
-                    className="min-h-12 rounded-lg border border-red-400 bg-red-500 px-4 text-left text-sm font-black text-white transition-colors hover:bg-red-400"
-                  >
-                    Fazer depois
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSkipAction("skip")}
-                    className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-left text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
-                  >
-                    Não farei hoje
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowSkipOptions(false);
-                      setSkipAction(null);
-                    }}
-                    className="min-h-11 rounded-lg px-4 text-left text-sm font-bold text-zinc-500 transition-colors hover:text-zinc-200"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              ) : null}
-
-              {skipAction === "skip" ? (
-                <>
-                  <div>
-                    <p className="text-sm font-semibold text-zinc-300">
-                      Motivo opcional
-                    </p>
-                    <div className="mt-2 grid gap-2">
-                      {skipReasons.map((reason) => (
-                        <button
-                          key={reason}
-                          type="button"
-                          onClick={() => {
-                            setSelectedSkipReason(reason);
-                            if (reason !== "Outro") {
-                              setCustomSkipReason("");
-                            }
-                          }}
-                          className={`min-h-11 rounded-lg border px-3 text-left text-sm font-bold transition-colors ${
-                            selectedSkipReason === reason
-                              ? "border-red-400 bg-red-500/20 text-red-100"
-                              : "border-zinc-800 bg-zinc-900 text-zinc-300"
-                          }`}
-                        >
-                          {reason}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {selectedSkipReason === "Outro" ? (
-                    <label className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-zinc-300">
-                        Descreva o motivo
-                      </span>
-                      <input
-                        value={customSkipReason}
-                        onChange={(event) =>
-                          setCustomSkipReason(event.target.value)
-                        }
-                        placeholder="Ex: agenda apertada, equipamento ocupado"
-                        className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-base font-semibold text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-red-400 focus:ring-2 focus:ring-red-500/30"
-                      />
-                    </label>
-                  ) : null}
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                  {skipReasons.map((reason) => (
                     <button
+                      key={reason}
                       type="button"
                       onClick={() => {
-                        setSkipAction(null);
-                        setSelectedSkipReason("");
-                        setCustomSkipReason("");
+                        setSelectedSkipReason(reason);
+                        if (reason !== "Outro") {
+                          setCustomSkipReason("");
+                        }
                       }}
-                      className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-200"
+                      className={`min-h-[44px] rounded-[10px] border px-3 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] ${
+                        selectedSkipReason === reason
+                          ? "border-[#B91C1C] bg-[#450A0A] text-[#FCA5A5]"
+                          : "border-[#3F3F46] bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F5]"
+                      }`}
                     >
-                      Voltar
+                      {reason}
                     </button>
-                    <button
-                      type="button"
-                      onClick={skipCurrentExercise}
-                      className="min-h-11 rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white"
-                    >
-                      Não farei hoje
-                    </button>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </AppCard>
-        </div>
-      ) : null}
-
-      {showCancelConfirm ? (
-        <div className="fixed inset-0 z-20 flex items-end bg-black/70 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center sm:justify-center">
-          <AppCard className="w-full max-w-md p-4">
-            <div className="flex flex-col gap-4">
-              <div>
-                <h2 className="text-lg font-black text-white">
-                  Cancelar treino
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  Tem certeza que deseja cancelar este treino? O progresso atual
-                  será perdido.
-                </p>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <button
+
+              {selectedSkipReason === "Outro" && (
+                <label className="flex flex-col gap-2">
+                  <span className="text-[14px] font-medium text-[#F4F4F5]">
+                    Descreva o motivo
+                  </span>
+                  <input
+                    value={customSkipReason}
+                    onChange={(event) =>
+                      setCustomSkipReason(event.target.value)
+                    }
+                    placeholder="Ex: agenda apertada, equipamento ocupado"
+                    className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
+                  />
+                </label>
+              )}
+
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <AppButton
                   type="button"
-                  onClick={() => setShowCancelConfirm(false)}
-                  className="min-h-12 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-100"
+                  variant="secondary"
+                  onClick={() => {
+                    setSkipAction(null);
+                    setSelectedSkipReason("");
+                    setCustomSkipReason("");
+                  }}
                 >
-                  Continuar treino
-                </button>
-                <button
+                  Voltar
+                </AppButton>
+                <AppButton
                   type="button"
-                  onClick={cancelSession}
-                  className="min-h-12 rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white"
+                  variant="primary"
+                  onClick={skipCurrentExercise}
                 >
-                  Cancelar treino
-                </button>
+                  Não farei hoje
+                </AppButton>
               </div>
             </div>
-          </AppCard>
+          )}
         </div>
-      ) : null}
+      </AppModal>
 
-      {showCurrentVideo && currentVideoUrl ? (
+      <AppModal
+        isOpen={showCancelConfirm}
+        onClose={() => setShowCancelConfirm(false)}
+        title="Cancelar treino"
+        description="O progresso atual será perdido."
+        isDestructive={true}
+        maxWidth="max-w-[440px]"
+      >
+        <div className="space-y-4">
+          <p className="text-[14px] leading-[21px] text-[#A1A1AA]">
+            Tem certeza que deseja cancelar este treino? O progresso desta sessão será perdido.
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-2">
+            <AppButton
+              type="button"
+              variant="secondary"
+              onClick={() => setShowCancelConfirm(false)}
+            >
+              Continuar treino
+            </AppButton>
+            <AppButton
+              type="button"
+              variant="danger"
+              onClick={cancelSession}
+            >
+              Cancelar treino
+            </AppButton>
+          </div>
+        </div>
+      </AppModal>
+
+      {showCurrentVideo && currentVideoUrl && (
         <VideoModal
           title={currentStep.item.name}
           videoUrl={currentVideoUrl}
           onClose={() => setShowCurrentVideo(false)}
         />
-      ) : null}
+      )}
 
-      {!showSkipOptions ? (
-        <div className="sticky bottom-0 -mx-4 border-t border-zinc-800 bg-zinc-950/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
-          <div className="mx-auto flex max-w-3xl flex-col gap-1.5">
-            <button
+      {!showSkipOptions && (
+        <div className="sticky bottom-0 -mx-4 border-t border-[#3F3F46] bg-[#09090B]/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
+          <div className="mx-auto flex max-w-[960px] flex-col gap-2">
+            <AppButton
               type="button"
+              variant="primary"
               onClick={completeAndGoNext}
               disabled={isPaused || isAdvancing}
-              className="flex min-h-11 w-full items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 py-2 text-center text-sm font-black text-white shadow-md shadow-red-950/30 transition-colors hover:bg-red-400 disabled:cursor-not-allowed disabled:border-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:shadow-none sm:min-h-12 sm:text-base"
+              fullWidth
             >
               {isAdvancing
                 ? "Salvando..."
                 : session.currentStepIndex >= orderedSteps.length - 1
                   ? "Concluir treino"
                   : "Concluir e próximo"}
-            </button>
-            <div className="grid grid-cols-2 gap-1.5">
+            </AppButton>
+
+            <div className="grid grid-cols-2 gap-2">
               {isPaused ? (
-                <button
+                <AppButton
                   type="button"
+                  variant="secondary"
                   onClick={resumeSession}
-                  className="min-h-10 rounded-lg border border-amber-300 bg-amber-300 px-3 text-sm font-black text-amber-950"
                 >
                   Retomar treino
-                </button>
+                </AppButton>
               ) : (
-                <button
+                <AppButton
                   type="button"
+                  variant="secondary"
                   onClick={pauseSession}
                   disabled={!canPauseSession}
-                  className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
                 >
                   Pausar treino
-                </button>
+                </AppButton>
               )}
-              <button
+              <AppButton
                 type="button"
+                variant="secondary"
                 onClick={() => setShowSkipOptions(true)}
                 disabled={isPaused}
-                className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-200 disabled:cursor-not-allowed disabled:text-zinc-500"
               >
                 Opções do exercício
-              </button>
+              </AppButton>
             </div>
+
             <button
               type="button"
               onClick={() => setShowCancelConfirm(true)}
-              className="min-h-7 rounded-lg px-3 text-xs font-bold text-zinc-500 transition-colors hover:text-red-200"
+              className="min-h-[44px] rounded-[10px] px-3 text-[13px] font-bold text-[#A1A1AA] transition-colors hover:text-[#FCA5A5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
             >
               Cancelar treino
             </button>
           </div>
         </div>
-      ) : null}
+      )}
     </main>
   );
 }
