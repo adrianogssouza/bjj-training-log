@@ -22,13 +22,17 @@ A progressão depende de tolerância, recuperação e eventuais sintomas, e **n�
 ## Funcionalidades
 
 - Página exclusiva `/bike`, preservando os seis cardios complementares já existentes.
-- Planejamento de seis semanas com fase, duração e instruções detalhadas.
+- **Painel "Treino de Hoje"**: Identifica automaticamente a semana vigente, exibe a sessão do dia com blocos de aquecimento (5 min), parte principal conversável e desaquecimento (5 min), orientações de intensidade e teste da fala.
+- **Modo de Execução Guiada**: Cronômetro progressivo/regressivo adaptado ao iPhone, com indicação da etapa atual, tempo restante, orientações em tempo real, botões de pausar/retomar/encerrar e preenchimento automático do registro ao finalizar. Resistente a bloqueio de tela e troca de abas no iOS Safari.
+- **Registro Rápido em Dois Níveis**: Nível 1 com campos imediatos (data, duração, FC opcional, PSE, fadiga e teste da fala); Nível 2 expansível para distância, resistência, sintomas e observações.
+- **Distribuição Semanal Flexível**: Seleção de dias preferenciais, liberdade para pedalar em dias alternativos, adiar sessões ou repetir semanas para recuperação sem penalidades no aplicativo.
+- **Painel de Evolução Completo**: Estatísticas consolidadas de FC média real, PSE médio, tendência de fadiga, gráficos de volume semanal e acompanhamento de peso, cintura e gordura corporal.
+- **Guia Prático Incorporado**: Dicas contextuais sobre intensidade, cadência, teste da fala, escala PSE, uso do monitor cardíaco e recuperação muscular.
 - Registro de sessão realizada ou não realizada, data, minutos, FC média e pico, PSE, teste da fala, distância, resistência, fadiga das pernas, sintomas e comentários.
-- Edição e exclusão de sessões.
-- Resumo e comparação de minutos planejados x realizados e quantidade de sessões.
+- Edição e exclusão de sessões com confirmação.
 - Registro de peso, gordura estimada, cintura e pressão arterial, todos opcionais.
 - Edição e exclusão de medições, além de meta opcional de peso.
-- Exportação CSV de sessões, backup JSON de todas as informações e restauração de backup.
+- Exportação CSV de sessões com proteção contra injeção de fórmulas, backup JSON de todas as informações e restauração de backup.
 - Sincronização com o Supabase da conta já existente; a importação legada consegue trazer dados locais no primeiro acesso, se essa opção for selecionada.
 - Interface mobile-first, acessível no navegador e sem novas dependências.
 
