@@ -11,6 +11,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Meu Treino",
   },
+  icons: {
+    icon: "/icons/icon-192x192.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

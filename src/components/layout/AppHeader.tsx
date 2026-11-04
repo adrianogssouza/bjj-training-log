@@ -12,8 +12,9 @@ const DESKTOP_LINKS = [
   { name: "Histórico", href: "/history" },
 ];
 
-export function AppHeader() {
-  const pathname = usePathname() || "/";
+export function AppHeader({ currentPath }: { currentPath?: string } = {}) {
+  const routerPath = usePathname();
+  const pathname = currentPath || routerPath || "/";
   const { openAccountModal, syncStatus } = useAccount();
 
   return (

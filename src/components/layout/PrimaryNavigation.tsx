@@ -39,8 +39,9 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-export function PrimaryNavigation() {
-  const pathname = usePathname() || "/";
+export function PrimaryNavigation({ currentPath }: { currentPath?: string } = {}) {
+  const routerPath = usePathname();
+  const pathname = currentPath || routerPath || "/";
 
   // Hide bottom navigation during guided workout execution
   const isGuidedWorkout =
