@@ -89,7 +89,7 @@ export function Account({ api, session, children }: { api: SupabaseClient; sessi
     let releaseLock: (() => void) | undefined;
     const lockAbort = new AbortController();
     if (navigator.locks) {
-      void navigator.locks.request(`bjj-training-log:${userId}`, { ifAvailable: true, signal: lockAbort.signal }, async lock => {
+      void navigator.locks.request(`bjj-training-log:${userId}`, { ifAvailable: true }, async lock => {
         if (!lock) { if (!cancelled) setError("Esta conta já está aberta em outra aba. Feche a outra aba e toque em Tentar novamente."); return; }
         await load();
         if (!cancelled) await new Promise<void>(resolve => { releaseLock = resolve; });
