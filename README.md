@@ -2,11 +2,11 @@
 
 Aplicativo web mobile-first para organizar, executar e revisar a rotina semanal real de treino do usuário.
 
-O projeto começou como um log simples de treinos de Jiu-Jitsu/BJJ e evoluiu para um painel prático de treino: Treino A, Treino B, complementares, execução guiada e histórico local.
+O projeto começou como um log simples de treinos de Jiu-Jitsu/BJJ e evoluiu para um painel prático de treino: Treino A, Treino B, complementares, execução guiada e histórico com sincronização opcional pelo Supabase.
 
 ## Estado Oficial
 
-Etapa atual: **testes da semana**.
+Etapa atual: **integração Supabase implementada; validação em produção pendente**.
 
 Sprints concluídas:
 
@@ -33,7 +33,8 @@ O app está funcional, publicado na Vercel e em fase de uso real semanal antes d
 - TypeScript
 - Tailwind CSS
 - ESLint
-- `localStorage` para persistência local
+- Supabase Auth e Postgres com RLS para login e sincronização
+- `localStorage` para cópia local e migração do histórico antigo
 - Deploy Vercel
 
 ## Funcionalidades Atuais
@@ -80,19 +81,22 @@ Tipos atuais:
 - `monthly`: Treino A e Treino B
 - `complementary`: Mobilidade, Core, Cardio e Anti-lesão
 
-## Persistência Local
+## Login e Sincronização
 
-O app usa `localStorage`, sem backend nesta fase.
+Configure o Supabase seguindo [o passo a passo](docs/SUPABASE.md).
+Pode usar o mesmo projeto do NutriPlan, com tabela própria `bjj_training_states`.
+A integração inclui login, histórico e sessões em andamento na nuvem, importação dos
+registros antigos e backup JSON. Atualizações concorrentes geram aviso de conflito,
+sem sobrescrever silenciosamente a versão remota.
+
+Sem as duas variáveis públicas, o aplicativo continua em modo local.
+As chaves antigas são preservadas:
 
 - Sessão ativa: `bjj-training-log:active-session:{workoutId}`
-- Histórico concluído: `bjj-training-log:workout-history`
-- Chave legada suportada: `bjj-training-log:session:{workoutId}`
+- Histórico: `bjj-training-log:workout-history`
+- Sessão legada: `bjj-training-log:session:{workoutId}`
 
-Limitações atuais:
-
-- Histórico fica apenas no navegador/dispositivo atual.
-- Limpar dados do navegador remove os registros.
-- Ainda não há login, backend, sincronização em nuvem ou conta de usuário.
+A integração usa exclusivamente a chave pública. Não coloque secret key no frontend.
 
 ## Correções Recentes
 
@@ -150,3 +154,5 @@ Valide build:
 ```bash
 npm run build
 ```
+
+Verifique também `npm test` e `npm run typecheck`. Os testes de nuvem usam serviço simulado; valide login e sincronização no projeto real após configurar o SQL.
