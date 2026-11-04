@@ -5,9 +5,16 @@ import {
 } from "@/lib/workout-validation";
 
 import { emptyTrainingState, parseTrainingState, type TrainingState } from "./training-state";
+import { BIKE_STORAGE_KEY, bindBikeStorage, newBikeData, sanitizeBikeData } from "./bike-cardio";
 
 let account: { read: () => TrainingState; write: (data: TrainingState) => void } | null = null;
-export function bindAccountStorage(adapter: typeof account) { account = adapter; }
+export function bindAccountStorage(adapter: typeof account) {
+  account = adapter;
+  bindBikeStorage(adapter ? {
+    read: () => sanitizeBikeData(adapter.read().bike ?? newBikeData()),
+    write: bike => adapter.write({ ...adapter.read(), bike }),
+  } : null);
+}
 
 /** Reads only the original device keys; never imports an account cache. */
 export function readLegacyTrainingState(): TrainingState {
@@ -23,6 +30,8 @@ export function readLegacyTrainingState(): TrainingState {
     const raw = localStorage.getItem(workoutStorageKeys.activeSession(id)) ?? localStorage.getItem(workoutStorageKeys.legacySession(id));
     if (raw) state.activeSessions[id] = JSON.parse(raw);
   }
+  const bike = localStorage.getItem(BIKE_STORAGE_KEY);
+  if (bike) state.bike = sanitizeBikeData(JSON.parse(bike));
   return parseTrainingState(state);
 }
 
