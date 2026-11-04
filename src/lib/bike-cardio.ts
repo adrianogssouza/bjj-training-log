@@ -231,8 +231,14 @@ export function loadBikeData(): BikeData {
 
 export function storeBikeData(data: BikeData) {
   const safe = sanitizeBikeData(data);
-  if (accountStorage) { accountStorage.write(safe); return; }
-  window.localStorage.setItem(BIKE_STORAGE_KEY, JSON.stringify(safe));
+  if (accountStorage) {
+    accountStorage.write(safe);
+  } else {
+    window.localStorage.setItem(BIKE_STORAGE_KEY, JSON.stringify(safe));
+  }
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event("bjj-bike-updated"));
+  }
 }
 
 export function getEffectiveWeek(data: BikeData, dateStr: string = localDate()): number {

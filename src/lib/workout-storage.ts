@@ -113,6 +113,12 @@ export function readWorkoutHistory() {
   return sanitizedHistory;
 }
 
+function notifyStorageUpdated() {
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event("bjj-storage-updated"));
+  }
+}
+
 export function saveWorkoutHistoryEntry(entry: WorkoutHistoryEntry) {
   const sanitizedEntry = sanitizeWorkoutSessionPse(entry);
   const history = readWorkoutHistory();
@@ -129,19 +135,48 @@ export function saveWorkoutHistoryEntry(entry: WorkoutHistoryEntry) {
   const nextHistory = [sanitizedEntry, ...history];
   if (account) {
     account.write({ ...account.read(), history: nextHistory });
+    notifyStorageUpdated();
     return nextHistory;
   }
   window.localStorage.setItem(
     workoutStorageKeys.history,
     JSON.stringify(nextHistory),
   );
+  notifyStorageUpdated();
 
   return nextHistory;
 }
 
 export function clearWorkoutHistory() {
-  if (account) { account.write({ ...account.read(), history: [] }); return; }
+  if (account) {
+    account.write({ ...account.read(), history: [] });
+    notifyStorageUpdated();
+    return;
+  }
   window.localStorage.removeItem(workoutStorageKeys.history);
+  notifyStorageUpdated();
+}
+
+export function readActiveWorkoutSessions(): WorkoutSession[] {
+  if (account) {
+    return Object.values(account.read().activeSessions).map(sanitizeWorkoutSessionPse);
+  }
+  const sessions: WorkoutSession[] = [];
+  const ids = new Set<string>();
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      const match = key?.match(/^bjj-training-log:(?:active-session|session):(.+)$/);
+      if (match) ids.add(match[1]);
+    }
+  } catch {
+    // ignore
+  }
+  for (const id of ids) {
+    const s = readActiveWorkoutSession(id);
+    if (s) sessions.push(s);
+  }
+  return sessions;
 }
 
 export function readActiveWorkoutSession(workoutId: string) {
@@ -163,6 +198,7 @@ export function saveActiveWorkoutSession(session: WorkoutSession) {
   if (account) {
     const state = account.read();
     account.write({ ...state, activeSessions: { ...state.activeSessions, [session.workoutId]: sanitizedSession } });
+    notifyStorageUpdated();
     return;
   }
 
@@ -173,6 +209,7 @@ export function saveActiveWorkoutSession(session: WorkoutSession) {
   window.localStorage.removeItem(
     workoutStorageKeys.legacySession(sanitizedSession.workoutId),
   );
+  notifyStorageUpdated();
 }
 
 export function removeActiveWorkoutSession(workoutId: string) {
@@ -182,8 +219,10 @@ export function removeActiveWorkoutSession(workoutId: string) {
     const activeSessions = { ...state.activeSessions };
     delete activeSessions[workoutId];
     account.write({ ...state, activeSessions });
+    notifyStorageUpdated();
     return;
   }
   window.localStorage.removeItem(workoutStorageKeys.activeSession(workoutId));
   window.localStorage.removeItem(workoutStorageKeys.legacySession(workoutId));
+  notifyStorageUpdated();
 }
