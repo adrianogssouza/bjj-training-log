@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CloudWorkspace } from "@/components/auth/CloudWorkspace";
 
 type AppShellProps = {
   children: ReactNode;
@@ -22,7 +23,7 @@ export function AppShell({ children }: AppShellProps) {
             </Link>
           </nav>
         </header>
-        {children}
+        <CloudWorkspace>{children}</CloudWorkspace>
       </div>
     </div>
   );

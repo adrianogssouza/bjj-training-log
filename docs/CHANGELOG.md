@@ -171,3 +171,11 @@ Status: concluída.
 Etapa atual: **testes da semana**.
 
 O APP JIU está funcional para uso semanal real. A próxima ação técnica prevista é a **Sprint 1.8.2** para melhorar a leitura do histórico local sem alterar a essência do app.
+
+## 2026-11-04 — Login e sincronização Supabase
+
+- Login com e-mail e senha, tabela própria com RLS e cache por conta.
+- Histórico e sessões em andamento na nuvem, importação legada e backup JSON.
+- Controle de revisão contra sobrescrita concorrente, reconexão e atualização das telas.
+- Retomada preserva sessão existente ao abrir um link de início. Reiniciar continua sendo uma ação explícita.
+- Testes automatizados de armazenamento, sincronização e interface da conta.

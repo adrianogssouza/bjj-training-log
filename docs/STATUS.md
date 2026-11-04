@@ -2,7 +2,7 @@
 
 ## Estado Atual
 
-Etapa atual: **testes da semana**.
+Etapa atual: **integração Supabase implementada; aguardando configuração e validação em produção**.
 
 O app está funcional, publicado na Vercel e em uso real semanal.
 
@@ -37,7 +37,9 @@ O app está funcional, publicado na Vercel e em uso real semanal.
 - Pausar/retomar.
 - Fazer depois.
 - Não farei hoje.
-- Histórico local.
+- Histórico e sessões em andamento com sincronização Supabase opcional.
+- Importação explícita dos registros locais antigos.
+- Login e armazenamento por conta, com RLS e controle de revisão.
 - Badges Principal/Complementar.
 - Repetir último treino.
 
@@ -75,3 +77,7 @@ Sessões iniciadas por `?start=1` e sessões reiniciadas pelo runner passam a co
 - Não alterar `localStorage` de forma incompatível sem necessidade.
 - Não criar feature nova durante testes da semana.
 - Bugs novos de QA ou uso real devem alimentar `docs/QA.md`.
+
+## Atualização solicitada — Supabase
+
+Implementada a pedido do usuário em 04/11/2026. A configuração está em `docs/SUPABASE.md`. O modo local continua disponível quando as variáveis não estão configuradas. As restrições anteriores sobre novas funcionalidades durante os testes não impedem esta integração explicitamente solicitada.

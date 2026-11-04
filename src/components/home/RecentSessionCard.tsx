@@ -46,7 +46,9 @@ export function RecentSessionCard() {
       setIsLoaded(true);
     }, 0);
 
-    return () => window.clearTimeout(timeout);
+    const update = () => setHistory([...readWorkoutHistory()].sort((a, b) => getEntryTime(b) - getEntryTime(a)));
+    window.addEventListener("bjj-cloud-updated", update);
+    return () => { window.clearTimeout(timeout); window.removeEventListener("bjj-cloud-updated", update); };
   }, []);
 
   const latestSession = history[0];
@@ -117,7 +119,7 @@ export function RecentSessionCard() {
           </div>
         ) : (
           <p className="text-sm leading-6 text-zinc-400">
-            Nenhuma sessão salva ainda neste dispositivo.
+            Nenhuma sessão salva ainda.
           </p>
         )}
       </div>

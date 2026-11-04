@@ -154,10 +154,6 @@ export function WorkoutRunner({
       ? Math.round((progressedCount / orderedSteps.length) * 100)
       : 0;
   const isPaused = Boolean(session.pausedAt) && runnerStatus === "active";
-  const hasPersistableSession =
-    hasWorkoutSessionProgress(session) ||
-    Boolean(session.pausedAt) ||
-    (runnerStatus === "active" && runnerView === "running");
   const currentLog = currentStep ? session.logs[currentStep.id] : undefined;
   const canPauseSession =
     runnerStatus === "active" &&
@@ -243,7 +239,7 @@ export function WorkoutRunner({
           setSession(createQueuedWorkoutSession());
           setRunnerStatus("idle");
         }
-      } else if (shouldAutoStart) {
+      } else if (shouldAutoStart && !storedSession) {
         const nextSession = createQueuedWorkoutSession();
 
         removeActiveWorkoutSession(workout.id);
@@ -260,6 +256,7 @@ export function WorkoutRunner({
       ) {
         setSession(storedSession);
         setRunnerStatus("active");
+        if (shouldAutoStart) setRunnerView("running");
       } else if (storedSession) {
         removeActiveWorkoutSession(workout.id);
         setRunnerStatus("idle");
@@ -288,13 +285,25 @@ export function WorkoutRunner({
       return;
     }
 
-    if (runnerStatus === "active" && hasPersistableSession) {
+    if (runnerStatus === "active") {
       saveActiveWorkoutSession(session);
       return;
     }
 
     removeActiveWorkoutSession(workout.id);
-  }, [hasPersistableSession, isLoaded, runnerStatus, session, workout.id]);
+  }, [isLoaded, runnerStatus, session, workout.id]);
+
+  useEffect(() => {
+    const update = () => {
+      const stored = readActiveWorkoutSession(workout.id);
+      setSession(stored ?? createQueuedWorkoutSession());
+      setRunnerStatus(stored ? "active" : "idle");
+      setRunnerView("overview");
+      setCompletedSummary(null);
+    };
+    window.addEventListener("bjj-cloud-updated", update);
+    return () => window.removeEventListener("bjj-cloud-updated", update);
+  }, [workout.id, createQueuedWorkoutSession]);
 
   useEffect(() => {
     function updateElapsedTime() {

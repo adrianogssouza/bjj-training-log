@@ -239,7 +239,9 @@ export function WorkoutHistory() {
       setIsLoaded(true);
     }, 0);
 
-    return () => window.clearTimeout(timeout);
+    const update = () => setHistory([...readWorkoutHistory()].sort((a, b) => getEntryTime(b) - getEntryTime(a)));
+    window.addEventListener("bjj-cloud-updated", update);
+    return () => { window.clearTimeout(timeout); window.removeEventListener("bjj-cloud-updated", update); };
   }, []);
 
   const summary = useMemo(() => {
@@ -466,7 +468,7 @@ export function WorkoutHistory() {
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-zinc-300">
                   Tem certeza que deseja apagar todos os treinos registrados
-                  neste dispositivo?
+                  da conta em todos os dispositivos sincronizados? No modo local, a limpeza afeta apenas este navegador.
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

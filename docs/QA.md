@@ -134,3 +134,11 @@ Validação:
 - Testar histórico.
 - Testar persistência/reload.
 - Registrar qualquer bug novo neste arquivo.
+
+## Regressões da integração Supabase
+
+- Conferir que importar não apaga as chaves locais originais.
+- Retomar pelo link de início não deve zerar treino em andamento.
+- Ao atualizar a nuvem, histórico e sessão devem refletir a versão remota sem reiniciar o treino.
+- Duas edições concorrentes devem bloquear sobrescrita e oferecer exportação da cópia local.
+- Limpar histórico em uma conta deve se refletir nos outros dispositivos e não afetar outras contas.
