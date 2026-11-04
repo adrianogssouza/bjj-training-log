@@ -1,16 +1,29 @@
-import type { ReactNode } from "react";
+import type { ElementType, HTMLAttributes, ReactNode } from "react";
 
-type AppCardProps = {
+export type AppCardVariant = "primary" | "secondary";
+
+export interface AppCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
+  variant?: AppCardVariant;
   className?: string;
-};
+  as?: ElementType;
+}
 
-export function AppCard({ children, className = "" }: AppCardProps) {
+export function AppCard({
+  children,
+  variant = "primary",
+  className = "",
+  as: Component = "section",
+  ...props
+}: AppCardProps) {
+  const radiusClass = variant === "primary" ? "rounded-[16px]" : "rounded-[12px]";
+
   return (
-    <section
-      className={`rounded-lg border border-zinc-800 bg-zinc-950/80 p-5 shadow-sm shadow-black/20 ${className}`}
+    <Component
+      className={`border border-[#3F3F46] bg-[#18181B] p-4 text-[#F4F4F5] ${radiusClass} ${className}`}
+      {...props}
     >
       {children}
-    </section>
+    </Component>
   );
 }

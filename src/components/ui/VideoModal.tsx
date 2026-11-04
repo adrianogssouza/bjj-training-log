@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { AppModal } from "./AppModal";
+import { AppButton } from "./AppButton";
 
 type VideoModalProps = {
   title: string;
@@ -58,67 +60,20 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
   const videoSource = useMemo(() => getVideoSource(videoUrl), [videoUrl]);
   const [hasError, setHasError] = useState(!videoSource.src);
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onClose]);
-
   return (
-    <div
-      className="fixed inset-0 z-40 flex items-end bg-black/80 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 sm:items-center sm:justify-center"
-      onClick={onClose}
+    <AppModal
+      isOpen={true}
+      onClose={onClose}
+      title={title}
+      description="Demonstração do exercício"
+      maxWidth="max-w-[640px]"
     >
-      <div
-        className="relative w-full max-w-2xl overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/60"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-zinc-800 bg-zinc-950 px-4 py-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
-              Vídeo
-            </p>
-            <h2 className="mt-1 break-words text-lg font-black leading-6 text-white">
-              {title}
-            </h2>
-            {videoSource.externalUrl ? (
-              <a
-                href={videoSource.externalUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border border-red-300 bg-red-500 px-4 text-sm font-black text-white shadow-md shadow-red-950/40 transition-colors hover:bg-red-400 sm:hidden"
-              >
-                Abrir no YouTube
-              </a>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="min-h-10 shrink-0 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-bold text-zinc-100 transition-colors hover:border-zinc-500"
-          >
-            Fechar
-          </button>
-        </div>
-
-        <div className="aspect-video max-h-[40vh] w-full bg-black">
+      <div className="space-y-4">
+        <div className="aspect-video w-full overflow-hidden rounded-[12px] border border-[#3F3F46] bg-black">
           {hasError ? (
-            <div className="flex h-full min-h-48 items-center justify-center px-4 text-center">
-              <p className="text-sm font-bold leading-6 text-zinc-300">
-                O vídeo integrado não carregou. Use o botão do YouTube para
-                abrir direto no app ou navegador.
+            <div className="flex h-full min-h-48 items-center justify-center p-4 text-center">
+              <p className="text-[14px] font-medium leading-[21px] text-[#A1A1AA]">
+                O vídeo integrado não carregou. Use a opção de abrir no YouTube.
               </p>
             </div>
           ) : videoSource.kind === "youtube" ? (
@@ -142,22 +97,29 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
             />
           )}
         </div>
-        <div className="flex flex-col gap-3 border-t border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold leading-5 text-zinc-300">
-            Se o vídeo integrado falhar no 5G, abra direto no YouTube.
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[13px] text-[#A1A1AA]">
+            Se o vídeo demorar a carregar, abra diretamente no YouTube.
           </p>
           {videoSource.externalUrl ? (
             <a
               href={videoSource.externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="hidden min-h-11 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-sm font-bold text-white transition-colors hover:bg-red-400 sm:flex"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-[12px] bg-[#27272A] border border-[#3F3F46] px-4 py-2 text-[14px] font-bold text-[#F4F4F5] hover:bg-[#3F3F46] transition-colors"
             >
               Abrir no YouTube
             </a>
           ) : null}
         </div>
+
+        <div className="pt-2">
+          <AppButton variant="secondary" onClick={onClose} fullWidth>
+            Fechar
+          </AppButton>
+        </div>
       </div>
-    </div>
+    </AppModal>
   );
 }
