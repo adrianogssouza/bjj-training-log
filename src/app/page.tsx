@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AppCard } from "@/components/ui/AppCard";
+import { BikeEntryCard } from "@/components/home/BikeEntryCard";
 import { RecentSessionCard } from "@/components/home/RecentSessionCard";
 import { seedWorkouts } from "@/data/seed-workouts";
 import type { Workout } from "@/types";
@@ -190,6 +191,7 @@ export default function HomePage() {
           </p>
         </div>
         <TopActionPanel workouts={monthlyWorkouts} />
+        <BikeEntryCard />
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-red-200">

@@ -14,7 +14,10 @@ export function AppShell({ children }: AppShellProps) {
           <Link href="/" className="text-sm font-bold uppercase tracking-wide">
             BJJ Training Log
           </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium text-zinc-300">
+          <nav className="flex flex-wrap items-center justify-end gap-2 text-xs font-medium text-zinc-300 sm:gap-4 sm:text-sm">
+            <Link href="/bike" className="hover:text-white">
+              Bike
+            </Link>
             <Link href="/workouts" className="hover:text-white">
               Treinos
             </Link>

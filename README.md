@@ -60,6 +60,17 @@ O app está funcional, publicado na Vercel e em fase de uso real semanal antes d
 - Vídeos oficiais dos complementares.
 - Interface dark, mobile-first.
 
+## Cardio na Bike — módulo independente
+
+- Nova rota `/bike`, acessível pela Home e barra de navegação.
+- Plano moderado de 6 semanas, 3 a 5 sessões/semana, com aquecimento e desaquecimento.
+- Registros de FC medida, tempo, PSE, recuperação e medidas; gráficos de evolução e backup JSON/CSV.
+- Usa o mesmo estado Supabase `bjj_training_states` com campo opcional `bike` (sem migração SQL).
+- Em modo local, dados ficam no navegador; com login, sincronizam na conta.
+- Os seis cardios complementares anteriores não são alterados.
+
+Leia `docs/BIKE-CARDIO.md` para instruções e limites da prescrição.
+
 ## Rotas Principais
 
 - `/`

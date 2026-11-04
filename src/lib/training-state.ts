@@ -1,10 +1,13 @@
 import type { WorkoutHistoryEntry, WorkoutSession } from "../types/index";
 import { sanitizeWorkoutSessionPse } from "./workout-validation";
+import { mergeBikeData, sanitizeBikeData, type BikeData } from "./bike-cardio";
 
 export type TrainingState = {
   version: 1;
   history: WorkoutHistoryEntry[];
   activeSessions: Record<string, WorkoutSession>;
+  /** Opcional para aceitar backups anteriores à criação da Bike. */
+  bike?: BikeData;
 };
 
 export const emptyTrainingState = (): TrainingState => ({ version: 1, history: [], activeSessions: {} });
@@ -39,7 +42,8 @@ export function parseTrainingState(value: unknown): TrainingState {
     if (parsed.workoutId !== id) throw Error("Identificador de treino inválido.");
     return [id, parsed];
   }));
-  return { version: 1, history, activeSessions };
+  const bike = value.bike === undefined ? undefined : sanitizeBikeData(value.bike);
+  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}) };
 }
 
 /** Explicit import only: retain cloud entries when the same session already exists. */
@@ -52,5 +56,6 @@ export function mergeTrainingState(current: TrainingState, incoming: TrainingSta
   for (const [id, session] of Object.entries(activeSessions)) {
     if (sessions.has(`${id}:${session.startedAt}`)) delete activeSessions[id];
   }
-  return { version: 1, history, activeSessions };
+  const bike = mergeBikeData(current.bike, incoming.bike);
+  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}) };
 }
