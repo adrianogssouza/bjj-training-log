@@ -27,10 +27,10 @@ export function AppLoadingState({
           {Array.from({ length: 4 }).map((_, idx) => (
             <div
               key={idx}
-              className="h-20 animate-pulse rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-4"
+              className="h-20 animate-pulse rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4"
             >
-              <div className="h-3 w-16 rounded bg-[#27272A]" />
-              <div className="mt-3 h-6 w-12 rounded bg-[#27272A]" />
+              <div className="h-3 w-16 rounded bg-[var(--surface-elevated)]" />
+              <div className="mt-3 h-6 w-12 rounded bg-[var(--surface-elevated)]" />
             </div>
           ))}
         </div>
@@ -38,24 +38,24 @@ export function AppLoadingState({
         Array.from({ length: rows }).map((_, idx) => (
           <div
             key={idx}
-            className="animate-pulse rounded-[16px] border border-[#3F3F46] bg-[#18181B] p-5 space-y-3"
+            className="animate-pulse rounded-[16px] border border-[var(--border)] bg-[var(--surface)] p-5 space-y-3"
           >
-            <div className="h-5 w-1/3 rounded bg-[#27272A]" />
-            <div className="h-4 w-2/3 rounded bg-[#27272A]" />
-            <div className="h-10 w-full rounded-[10px] bg-[#27272A]" />
+            <div className="h-5 w-1/3 rounded bg-[var(--surface-elevated)]" />
+            <div className="h-4 w-2/3 rounded bg-[var(--surface-elevated)]" />
+            <div className="h-10 w-full rounded-[10px] bg-[var(--surface-elevated)]" />
           </div>
         ))
       ) : (
         Array.from({ length: rows }).map((_, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-4"
+            className="flex items-center justify-between rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4"
           >
             <div className="space-y-2">
-              <div className="h-4 w-32 rounded bg-[#27272A]" />
-              <div className="h-3 w-20 rounded bg-[#27272A]" />
+              <div className="h-4 w-32 rounded bg-[var(--surface-elevated)]" />
+              <div className="h-3 w-20 rounded bg-[var(--surface-elevated)]" />
             </div>
-            <div className="h-8 w-20 rounded-[10px] bg-[#27272A]" />
+            <div className="h-8 w-20 rounded-[10px] bg-[var(--surface-elevated)]" />
           </div>
         ))
       )}

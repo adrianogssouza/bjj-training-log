@@ -267,10 +267,10 @@ export function WorkoutHistory() {
     <div className="flex flex-1 flex-col gap-6">
       {/* Header */}
       <header className="space-y-1">
-        <h1 className="text-[28px] font-extrabold leading-[34px] text-[#F4F4F5]">
+        <h1 className="text-[28px] font-extrabold leading-[34px] text-[var(--foreground)]">
           Histórico
         </h1>
-        <p className="text-[16px] font-normal leading-[24px] text-[#A1A1AA]">
+        <p className="text-[16px] font-normal leading-[24px] text-[var(--muted)]">
           Suas sessões registradas
         </p>
       </header>
@@ -278,21 +278,21 @@ export function WorkoutHistory() {
       {/* Aggregate Stats (Section 11.6: separate Treinos vs Bike) */}
       {!isGlobalEmpty && (
         <section aria-label="Indicadores do histórico" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3.5 space-y-1">
-            <span className="text-[12px] font-medium text-[#A1A1AA]">Treinos concluídos</span>
-            <p className="text-[22px] font-extrabold text-[#F4F4F5]">{stats.workoutSessionsCount}</p>
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+            <span className="text-[12px] font-medium text-[var(--muted)]">Treinos concluídos</span>
+            <p className="text-[22px] font-extrabold text-[var(--foreground)]">{stats.workoutSessionsCount}</p>
           </div>
-          <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3.5 space-y-1">
-            <span className="text-[12px] font-medium text-[#A1A1AA]">Tempo em treino</span>
-            <p className="text-[22px] font-extrabold text-[#F4F4F5]">{stats.workoutTotalTime}</p>
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+            <span className="text-[12px] font-medium text-[var(--muted)]">Tempo em treino</span>
+            <p className="text-[22px] font-extrabold text-[var(--foreground)]">{stats.workoutTotalTime}</p>
           </div>
-          <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3.5 space-y-1">
-            <span className="text-[12px] font-medium text-[#A1A1AA]">Pedaladas</span>
-            <p className="text-[22px] font-extrabold text-[#6EE7B7]">{stats.bikeSessionsCount}</p>
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+            <span className="text-[12px] font-medium text-[var(--muted)]">Pedaladas</span>
+            <p className="text-[22px] font-extrabold text-[var(--success-text)]">{stats.bikeSessionsCount}</p>
           </div>
-          <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3.5 space-y-1">
-            <span className="text-[12px] font-medium text-[#A1A1AA]">Minutos na Bike</span>
-            <p className="text-[22px] font-extrabold text-[#6EE7B7]">{stats.bikeTotalMinutes} min</p>
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+            <span className="text-[12px] font-medium text-[var(--muted)]">Minutos na Bike</span>
+            <p className="text-[22px] font-extrabold text-[var(--success-text)]">{stats.bikeTotalMinutes} min</p>
           </div>
         </section>
       )}
@@ -316,10 +316,10 @@ export function WorkoutHistory() {
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => handleCategoryChange(cat.id)}
-                className={`min-h-[44px] rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] ${
+                className={`min-h-[44px] rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
                   isActive
-                    ? "bg-[#450A0A] border border-[#B91C1C] text-[#FCA5A5]"
-                    : "bg-[#27272A] border border-[#3F3F46] text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-[#3F3F46]"
+                    ? "bg-[var(--primary-soft)] border border-[var(--primary-hover)] text-[var(--primary-text)]"
+                    : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]"
                 }`}
               >
                 {cat.label}
@@ -369,19 +369,19 @@ export function WorkoutHistory() {
                         <AppBadge variant="warning">Não realizada</AppBadge>
                       )}
                     </div>
-                    <h2 className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+                    <h2 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
                       {item.title}
                     </h2>
                   </div>
-                  <span className="text-[13px] font-medium text-[#A1A1AA] shrink-0">
+                  <span className="text-[13px] font-medium text-[var(--muted)] shrink-0">
                     {item.formattedDate}
                   </span>
                 </div>
 
                 {/* Duration & status metrics */}
-                <div className="flex items-center gap-4 text-[14px] text-[#A1A1AA]">
+                <div className="flex items-center gap-4 text-[14px] text-[var(--muted)]">
                   <span>
-                    Duração: <strong className="text-[#F4F4F5]">{item.formattedDuration}</strong>
+                    Duração: <strong className="text-[var(--foreground)]">{item.formattedDuration}</strong>
                   </span>
                 </div>
 
@@ -391,7 +391,7 @@ export function WorkoutHistory() {
                     type="button"
                     onClick={() => toggleExpand(item.id)}
                     aria-expanded={isExpanded}
-                    className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-4 py-2 text-[14px] font-medium text-[#F4F4F5] hover:bg-[#3F3F46] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+                    className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-4 py-2 text-[14px] font-medium text-[var(--foreground)] hover:bg-[var(--border)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
                   >
                     <span>{isExpanded ? "Ocultar detalhes" : "Ver detalhes"}</span>
                     <AppIcon
@@ -404,11 +404,11 @@ export function WorkoutHistory() {
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="space-y-4 border-t border-[#3F3F46] pt-4">
+                  <div className="space-y-4 border-t border-[var(--border)] pt-4">
                     {/* Workout Details (Musculação / Complementares) */}
                     {item.workoutEntry && (
                       <div className="space-y-3">
-                        <h3 className="text-[14px] font-bold uppercase tracking-wider text-[#A1A1AA]">
+                        <h3 className="text-[14px] font-bold uppercase tracking-wider text-[var(--muted)]">
                           Exercícios registrados
                         </h3>
                         <div className="space-y-2">
@@ -422,20 +422,20 @@ export function WorkoutHistory() {
                                 key={logKey}
                                 className={`rounded-[10px] border p-3 text-[13px] ${
                                   log.skipped
-                                    ? "border-[#FBBF24]/40 bg-[#FBBF24]/10"
-                                    : "border-[#3F3F46] bg-[#27272A]"
+                                    ? "border-[var(--warning)]/40 bg-[var(--warning)]/10"
+                                    : "border-[var(--border)] bg-[var(--surface-elevated)]"
                                 }`}
                               >
                                 <div className="flex items-center justify-between gap-2">
                                   <div>
-                                    <p className="text-[11px] text-[#A1A1AA] uppercase">
+                                    <p className="text-[11px] text-[var(--muted)] uppercase">
                                       {blockTitle}
                                     </p>
-                                    <p className="font-bold text-[#F4F4F5]">{exerciseName}</p>
+                                    <p className="font-bold text-[var(--foreground)]">{exerciseName}</p>
                                   </div>
                                   <span
                                     className={`text-[12px] font-medium ${
-                                      log.skipped ? "text-[#FBBF24]" : "text-[#6EE7B7]"
+                                      log.skipped ? "text-[var(--warning)]" : "text-[var(--success-text)]"
                                     }`}
                                   >
                                     {log.skipped ? "Pulado" : "Concluído"}
@@ -445,21 +445,21 @@ export function WorkoutHistory() {
                                 {!log.skipped ? (
                                   <div className="mt-2 grid grid-cols-3 gap-2 text-[12px]">
                                     <div>
-                                      <span className="text-[#A1A1AA]">Realizado: </span>
-                                      <strong className="text-[#F4F4F5]">{log.reps || "-"}</strong>
+                                      <span className="text-[var(--muted)]">Realizado: </span>
+                                      <strong className="text-[var(--foreground)]">{log.reps || "-"}</strong>
                                     </div>
                                     <div>
-                                      <span className="text-[#A1A1AA]">Carga: </span>
-                                      <strong className="text-[#F4F4F5]">{log.load || "-"}</strong>
+                                      <span className="text-[var(--muted)]">Carga: </span>
+                                      <strong className="text-[var(--foreground)]">{log.load || "-"}</strong>
                                     </div>
                                     <div>
-                                      <span className="text-[#A1A1AA]">PSE: </span>
-                                      <strong className="text-[#F4F4F5]">{log.actualPse || "-"}</strong>
+                                      <span className="text-[var(--muted)]">PSE: </span>
+                                      <strong className="text-[var(--foreground)]">{log.actualPse || "-"}</strong>
                                     </div>
                                   </div>
                                 ) : (
                                   log.skipReason && (
-                                    <p className="mt-1.5 text-[12px] text-[#FBBF24]">
+                                    <p className="mt-1.5 text-[12px] text-[var(--warning)]">
                                       Motivo: {log.skipReason}
                                     </p>
                                   )
@@ -475,56 +475,56 @@ export function WorkoutHistory() {
                     {item.bikeSession && (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-[14px] font-bold uppercase tracking-wider text-[#6EE7B7]">
+                          <h3 className="text-[14px] font-bold uppercase tracking-wider text-[var(--success-text)]">
                             Dados da pedalada
                           </h3>
                           <Link
                             href="/bike"
-                            className="text-[13px] font-medium text-[#6EE7B7] hover:underline"
+                            className="text-[13px] font-medium text-[var(--success-text)] hover:underline"
                           >
                             Ver no módulo Bike
                           </Link>
                         </div>
 
                         <dl className="grid grid-cols-2 gap-2 text-[13px] sm:grid-cols-4">
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">Duração</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.minutes} min</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">Duração</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.minutes} min</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">BPM Médio</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.averageBpm ?? "-"}</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">BPM Médio</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.averageBpm ?? "-"}</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">BPM Máx</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.peakBpm ?? "-"}</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">BPM Máx</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.peakBpm ?? "-"}</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">PSE / Esforço</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.rpe ?? "-"}/10</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">PSE / Esforço</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.rpe ?? "-"}/10</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">Fadiga Pernas</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.legFatigue ?? "-"}/10</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">Fadiga Pernas</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.legFatigue ?? "-"}/10</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">Distância</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.distanceKm ? `${item.bikeSession.distanceKm} km` : "-"}</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">Distância</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.distanceKm ? `${item.bikeSession.distanceKm} km` : "-"}</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">Resistência</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.resistance || "-"}</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">Resistência</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.resistance || "-"}</dd>
                           </div>
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5">
-                            <dt className="text-[11px] text-[#A1A1AA]">Sintomas</dt>
-                            <dd className="font-bold text-[#F4F4F5]">{item.bikeSession.symptoms ? "Sim" : "Não"}</dd>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
+                            <dt className="text-[11px] text-[var(--muted)]">Sintomas</dt>
+                            <dd className="font-bold text-[var(--foreground)]">{item.bikeSession.symptoms ? "Sim" : "Não"}</dd>
                           </div>
                         </dl>
 
                         {item.bikeSession.notes && (
-                          <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] p-2.5 text-[13px]">
-                            <span className="text-[#A1A1AA]">Observações: </span>
-                            <span className="text-[#F4F4F5]">{item.bikeSession.notes}</span>
+                          <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5 text-[13px]">
+                            <span className="text-[var(--muted)]">Observações: </span>
+                            <span className="text-[var(--foreground)]">{item.bikeSession.notes}</span>
                           </div>
                         )}
                       </div>

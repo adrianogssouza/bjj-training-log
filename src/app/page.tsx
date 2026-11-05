@@ -10,6 +10,7 @@ import { BikeCardioHomeCard } from "@/components/home/BikeCardioHomeCard";
 import { WeekSummarySection } from "@/components/home/WeekSummarySection";
 import { LastSessionSection } from "@/components/home/LastSessionSection";
 import { AppButton } from "@/components/ui/AppButton";
+import { HomePlanSections } from "@/components/home/HomePlanSections";
 
 export default function HomePage() {
   const [activeSessions, setActiveSessions] = useState<WorkoutSession[]>([]);
@@ -39,19 +40,22 @@ export default function HomePage() {
       {/* 2. Treino em andamento, quando existir */}
       <ActiveWorkoutSection sessions={activeSessions} />
 
-      {/* 3. Acesso ao treino principal */}
-      <PrincipalWorkoutsSection />
+      {/* 3. Plano de hoje e faixa da semana (vêm do planejador semanal) */}
+      <HomePlanSections />
 
-      {/* 4. Cartão Bike Cardio */}
-      <BikeCardioHomeCard />
-
-      {/* 5. Resumo da semana */}
+      {/* 4. Resumo da semana */}
       <WeekSummarySection />
 
-      {/* 6. Última sessão */}
+      {/* 5. Cartão Bike Cardio */}
+      <BikeCardioHomeCard />
+
+      {/* 6. Acesso direto ao Treino A/B do ciclo */}
+      <PrincipalWorkoutsSection />
+
+      {/* 7. Última sessão */}
       <LastSessionSection />
 
-      {/* 7. Link para todos os treinos */}
+      {/* 8. Link para todos os treinos */}
       <section className="pt-2">
         <AppButton href="/workouts" variant="secondary" fullWidth>
           Ver todos os treinos

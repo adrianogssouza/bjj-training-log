@@ -47,7 +47,7 @@ export function WorkoutDetailPageActions({ workoutId }: WorkoutDetailPageActions
 
   return (
     <>
-      <div className="sticky bottom-0 -mx-4 border-t border-[#3F3F46] bg-[#09090B]/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:-mx-6 sm:px-6">
+      <div className="sticky bottom-0 -mx-4 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:-mx-6 sm:px-6">
         <div className="mx-auto flex max-w-[960px] flex-col gap-2">
           {activeSession ? (
             <>
@@ -87,7 +87,7 @@ export function WorkoutDetailPageActions({ workoutId }: WorkoutDetailPageActions
         maxWidth="max-w-[440px]"
       >
         <div className="space-y-4">
-          <p className="text-[14px] leading-[21px] text-[#A1A1AA]">
+          <p className="text-[14px] leading-[21px] text-[var(--muted)]">
             Reiniciar o treino descartará o progresso registrado nesta sessão em andamento. Deseja reiniciar do começo?
           </p>
 

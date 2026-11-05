@@ -42,21 +42,21 @@ export function ActiveWorkoutSection({ sessions }: ActiveWorkoutSectionProps) {
     return (
       <AppCard
         key={session.workoutId}
-        className="space-y-4 border-[#DC2626]/40 bg-[#450A0A]/20 p-5"
+        className="space-y-4 border-[var(--primary)]/40 bg-[var(--primary-soft)]/20 p-5"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <AppBadge variant="primary">Em andamento</AppBadge>
             </div>
-            <h3 className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+            <h3 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
               {workoutTitle}
             </h3>
           </div>
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between text-[13px] font-medium text-[#A1A1AA]">
+          <div className="flex justify-between text-[13px] font-medium text-[var(--muted)]">
             <span>
               {registeredCount} de {totalItems} etapas registradas
             </span>
@@ -82,7 +82,7 @@ export function ActiveWorkoutSection({ sessions }: ActiveWorkoutSectionProps) {
     <section className="space-y-3" aria-labelledby="active-workout-heading">
       <h2
         id="active-workout-heading"
-        className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]"
+        className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]"
       >
         Treino em andamento
       </h2>
@@ -93,7 +93,7 @@ export function ActiveWorkoutSection({ sessions }: ActiveWorkoutSectionProps) {
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="text-[14px] font-medium text-[#FCA5A5] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] rounded px-1"
+          className="text-[14px] font-medium text-[var(--primary-text)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] rounded px-1"
         >
           Ver outros em andamento ({otherSessions.length})
         </button>

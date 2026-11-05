@@ -743,10 +743,10 @@ export function WorkoutRunner({
           {runnerStatus === "idle" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-[20px] font-bold text-[#F4F4F5]">
+                <h2 className="text-[20px] font-bold text-[var(--foreground)]">
                   Pronto para começar
                 </h2>
-                <p className="mt-1 text-[14px] text-[#A1A1AA]">
+                <p className="mt-1 text-[14px] text-[var(--muted)]">
                   Nenhuma sessão ativa foi encontrada neste dispositivo.
                 </p>
               </div>
@@ -763,15 +763,15 @@ export function WorkoutRunner({
           {runnerStatus === "active" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-[20px] font-bold text-[#F4F4F5]">
+                <h2 className="text-[20px] font-bold text-[var(--foreground)]">
                   Treino em andamento
                 </h2>
-                <p className="mt-1 text-[14px] text-[#A1A1AA]">
+                <p className="mt-1 text-[14px] text-[var(--muted)]">
                   Continue de onde parou ou reinicie a sessão atual.
                 </p>
               </div>
-              <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-4 py-3">
-                <p className="text-[14px] font-bold text-[#F4F4F5]">
+              <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-4 py-3">
+                <p className="text-[14px] font-bold text-[var(--foreground)]">
                   {progressedCount}/{orderedSteps.length} {progressRecordLabel}
                 </p>
               </div>
@@ -797,34 +797,34 @@ export function WorkoutRunner({
           {runnerStatus === "completed" ? (
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-[13px] font-semibold uppercase tracking-wide text-[#6EE7B7]">
+                <p className="text-[13px] font-semibold uppercase tracking-wide text-[var(--success-text)]">
                   Sessão salva
                 </p>
-                <h2 className="mt-1 text-[24px] font-extrabold text-[#F4F4F5]">
+                <h2 className="mt-1 text-[24px] font-extrabold text-[var(--foreground)]">
                   Treino concluído
                 </h2>
-                <p className="mt-1 text-[14px] text-[#A1A1AA]">
+                <p className="mt-1 text-[14px] text-[var(--muted)]">
                   {completedSummary?.workoutTitle ?? workout.title}
                 </p>
               </div>
 
               <dl className="grid grid-cols-2 gap-3 text-[14px]">
-                <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-                  <dt className="text-[12px] text-[#A1A1AA]">Tempo total</dt>
-                  <dd className="mt-0.5 font-bold text-[#F4F4F5]">
+                <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+                  <dt className="text-[12px] text-[var(--muted)]">Tempo total</dt>
+                  <dd className="mt-0.5 font-bold text-[var(--foreground)]">
                     {formatDuration(completedSummary?.durationSeconds ?? 0)}
                   </dd>
                 </div>
-                <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-                  <dt className="text-[12px] text-[#A1A1AA]">Concluídos</dt>
-                  <dd className="mt-0.5 font-bold text-[#6EE7B7]">
+                <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+                  <dt className="text-[12px] text-[var(--muted)]">Concluídos</dt>
+                  <dd className="mt-0.5 font-bold text-[var(--success-text)]">
                     {completedSummary?.completedCount ?? 0}
                   </dd>
                 </div>
                 {Boolean(completedSummary?.skippedCount) && (
-                  <div className="col-span-2 rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-                    <dt className="text-[12px] text-[#A1A1AA]">Pulados</dt>
-                    <dd className="mt-0.5 font-bold text-[#FBBF24]">
+                  <div className="col-span-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+                    <dt className="text-[12px] text-[var(--muted)]">Pulados</dt>
+                    <dd className="mt-0.5 font-bold text-[var(--warning)]">
                       {completedSummary?.skippedCount}
                     </dd>
                   </div>
@@ -985,26 +985,26 @@ export function WorkoutRunner({
 
       {/* Referência anterior (Última execução) */}
       {previousExecutionLog && (
-        <AppCard variant="secondary" className="p-3 border-[#3F3F46] bg-[#18181B] space-y-2">
-          <p className="text-[12px] font-bold uppercase tracking-wider text-[#A1A1AA]">
+        <AppCard variant="secondary" className="p-3 border-[var(--border)] bg-[var(--surface)] space-y-2">
+          <p className="text-[12px] font-bold uppercase tracking-wider text-[var(--muted)]">
             Última execução
           </p>
           <dl className="grid grid-cols-3 gap-2 text-[13px]">
-            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[#A1A1AA]">Reps / Tempo</dt>
-              <dd className="font-semibold text-[#F4F4F5]">
+            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[var(--muted)]">Reps / Tempo</dt>
+              <dd className="font-semibold text-[var(--foreground)]">
                 {previousExecutionLog.reps || "-"}
               </dd>
             </div>
-            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[#A1A1AA]">Carga</dt>
-              <dd className="font-semibold text-[#F4F4F5]">
+            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[var(--muted)]">Carga</dt>
+              <dd className="font-semibold text-[var(--foreground)]">
                 {previousExecutionLog.load || "-"}
               </dd>
             </div>
-            <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[#A1A1AA]">PSE</dt>
-              <dd className="font-semibold text-[#F4F4F5]">
+            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+              <dt className="text-[11px] text-[var(--muted)]">PSE</dt>
+              <dd className="font-semibold text-[var(--foreground)]">
                 {previousExecutionLog.actualPse || "-"}
               </dd>
             </div>
@@ -1015,7 +1015,7 @@ export function WorkoutRunner({
       <AppCard className="p-4">
         <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[#F4F4F5]">
+            <span className="text-[14px] font-medium text-[var(--foreground)]">
               {primaryFieldLabel}
             </span>
             <input
@@ -1028,12 +1028,12 @@ export function WorkoutRunner({
               value={currentLog?.reps ?? ""}
               onChange={(event) => updateCurrentLog("reps", event.target.value)}
               placeholder={primaryFieldPlaceholder}
-              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
+              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
             />
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[#F4F4F5]">
+            <span className="text-[14px] font-medium text-[var(--foreground)]">
               {loadFieldLabel}
             </span>
             <input
@@ -1044,12 +1044,12 @@ export function WorkoutRunner({
               value={currentLog?.load ?? ""}
               onChange={(event) => updateCurrentLog("load", event.target.value)}
               placeholder={loadFieldPlaceholder}
-              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
+              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
             />
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[#F4F4F5]">
+            <span className="text-[14px] font-medium text-[var(--foreground)]">
               {pseFieldLabel}
             </span>
             <input
@@ -1062,25 +1062,25 @@ export function WorkoutRunner({
                 updateCurrentLog("actualPse", event.target.value)
               }
               placeholder="0 a 10"
-              className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
+              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
             />
           </label>
         </div>
       </AppCard>
 
       {/* Próximo exercício */}
-      <div className="rounded-[12px] border border-[#3F3F46] bg-[#18181B] p-3 text-[14px]">
-        <p className="text-[12px] font-semibold uppercase tracking-wider text-[#A1A1AA]">
+      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3 text-[14px]">
+        <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--muted)]">
           Próximo exercício
         </p>
-        <p className="mt-0.5 font-bold text-[#F4F4F5]">
+        <p className="mt-0.5 font-bold text-[var(--foreground)]">
           {nextStep ? nextStep.item.name : "Último exercício do treino"}
         </p>
       </div>
 
       {validationMessage ? (
-        <div className="rounded-[10px] border border-[#B91C1C] bg-[#450A0A]/40 p-3">
-          <p className="text-[14px] font-medium text-[#FCA5A5]">{validationMessage}</p>
+        <div className="rounded-[10px] border border-[var(--primary-hover)] bg-[var(--primary-soft)]/40 p-3">
+          <p className="text-[14px] font-medium text-[var(--primary-text)]">{validationMessage}</p>
         </div>
       ) : null}
 
@@ -1128,7 +1128,7 @@ export function WorkoutRunner({
           ) : (
             <div className="space-y-4">
               <div>
-                <p className="text-[14px] font-medium text-[#F4F4F5]">
+                <p className="text-[14px] font-medium text-[var(--foreground)]">
                   Motivo opcional
                 </p>
                 <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
@@ -1142,10 +1142,10 @@ export function WorkoutRunner({
                           setCustomSkipReason("");
                         }
                       }}
-                      className={`min-h-[44px] rounded-[10px] border px-3 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] ${
+                      className={`min-h-[44px] rounded-[10px] border px-3 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
                         selectedSkipReason === reason
-                          ? "border-[#B91C1C] bg-[#450A0A] text-[#FCA5A5]"
-                          : "border-[#3F3F46] bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F5]"
+                          ? "border-[var(--primary-hover)] bg-[var(--primary-soft)] text-[var(--primary-text)]"
+                          : "border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--muted)] hover:text-[var(--foreground)]"
                       }`}
                     >
                       {reason}
@@ -1156,7 +1156,7 @@ export function WorkoutRunner({
 
               {selectedSkipReason === "Outro" && (
                 <label className="flex flex-col gap-2">
-                  <span className="text-[14px] font-medium text-[#F4F4F5]">
+                  <span className="text-[14px] font-medium text-[var(--foreground)]">
                     Descreva o motivo
                   </span>
                   <input
@@ -1165,7 +1165,7 @@ export function WorkoutRunner({
                       setCustomSkipReason(event.target.value)
                     }
                     placeholder="Ex: agenda apertada, equipamento ocupado"
-                    className="min-h-[48px] rounded-[10px] border border-[#3F3F46] bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] outline-none transition-colors placeholder:text-[#A1A1AA] focus:border-[#93C5FD] focus:ring-2 focus:ring-[#93C5FD]"
+                    className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
                   />
                 </label>
               )}
@@ -1204,7 +1204,7 @@ export function WorkoutRunner({
         maxWidth="max-w-[440px]"
       >
         <div className="space-y-4">
-          <p className="text-[14px] leading-[21px] text-[#A1A1AA]">
+          <p className="text-[14px] leading-[21px] text-[var(--muted)]">
             Tem certeza que deseja cancelar este treino? O progresso desta sessão será perdido.
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-2">
@@ -1235,7 +1235,7 @@ export function WorkoutRunner({
       )}
 
       {!showSkipOptions && (
-        <div className="sticky bottom-0 -mx-4 border-t border-[#3F3F46] bg-[#09090B]/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
+        <div className="sticky bottom-0 -mx-4 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
           <div className="mx-auto flex max-w-[960px] flex-col gap-2">
             <AppButton
               type="button"
@@ -1283,7 +1283,7 @@ export function WorkoutRunner({
             <button
               type="button"
               onClick={() => setShowCancelConfirm(true)}
-              className="min-h-[44px] rounded-[10px] px-3 text-[13px] font-bold text-[#A1A1AA] transition-colors hover:text-[#FCA5A5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+              className="min-h-[44px] rounded-[10px] px-3 text-[13px] font-bold text-[var(--muted)] transition-colors hover:text-[var(--primary-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
             >
               Cancelar treino
             </button>

@@ -46,10 +46,10 @@ export default function WorkoutsPage() {
     <div className="flex flex-1 flex-col gap-6">
       {/* Header */}
       <header className="space-y-1">
-        <h1 className="text-[28px] font-extrabold leading-[34px] text-[#F4F4F5]">
+        <h1 className="text-[28px] font-extrabold leading-[34px] text-[var(--foreground)]">
           Meus treinos
         </h1>
-        <p className="text-[16px] font-normal leading-[24px] text-[#A1A1AA]">
+        <p className="text-[16px] font-normal leading-[24px] text-[var(--muted)]">
           Treinos principais e complementares
         </p>
       </header>
@@ -68,10 +68,10 @@ export default function WorkoutsPage() {
               type="button"
               aria-pressed={isActive}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`min-h-[44px] rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] ${
+              className={`min-h-[44px] rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
                 isActive
-                  ? "bg-[#450A0A] border border-[#B91C1C] text-[#FCA5A5]"
-                  : "bg-[#27272A] border border-[#3F3F46] text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-[#3F3F46]"
+                  ? "bg-[var(--primary-soft)] border border-[var(--primary-hover)] text-[var(--primary-text)]"
+                  : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]"
               }`}
             >
               {cat.label}

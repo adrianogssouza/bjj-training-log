@@ -36,20 +36,20 @@ export function BikeCardioHomeCard() {
 
   return (
     <section aria-labelledby="bike-cardio-home-heading">
-      <AppCard className="space-y-4 border-[#047857]/40 bg-[#18181B] p-5">
+      <AppCard className="space-y-4 border-[var(--success)]/40 bg-[var(--surface)] p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[#6EE7B7]">
+              <span className="text-[var(--success-text)]">
                 <AppIcon name="bike" size={20} />
               </span>
-              <span className="text-[13px] font-bold uppercase tracking-wider text-[#6EE7B7]">
+              <span className="text-[13px] font-bold uppercase tracking-wider text-[var(--success-text)]">
                 Cardio na Bike
               </span>
             </div>
             <h3
               id="bike-cardio-home-heading"
-              className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]"
+              className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]"
             >
               Programa Progressivo
             </h3>
@@ -62,22 +62,22 @@ export function BikeCardioHomeCard() {
         </div>
 
         {hasSessions && summary ? (
-          <div className="grid grid-cols-2 gap-3 rounded-[12px] border border-[#3F3F46] bg-[#27272A] p-3 text-center sm:text-left">
+          <div className="grid grid-cols-2 gap-3 rounded-[12px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3 text-center sm:text-left">
             <div>
-              <p className="text-[13px] font-medium text-[#A1A1AA]">Realizados</p>
-              <p className="text-[20px] font-extrabold text-[#6EE7B7]">
+              <p className="text-[13px] font-medium text-[var(--muted)]">Realizados</p>
+              <p className="text-[20px] font-extrabold text-[var(--success-text)]">
                 {summary.minutes} min
               </p>
             </div>
             <div>
-              <p className="text-[13px] font-medium text-[#A1A1AA]">Meta semanal</p>
-              <p className="text-[20px] font-extrabold text-[#F4F4F5]">
+              <p className="text-[13px] font-medium text-[var(--muted)]">Meta semanal</p>
+              <p className="text-[20px] font-extrabold text-[var(--foreground)]">
                 {summary.plannedMinutes} min
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-[14px] font-medium text-[#A1A1AA]">
+          <p className="text-[14px] font-medium text-[var(--muted)]">
             Nenhuma sessão registrada
           </p>
         )}

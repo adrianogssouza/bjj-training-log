@@ -111,7 +111,7 @@ export function RecentSessionCard() {
             {latestWorkout ? (
               <Link
                 href={`/workouts/${latestWorkout.id}/start?start=1`}
-                className="col-span-2 flex min-h-12 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-center text-sm font-black text-white shadow-md shadow-red-950/30 transition-colors hover:bg-red-400"
+                className="col-span-2 flex min-h-12 items-center justify-center rounded-lg border border-red-400 bg-red-500 px-4 text-center text-sm font-black text-[var(--on-primary)] shadow-md shadow-red-950/30 transition-colors hover:bg-red-400"
               >
                 Repetir último treino
               </Link>

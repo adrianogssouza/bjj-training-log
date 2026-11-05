@@ -14,7 +14,10 @@ export type IconName =
   | "cloud"
   | "alert"
   | "info"
-  | "close";
+  | "close"
+  | "contrast"
+  | "list"
+  | "plus";
 
 export interface AppIconProps extends SVGProps<SVGSVGElement> {
   name: IconName;
@@ -165,6 +168,34 @@ export function AppIcon({
         <svg {...commonProps}>
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      );
+
+    case "contrast":
+      return (
+        <svg {...commonProps}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
+        </svg>
+      );
+
+    case "list":
+      return (
+        <svg {...commonProps}>
+          <line x1="9" y1="6" x2="20" y2="6" />
+          <line x1="9" y1="12" x2="20" y2="12" />
+          <line x1="9" y1="18" x2="20" y2="18" />
+          <circle cx="4.5" cy="6" r="1" />
+          <circle cx="4.5" cy="12" r="1" />
+          <circle cx="4.5" cy="18" r="1" />
+        </svg>
+      );
+
+    case "plus":
+      return (
+        <svg {...commonProps}>
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       );
 

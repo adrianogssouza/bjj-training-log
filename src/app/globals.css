@@ -1,22 +1,197 @@
 @import "tailwindcss";
 
-:root {
-  --background: #09090b;
-  --surface: #18181b;
-  --surface-elevated: #27272a;
-  --border: #3f3f46;
-  --foreground: #f4f4f5;
+/*
+ * Temas visuais (todos escuros).
+ * O tema ativo fica em <html data-theme="...">; "carvao" é o padrão.
+ * Os componentes usam as variáveis semânticas abaixo (--background, --primary…).
+ * Nos temas alternativos, as escalas zinc e red do Tailwind também são
+ * redefinidas, para que as telas antigas (ex.: Bike) acompanhem o tema.
+ * Vermelho de perigo (--danger) e as cores de status (sucesso/aviso) não mudam.
+ */
+
+:root,
+[data-theme="carvao"] {
+  --background: #0a0a0c;
+  --background-glass: rgba(10, 10, 12, 0.94);
+  --surface: #151518;
+  --surface-elevated: #1f1f23;
+  --border: #2f2f35;
+  --border-strong: #52525b;
+  --foreground: #f5f5f6;
+  --foreground-soft: #d4d4d8;
   --muted: #a1a1aa;
+  --muted-strong: #71717a;
   --primary: #dc2626;
   --primary-hover: #b91c1c;
-  --primary-soft: #450a0a;
+  --primary-active: #991b1b;
+  --primary-soft: #3a0e10;
+  --primary-text: #fca5a5;
+  --primary-tint: rgba(220, 38, 38, 0.08);
+  --primary-line: rgba(220, 38, 38, 0.4);
+  --primary-glow: rgba(220, 38, 38, 0.35);
+  --on-primary: #ffffff;
+  --nav-active: var(--primary-text);
+  --font-body: "Inter Variable", Arial, Helvetica, sans-serif;
+  --font-heading: "Inter Variable", Arial, Helvetica, sans-serif;
+  --theme-color: #0a0a0c;
+}
+
+[data-theme="lima"] {
+  --background: #000000;
+  --background-glass: rgba(0, 0, 0, 0.94);
+  --surface: #0e0f0b;
+  --surface-elevated: #181a13;
+  --border: #2a2d20;
+  --border-strong: #4f5342;
+  --foreground: #f7f9f0;
+  --foreground-soft: #d8dcc8;
+  --muted: #9ca18c;
+  --muted-strong: #6b705b;
+  --primary: #c6f432;
+  --primary-hover: #8db51f;
+  --primary-active: #6f8f17;
+  --primary-soft: #1a2406;
+  --primary-text: #d6fa66;
+  --primary-tint: rgba(198, 244, 50, 0.06);
+  --primary-line: rgba(198, 244, 50, 0.4);
+  --primary-glow: rgba(198, 244, 50, 0.3);
+  --on-primary: #0a1000;
+  --font-body: "Barlow", Arial, Helvetica, sans-serif;
+  --font-heading: "Barlow Condensed", "Barlow", Arial, sans-serif;
+  --theme-color: #000000;
+
+  --color-zinc-50: #f7f9f0;
+  --color-zinc-100: #eef1e4;
+  --color-zinc-200: #d8dcc8;
+  --color-zinc-300: #bcc1aa;
+  --color-zinc-400: #9ca18c;
+  --color-zinc-500: #6b705b;
+  --color-zinc-600: #4f5342;
+  --color-zinc-700: #3a3d30;
+  --color-zinc-800: #2a2d20;
+  --color-zinc-900: #181a13;
+  --color-zinc-950: #0e0f0b;
+  --color-red-50: #f7fee7;
+  --color-red-100: #ecfccb;
+  --color-red-200: #d9f99d;
+  --color-red-300: #d6fa66;
+  --color-red-400: #c6f432;
+  --color-red-500: #d4f75a;
+  --color-red-600: #c6f432;
+  --color-red-700: #8db51f;
+  --color-red-800: #4d6410;
+  --color-red-900: #2b380a;
+  --color-red-950: #1a2406;
+}
+
+[data-theme="ciano"] {
+  --background: #050b16;
+  --background-glass: rgba(5, 11, 22, 0.94);
+  --surface: #0c1628;
+  --surface-elevated: #142139;
+  --border: #233553;
+  --border-strong: #44587a;
+  --foreground: #eaf2ff;
+  --foreground-soft: #c6d4ec;
+  --muted: #8da2c4;
+  --muted-strong: #5f7396;
+  --primary: #22d3ee;
+  --primary-hover: #0e8fa8;
+  --primary-active: #0b6f83;
+  --primary-soft: #08293a;
+  --primary-text: #86eafb;
+  --primary-tint: rgba(34, 211, 238, 0.07);
+  --primary-line: rgba(34, 211, 238, 0.4);
+  --primary-glow: rgba(34, 211, 238, 0.3);
+  --on-primary: #021822;
+  --font-body: "DM Sans Variable", Arial, Helvetica, sans-serif;
+  --font-heading: "Space Grotesk Variable", "DM Sans Variable", Arial, sans-serif;
+  --theme-color: #050b16;
+
+  --color-zinc-50: #f2f6fd;
+  --color-zinc-100: #eaf2ff;
+  --color-zinc-200: #c6d4ec;
+  --color-zinc-300: #a7b9d8;
+  --color-zinc-400: #8da2c4;
+  --color-zinc-500: #5f7396;
+  --color-zinc-600: #44587a;
+  --color-zinc-700: #2e4262;
+  --color-zinc-800: #233553;
+  --color-zinc-900: #0c1628;
+  --color-zinc-950: #050b16;
+  --color-red-50: #ecfeff;
+  --color-red-100: #cffafe;
+  --color-red-200: #a5f3fc;
+  --color-red-300: #86eafb;
+  --color-red-400: #3edcf2;
+  --color-red-500: #5be3f6;
+  --color-red-600: #22d3ee;
+  --color-red-700: #0e8fa8;
+  --color-red-800: #0b5e70;
+  --color-red-900: #083a47;
+  --color-red-950: #08293a;
+}
+
+[data-theme="dourado"] {
+  --background: #121110;
+  --background-glass: rgba(18, 17, 16, 0.94);
+  --surface: #1b1916;
+  --surface-elevated: #26231f;
+  --border: #3a362f;
+  --border-strong: #5c5547;
+  --foreground: #f7f3ea;
+  --foreground-soft: #ddd5c4;
+  --muted: #a59d8c;
+  --muted-strong: #7a7262;
+  --primary: #d4a24c;
+  --primary-hover: #a97c2d;
+  --primary-active: #8a6424;
+  --primary-soft: #2e2110;
+  --primary-text: #f0cc84;
+  --primary-tint: rgba(212, 162, 76, 0.07);
+  --primary-line: rgba(212, 162, 76, 0.4);
+  --primary-glow: rgba(212, 162, 76, 0.3);
+  --on-primary: #1a1204;
+  --font-body: "Manrope Variable", Arial, Helvetica, sans-serif;
+  --font-heading: "Sora Variable", "Manrope Variable", Arial, sans-serif;
+  --theme-color: #121110;
+
+  --color-zinc-50: #fbf8f2;
+  --color-zinc-100: #f7f3ea;
+  --color-zinc-200: #ddd5c4;
+  --color-zinc-300: #c4baa6;
+  --color-zinc-400: #a59d8c;
+  --color-zinc-500: #7a7262;
+  --color-zinc-600: #5c5547;
+  --color-zinc-700: #4a443a;
+  --color-zinc-800: #3a362f;
+  --color-zinc-900: #1b1916;
+  --color-zinc-950: #121110;
+  --color-red-50: #fdf8ec;
+  --color-red-100: #fbf0d9;
+  --color-red-200: #f5dfb0;
+  --color-red-300: #f0cc84;
+  --color-red-400: #e3b562;
+  --color-red-500: #ddb066;
+  --color-red-600: #d4a24c;
+  --color-red-700: #a97c2d;
+  --color-red-800: #6e5020;
+  --color-red-900: #3d2d14;
+  --color-red-950: #2e2110;
+}
+
+/* Cores que não mudam entre temas */
+:root {
   --success: #047857;
   --success-text: #6ee7b7;
   --warning: #fbbf24;
   --danger: #b91c1c;
+  --danger-hover: #991b1b;
+  --danger-active: #7f1d1d;
+  --danger-soft: #450a0a;
+  --danger-text: #fecaca;
   --focus: #93c5fd;
   --white: #ffffff;
-  --nav-active: #fca5a5;
 }
 
 @theme inline {
@@ -37,16 +212,22 @@
   --color-white: var(--white);
   --color-nav-active: var(--nav-active);
 
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-body);
   --font-mono: "Courier New", Courier, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
 }
 
 a {
@@ -59,7 +240,7 @@ a {
   top: -60px;
   left: 16px;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--on-primary);
   padding: 10px 16px;
   z-index: 9999;
   border-radius: 8px;

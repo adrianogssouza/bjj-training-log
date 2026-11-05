@@ -28,18 +28,18 @@ export function AppToast({
     }
   }, [type, duration, onClose]);
 
-  let borderBg = "border-[#3F3F46] bg-[#18181B] text-[#F4F4F5]";
+  let borderBg = "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]";
   let iconName: "check" | "alert" | "info" = "info";
-  let iconColor = "text-[#A1A1AA]";
+  let iconColor = "text-[var(--muted)]";
 
   if (type === "success") {
-    borderBg = "border-[#047857] bg-[#18181B] text-[#6EE7B7]";
+    borderBg = "border-[var(--success)] bg-[var(--surface)] text-[var(--success-text)]";
     iconName = "check";
-    iconColor = "text-[#6EE7B7]";
+    iconColor = "text-[var(--success-text)]";
   } else if (type === "error") {
-    borderBg = "border-[#B91C1C] bg-[#18181B] text-red-200";
+    borderBg = "border-[var(--primary-hover)] bg-[var(--surface)] text-red-200";
     iconName = "alert";
-    iconColor = "text-[#FCA5A5]";
+    iconColor = "text-[var(--primary-text)]";
   }
 
   return (
@@ -59,7 +59,7 @@ export function AppToast({
           type="button"
           onClick={onClose}
           aria-label="Fechar notificação"
-          className="rounded p-1 text-[#A1A1AA] hover:text-[#F4F4F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+          className="rounded p-1 text-[var(--muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
         >
           <AppIcon name="close" size={16} />
         </button>

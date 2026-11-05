@@ -12,7 +12,7 @@ export interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <CloudWorkspace>
-      <div className="flex min-h-screen flex-col bg-[#09090B] text-[#F4F4F5]">
+      <div className="flex min-h-screen flex-col bg-[var(--background)] text-[var(--foreground)]">
         <a href="#main-content" className="skip-link">
           Pular para o conteúdo
         </a>

@@ -36,21 +36,21 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
         <div className="flex items-center justify-between gap-2">
           <AppBadge variant={category.variant}>{category.label}</AppBadge>
           {workout.type === "monthly" ? (
-            <span className="text-[13px] font-medium text-[#A1A1AA]">
+            <span className="text-[13px] font-medium text-[var(--muted)]">
               Ciclo 4
             </span>
           ) : (
-            <span className="text-[13px] font-medium text-[#A1A1AA]">
+            <span className="text-[13px] font-medium text-[var(--muted)]">
               {workout.month} {workout.year}
             </span>
           )}
         </div>
 
         <div>
-          <h2 className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+          <h2 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
             {workout.title}
           </h2>
-          <div className="mt-1 flex items-center gap-2 text-[13px] font-medium text-[#A1A1AA]">
+          <div className="mt-1 flex items-center gap-2 text-[13px] font-medium text-[var(--muted)]">
             <span>{workout.blocks.length} {workout.blocks.length === 1 ? "bloco" : "blocos"}</span>
             <span>·</span>
             <span>{exerciseCount} {exerciseCount === 1 ? "exercício" : "exercícios"}</span>
@@ -58,7 +58,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
         </div>
 
         {workout.description && (
-          <p className="line-clamp-3 text-[14px] leading-[21px] text-[#A1A1AA]">
+          <p className="line-clamp-3 text-[14px] leading-[21px] text-[var(--muted)]">
             {workout.description}
           </p>
         )}

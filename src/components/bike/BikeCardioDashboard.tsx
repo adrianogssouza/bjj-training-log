@@ -662,7 +662,7 @@ export function BikeCardioDashboard() {
               aria-current={isActive ? "page" : undefined}
               className={`flex min-h-11 flex-1 items-center justify-center gap-1 rounded-lg px-2.5 py-2 text-xs font-bold transition sm:min-h-10 sm:text-sm ${
                 isActive
-                  ? "bg-red-600 text-white shadow-md"
+                  ? "bg-red-600 text-[var(--on-primary)] shadow-md"
                   : "text-zinc-300 hover:bg-zinc-800/80 hover:text-white"
               }`}
             >
@@ -863,7 +863,7 @@ export function BikeCardioDashboard() {
             <button
               type="button"
               onClick={() => handleStartGuided(phase.minutes)}
-              className="min-h-12 w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-black text-white hover:bg-red-500"
+              className="min-h-12 w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-black text-[var(--on-primary)] hover:bg-red-500"
             >
               Iniciar sessão da Semana {week} no Modo Guiado ({phase.minutes} min)
             </button>
@@ -1079,7 +1079,7 @@ export function BikeCardioDashboard() {
             <div className="flex flex-wrap gap-2 pt-1">
               <button
                 type="submit"
-                className="min-h-11 rounded-lg bg-red-600 px-5 text-xs font-bold text-white hover:bg-red-500"
+                className="min-h-11 rounded-lg bg-red-600 px-5 text-xs font-bold text-[var(--on-primary)] hover:bg-red-500"
               >
                 {editingMeasure ? "Atualizar medida" : "Salvar medida"}
               </button>

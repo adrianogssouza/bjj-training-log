@@ -1,6 +1,7 @@
 import type { WorkoutHistoryEntry, WorkoutSession } from "../types/index";
 import { sanitizeWorkoutSessionPse } from "./workout-validation";
 import { mergeBikeData, sanitizeBikeData, type BikeData } from "./bike-cardio";
+import { mergeWeeklyPlans, sanitizeWeeklyPlans, type WeeklyPlans } from "./weekly-plan";
 
 export type TrainingState = {
   version: 1;
@@ -8,6 +9,8 @@ export type TrainingState = {
   activeSessions: Record<string, WorkoutSession>;
   /** Opcional para aceitar backups anteriores à criação da Bike. */
   bike?: BikeData;
+  /** Plano semanal (opcional: estados anteriores ao planejador não têm). */
+  plans?: WeeklyPlans;
 };
 
 export const emptyTrainingState = (): TrainingState => ({ version: 1, history: [], activeSessions: {} });
@@ -43,7 +46,8 @@ export function parseTrainingState(value: unknown): TrainingState {
     return [id, parsed];
   }));
   const bike = value.bike === undefined ? undefined : sanitizeBikeData(value.bike);
-  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}) };
+  const plans = value.plans === undefined ? undefined : sanitizeWeeklyPlans(value.plans);
+  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}), ...(plans ? { plans } : {}) };
 }
 
 /** Explicit import only: retain cloud entries when the same session already exists. */
@@ -57,5 +61,6 @@ export function mergeTrainingState(current: TrainingState, incoming: TrainingSta
     if (sessions.has(`${id}:${session.startedAt}`)) delete activeSessions[id];
   }
   const bike = mergeBikeData(current.bike, incoming.bike);
-  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}) };
+  const plans = mergeWeeklyPlans(current.plans, incoming.plans);
+  return { version: 1, history, activeSessions, ...(bike ? { bike } : {}), ...(plans ? { plans } : {}) };
 }

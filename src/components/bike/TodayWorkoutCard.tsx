@@ -132,7 +132,7 @@ export function TodayWorkoutCard({
           <button
             type="button"
             onClick={() => onStartGuided(info.phase.minutes)}
-            className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-base font-black text-white shadow-lg shadow-red-700/30 transition hover:bg-red-500 active:scale-[0.98]"
+            className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-base font-black text-[var(--on-primary)] shadow-lg shadow-red-700/30 transition hover:bg-red-500 active:scale-[0.98]"
           >
             <span>▶ Iniciar treino guiado</span>
             <span className="text-xs font-semibold opacity-80">({info.phase.minutes} min)</span>
@@ -176,7 +176,7 @@ export function TodayWorkoutCard({
                         aria-pressed={selected}
                         className={`min-h-10 min-w-11 rounded-lg border px-2.5 py-1.5 font-bold transition ${
                           selected
-                            ? "border-red-400 bg-red-600 text-white"
+                            ? "border-red-400 bg-red-600 text-[var(--on-primary)]"
                             : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
                         }`}
                       >

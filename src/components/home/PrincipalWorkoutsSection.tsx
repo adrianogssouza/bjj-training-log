@@ -32,7 +32,7 @@ export function PrincipalWorkoutsSection() {
       <div className="flex items-center justify-between">
         <h2
           id="principal-workouts-heading"
-          className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]"
+          className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]"
         >
           Treino principal
         </h2>
@@ -51,13 +51,13 @@ export function PrincipalWorkoutsSection() {
               className="flex flex-col justify-between gap-4 p-5"
             >
               <div className="space-y-1.5">
-                <span className="text-[13px] font-medium text-[#A1A1AA]">
+                <span className="text-[13px] font-medium text-[var(--muted)]">
                   {cycle.name}
                 </span>
-                <h3 className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+                <h3 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
                   {simplifiedName}
                 </h3>
-                <p className="text-[14px] text-[#A1A1AA]">
+                <p className="text-[14px] text-[var(--muted)]">
                   {exerciseCount} exercícios
                 </p>
               </div>

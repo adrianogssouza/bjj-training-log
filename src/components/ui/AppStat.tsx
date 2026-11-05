@@ -17,14 +17,14 @@ export function AppStat({
   className = "",
   color = "default",
 }: AppStatProps) {
-  let valueColor = "text-[#F4F4F5]";
-  if (color === "primary") valueColor = "text-[#FCA5A5]";
-  if (color === "success") valueColor = "text-[#6EE7B7]";
-  if (color === "warning") valueColor = "text-[#FBBF24]";
+  let valueColor = "text-[var(--foreground)]";
+  if (color === "primary") valueColor = "text-[var(--primary-text)]";
+  if (color === "success") valueColor = "text-[var(--success-text)]";
+  if (color === "warning") valueColor = "text-[var(--warning)]";
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      <div className="flex items-center gap-1.5 text-[13px] font-medium leading-[18px] text-[#A1A1AA]">
+      <div className="flex items-center gap-1.5 text-[13px] font-medium leading-[18px] text-[var(--muted)]">
         {icon}
         <span>{label}</span>
       </div>
@@ -32,7 +32,7 @@ export function AppStat({
         {value}
       </div>
       {subtext && (
-        <div className="text-[13px] font-normal leading-[18px] text-[#A1A1AA]">
+        <div className="text-[13px] font-normal leading-[18px] text-[var(--muted)]">
           {subtext}
         </div>
       )}

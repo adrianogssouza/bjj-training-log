@@ -17,19 +17,19 @@ export function AppBadge({
   let variantClasses = "";
   switch (variant) {
     case "neutral":
-      variantClasses = "bg-[#27272A] border border-[#3F3F46] text-[#A1A1AA]";
+      variantClasses = "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--muted)]";
       break;
     case "primary":
-      variantClasses = "bg-[#450A0A] border border-[#B91C1C] text-[#FCA5A5]";
+      variantClasses = "bg-[var(--primary-soft)] border border-[var(--primary-hover)] text-[var(--primary-text)]";
       break;
     case "success":
-      variantClasses = "bg-[#047857]/20 border border-[#047857] text-[#6EE7B7]";
+      variantClasses = "bg-[var(--success)]/20 border border-[var(--success)] text-[var(--success-text)]";
       break;
     case "warning":
-      variantClasses = "bg-[#FBBF24]/10 border border-[#FBBF24]/40 text-[#FBBF24]";
+      variantClasses = "bg-[var(--warning)]/10 border border-[var(--warning)]/40 text-[var(--warning)]";
       break;
     case "danger":
-      variantClasses = "bg-[#450A0A] border border-[#B91C1C] text-red-200";
+      variantClasses = "bg-[var(--danger-soft)] border border-[var(--danger)] text-[var(--danger-text)]";
       break;
   }
 

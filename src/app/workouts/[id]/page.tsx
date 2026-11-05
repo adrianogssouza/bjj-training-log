@@ -29,10 +29,10 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       <div className="flex flex-1 flex-col gap-6 py-8">
         <AppCard className="flex flex-col gap-4">
           <div>
-            <h1 className="text-[24px] font-bold text-[#F4F4F5]">
+            <h1 className="text-[24px] font-bold text-[var(--foreground)]">
               Treino não encontrado
             </h1>
-            <p className="mt-2 text-[14px] text-[#A1A1AA]">
+            <p className="mt-2 text-[14px] text-[var(--muted)]">
               O treino solicitado não existe no catálogo oficial.
             </p>
           </div>
@@ -58,7 +58,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       <section className="flex flex-col gap-3">
         <Link
           href="/workouts"
-          className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#A1A1AA] hover:text-[#F4F4F5] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] rounded w-fit"
+          className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] rounded w-fit"
         >
           <AppIcon name="arrow" direction="left" size={16} />
           Voltar para treinos
@@ -68,15 +68,15 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
             <AppBadge variant={workout.type === "monthly" ? "primary" : "neutral"}>
               {workout.type === "monthly" ? "Ciclo 4" : metadata.type}
             </AppBadge>
-            <span className="text-[13px] text-[#A1A1AA]">
+            <span className="text-[13px] text-[var(--muted)]">
               {exerciseCount} {exerciseCount === 1 ? "exercício" : "exercícios"}
             </span>
           </div>
-          <h1 className="mt-2 break-words text-[28px] font-extrabold leading-[34px] text-[#F4F4F5]">
+          <h1 className="mt-2 break-words text-[28px] font-extrabold leading-[34px] text-[var(--foreground)]">
             {workout.title}
           </h1>
           {workout.description ? (
-            <p className="mt-2 text-[14px] leading-[21px] text-[#A1A1AA]">
+            <p className="mt-2 text-[14px] leading-[21px] text-[var(--muted)]">
               {workout.description}
             </p>
           ) : null}
@@ -86,27 +86,27 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       {/* Summary Stat Card */}
       <AppCard variant="secondary">
         <dl className="grid grid-cols-2 gap-3 text-[14px] sm:grid-cols-4">
-          <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-            <dt className="text-[12px] text-[#A1A1AA]">Tipo</dt>
-            <dd className="mt-0.5 font-bold text-[#F4F4F5]">{metadata.type}</dd>
+          <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+            <dt className="text-[12px] text-[var(--muted)]">Tipo</dt>
+            <dd className="mt-0.5 font-bold text-[var(--foreground)]">{metadata.type}</dd>
           </div>
-          <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-            <dt className="text-[12px] text-[#A1A1AA]">Blocos</dt>
-            <dd className="mt-0.5 font-bold text-[#F4F4F5]">{metadata.blockCount}</dd>
+          <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+            <dt className="text-[12px] text-[var(--muted)]">Blocos</dt>
+            <dd className="mt-0.5 font-bold text-[var(--foreground)]">{metadata.blockCount}</dd>
           </div>
-          <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-            <dt className="text-[12px] text-[#A1A1AA]">Exercícios</dt>
-            <dd className="mt-0.5 font-bold text-[#F4F4F5]">{exerciseCount}</dd>
+          <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+            <dt className="text-[12px] text-[var(--muted)]">Exercícios</dt>
+            <dd className="mt-0.5 font-bold text-[var(--foreground)]">{exerciseCount}</dd>
           </div>
           {isComplementary ? (
-            <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-              <dt className="text-[12px] text-[#A1A1AA]">Formato</dt>
-              <dd className="mt-0.5 font-bold text-[#F4F4F5]">{metadata.format}</dd>
+            <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+              <dt className="text-[12px] text-[var(--muted)]">Formato</dt>
+              <dd className="mt-0.5 font-bold text-[var(--foreground)]">{metadata.format}</dd>
             </div>
           ) : (
-            <div className="rounded-[10px] border border-[#3F3F46] bg-[#27272A] p-3">
-              <dt className="text-[12px] text-[#A1A1AA]">Ciclo</dt>
-              <dd className="mt-0.5 font-bold text-[#F4F4F5]">Ciclo 4</dd>
+            <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
+              <dt className="text-[12px] text-[var(--muted)]">Ciclo</dt>
+              <dd className="mt-0.5 font-bold text-[var(--foreground)]">Ciclo 4</dd>
             </div>
           )}
         </dl>
@@ -115,10 +115,10 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       {/* Blocks Sequence */}
       <section className="flex flex-col gap-3">
         <div>
-          <h2 className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]">
+          <h2 className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]">
             {isComplementary ? "Sequência guiada" : "Blocos do treino"}
           </h2>
-          <p className="text-[14px] text-[#A1A1AA]">
+          <p className="text-[14px] text-[var(--muted)]">
             {isComplementary
               ? "Sequência guiada por vídeo, formato e PSE alvo."
               : "Ordem, tipo do bloco, exercícios combinados, volume e PSE alvo."}

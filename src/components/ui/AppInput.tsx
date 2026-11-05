@@ -24,7 +24,7 @@ export function AppInput({
       {label && (
         <label
           htmlFor={inputId}
-          className="mb-2 block text-[14px] font-medium text-[#F4F4F5]"
+          className="mb-2 block text-[14px] font-medium text-[var(--foreground)]"
         >
           {label}
         </label>
@@ -34,18 +34,18 @@ export function AppInput({
         disabled={disabled}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={[errorId, helperId].filter(Boolean).join(" ") || undefined}
-        className={`w-full min-h-[48px] rounded-[10px] border bg-[#27272A] px-3.5 py-2.5 text-[16px] text-[#F4F4F5] placeholder-[#A1A1AA] transition-colors focus:border-[#93C5FD] focus:outline-none focus:ring-2 focus:ring-[#93C5FD] disabled:cursor-not-allowed disabled:opacity-50 ${
-          error ? "border-[#B91C1C]" : "border-[#3F3F46]"
+        className={`w-full min-h-[48px] rounded-[10px] border bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] placeholder-[var(--muted)] transition-colors focus:border-[var(--focus)] focus:outline-none focus:ring-2 focus:ring-[var(--focus)] disabled:cursor-not-allowed disabled:opacity-50 ${
+          error ? "border-[var(--primary-hover)]" : "border-[var(--border)]"
         } ${className}`}
         {...props}
       />
       {error && (
-        <p id={errorId} className="mt-1.5 text-[13px] text-[#FCA5A5]" role="alert">
+        <p id={errorId} className="mt-1.5 text-[13px] text-[var(--primary-text)]" role="alert">
           {error}
         </p>
       )}
       {!error && helperText && (
-        <p id={helperId} className="mt-1.5 text-[13px] text-[#A1A1AA]">
+        <p id={helperId} className="mt-1.5 text-[13px] text-[var(--muted)]">
           {helperText}
         </p>
       )}

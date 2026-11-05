@@ -54,7 +54,7 @@ export function PrimaryNavigation({ currentPath }: { currentPath?: string } = {}
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed bottom-0 left-0 right-0 z-40 block border-t border-[#3F3F46] bg-[#09090B] pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-40 block border-t border-[var(--border)] bg-[var(--background)] pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <div className="mx-auto flex h-[64px] max-w-[960px] items-stretch justify-around px-2">
         {NAV_ITEMS.map((item) => {
@@ -64,13 +64,13 @@ export function PrimaryNavigation({ currentPath }: { currentPath?: string } = {}
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-[10px] my-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] ${
+              className={`flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-[10px] my-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
                 active
-                  ? "bg-[#450A0A] text-[#F4F4F5]"
-                  : "bg-transparent text-[#A1A1AA] hover:text-[#F4F4F5]"
+                  ? "bg-[var(--primary-soft)] text-[var(--foreground)]"
+                  : "bg-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
-              <span className={active ? "text-[#FCA5A5]" : "text-current"}>
+              <span className={active ? "text-[var(--primary-text)]" : "text-current"}>
                 <AppIcon name={item.icon} size={22} />
               </span>
               <span className="text-[13px] font-medium leading-[16px]">

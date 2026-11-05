@@ -99,7 +99,7 @@ export function LastSessionSection() {
     <section className="space-y-3" aria-labelledby="last-session-heading">
       <h2
         id="last-session-heading"
-        className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]"
+        className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]"
       >
         Última sessão
       </h2>
@@ -112,17 +112,17 @@ export function LastSessionSection() {
                 <AppBadge variant={latestSession.type === "Cardio na Bike" ? "success" : "primary"}>
                   {latestSession.type}
                 </AppBadge>
-                <h3 className="text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+                <h3 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
                   {latestSession.title}
                 </h3>
               </div>
-              <span className="text-[13px] font-medium text-[#A1A1AA]">
+              <span className="text-[13px] font-medium text-[var(--muted)]">
                 {latestSession.formattedDate}
               </span>
             </div>
 
-            <div className="text-[14px] text-[#A1A1AA]">
-              Duração: <strong className="text-[#F4F4F5]">{latestSession.formattedDuration}</strong>
+            <div className="text-[14px] text-[var(--muted)]">
+              Duração: <strong className="text-[var(--foreground)]">{latestSession.formattedDuration}</strong>
             </div>
 
             <div className="pt-1">
@@ -133,7 +133,7 @@ export function LastSessionSection() {
           </>
         ) : (
           <div className="space-y-3 py-2 text-center sm:text-left">
-            <p className="text-[14px] font-medium text-[#A1A1AA]">
+            <p className="text-[14px] font-medium text-[var(--muted)]">
               Nenhum treino concluído ainda
             </p>
             <div>

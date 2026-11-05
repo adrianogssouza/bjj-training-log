@@ -76,15 +76,15 @@ export function AccountModal({
       >
         <div className="space-y-5">
           {/* User & Sync Status Card */}
-          <div className="rounded-[12px] border border-[#3F3F46] bg-[#27272A] p-4 space-y-3">
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface-elevated)] p-4 space-y-3">
             <div>
-              <p className="text-[13px] font-medium text-[#A1A1AA]">E-mail da conta</p>
-              <p className="text-[16px] font-bold text-[#F4F4F5] break-all">
+              <p className="text-[13px] font-medium text-[var(--muted)]">E-mail da conta</p>
+              <p className="text-[16px] font-bold text-[var(--foreground)] break-all">
                 {email || "Modo local (sem sincronização em nuvem)"}
               </p>
             </div>
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[13px] font-medium text-[#A1A1AA]">Status:</span>
+              <span className="text-[13px] font-medium text-[var(--muted)]">Status:</span>
               <AppBadge variant={statusBadgeVariant}>{statusBadgeText}</AppBadge>
             </div>
           </div>
@@ -93,7 +93,7 @@ export function AccountModal({
           {(syncMessage || syncStatus === "error" || syncStatus === "conflict") && (
             <div
               role="alert"
-              className="space-y-3 rounded-[12px] border border-[#FBBF24]/50 bg-[#FBBF24]/10 p-4 text-[#F4F4F5]"
+              className="space-y-3 rounded-[12px] border border-[var(--warning)]/50 bg-[var(--warning)]/10 p-4 text-[var(--foreground)]"
             >
               <p className="text-[14px] leading-[21px]">{syncMessage || "Atenção com a sincronização."}</p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -118,16 +118,16 @@ export function AccountModal({
           {clearSuccessMessage && (
             <div
               role="status"
-              className="rounded-[12px] border border-[#047857] bg-[#047857]/20 p-3 text-center text-[14px] font-medium text-[#6EE7B7]"
+              className="rounded-[12px] border border-[var(--success)] bg-[var(--success)]/20 p-3 text-center text-[14px] font-medium text-[var(--success-text)]"
             >
               Histórico de musculação limpo com sucesso. Registros da bike foram preservados.
             </div>
           )}
 
           {/* Dados e Backup */}
-          <div className="space-y-3 border-t border-[#3F3F46] pt-4">
-            <h3 className="text-[16px] font-bold text-[#F4F4F5]">Dados e backup</h3>
-            <p className="text-[13px] leading-[18px] text-[#A1A1AA]">
+          <div className="space-y-3 border-t border-[var(--border)] pt-4">
+            <h3 className="text-[16px] font-bold text-[var(--foreground)]">Dados e backup</h3>
+            <p className="text-[13px] leading-[18px] text-[var(--muted)]">
               Espere aparecer &quot;Sincronizado&quot; antes de continuar o treino em outro dispositivo.
             </p>
 
@@ -145,7 +145,7 @@ export function AccountModal({
               )}
 
               {onImportJson && (
-                <label className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-[12px] border border-[#3F3F46] bg-[#27272A] px-4 py-2.5 text-center text-base font-medium text-[#F4F4F5] hover:bg-[#3F3F46] transition-colors focus-within:ring-2 focus-within:ring-[#93C5FD]">
+                <label className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-[12px] border border-[var(--border)] bg-[var(--surface-elevated)] px-4 py-2.5 text-center text-base font-medium text-[var(--foreground)] hover:bg-[var(--border)] transition-colors focus-within:ring-2 focus-within:ring-[var(--focus)]">
                   Importar backup JSON
                   <input
                     type="file"
@@ -163,7 +163,7 @@ export function AccountModal({
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(true)}
-                className="mt-2 min-h-[44px] w-full rounded-[12px] border border-[#B91C1C]/40 bg-transparent px-4 py-2 text-[14px] font-bold text-[#FCA5A5] hover:bg-[#450A0A]/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+                className="mt-2 min-h-[44px] w-full rounded-[12px] border border-[var(--primary-hover)]/40 bg-transparent px-4 py-2 text-[14px] font-bold text-[var(--primary-text)] hover:bg-[var(--primary-soft)]/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
               >
                 Limpar histórico de musculação
               </button>
@@ -172,7 +172,7 @@ export function AccountModal({
 
           {/* Sair */}
           {onLogout && (
-            <div className="border-t border-[#3F3F46] pt-4">
+            <div className="border-t border-[var(--border)] pt-4">
               <AppButton variant="ghost" onClick={onLogout} fullWidth>
                 Sair da conta
               </AppButton>
@@ -193,9 +193,9 @@ export function AccountModal({
         maxWidth="max-w-[480px]"
       >
         <div className="space-y-4">
-          <p className="text-[14px] leading-[21px] text-[#A1A1AA]">
+          <p className="text-[14px] leading-[21px] text-[var(--muted)]">
             Esta operação remove todos os registros de musculação e complementares da sua conta sincronizada.
-            <strong className="block mt-1 text-[#F4F4F5]">
+            <strong className="block mt-1 text-[var(--foreground)]">
               Os registros do módulo Bike Cardio não serão afetados.
             </strong>
           </p>
@@ -208,8 +208,8 @@ export function AccountModal({
             </div>
           )}
 
-          <div className="rounded-[10px] border border-[#B91C1C]/40 bg-[#450A0A]/30 p-3">
-            <p className="text-[13px] text-[#FCA5A5]">
+          <div className="rounded-[10px] border border-[var(--primary-hover)]/40 bg-[var(--primary-soft)]/30 p-3">
+            <p className="text-[13px] text-[var(--primary-text)]">
               Para confirmar a exclusão definitiva, digite <span className="font-mono font-black text-white">APAGAR</span> abaixo:
             </p>
           </div>

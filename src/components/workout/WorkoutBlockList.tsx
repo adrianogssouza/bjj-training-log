@@ -63,18 +63,18 @@ export function WorkoutBlockList({
             <li key={block.id}>
               <AppCard variant="secondary" className="space-y-4 p-4">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#DC2626] text-white text-[14px] font-bold">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--primary)] text-[var(--on-primary)] text-[14px] font-bold">
                     {block.order}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-semibold uppercase tracking-wider text-[#FCA5A5]">
+                    <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--primary-text)]">
                       {blockTypeLabel}
                     </p>
-                    <h3 className="text-[16px] font-bold leading-snug text-[#F4F4F5]">
+                    <h3 className="text-[16px] font-bold leading-snug text-[var(--foreground)]">
                       {block.title}
                     </h3>
                     {block.notes && (
-                      <p className="mt-1 text-[13px] leading-[18px] text-[#A1A1AA]">
+                      <p className="mt-1 text-[13px] leading-[18px] text-[var(--muted)]">
                         {block.notes}
                       </p>
                     )}
@@ -82,15 +82,15 @@ export function WorkoutBlockList({
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[13px]">
-                  <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-3 py-1.5">
-                    <span className="text-[#A1A1AA]">Sets: </span>
-                    <strong className="text-[#F4F4F5]">{block.sets}</strong>
+                  <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5">
+                    <span className="text-[var(--muted)]">Sets: </span>
+                    <strong className="text-[var(--foreground)]">{block.sets}</strong>
                   </div>
-                  <div className="rounded-[8px] border border-[#3F3F46] bg-[#27272A] px-3 py-1.5">
-                    <span className="text-[#A1A1AA]">
+                  <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5">
+                    <span className="text-[var(--muted)]">
                       {isComplementary ? "Etapas: " : "Exercícios: "}
                     </span>
-                    <strong className="text-[#F4F4F5]">{block.items.length}</strong>
+                    <strong className="text-[var(--foreground)]">{block.items.length}</strong>
                   </div>
                 </div>
 
@@ -101,10 +101,10 @@ export function WorkoutBlockList({
                     return (
                       <li
                         key={item.id}
-                        className="rounded-[10px] border border-[#3F3F46] bg-[#27272A]/70 p-3 space-y-2.5"
+                        className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)]/70 p-3 space-y-2.5"
                       >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                          <h4 className="text-[15px] font-bold text-[#F4F4F5]">
+                          <h4 className="text-[15px] font-bold text-[var(--foreground)]">
                             {isComplementary ? `${item.name} (guiado)` : item.name}
                           </h4>
                           {videoUrl && (
@@ -116,7 +116,7 @@ export function WorkoutBlockList({
                                   videoUrl,
                                 })
                               }
-                              className="self-start rounded-[8px] border border-[#3F3F46] bg-[#18181B] px-2.5 py-1 text-[12px] font-bold text-[#F4F4F5] hover:border-[#DC2626] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+                              className="self-start rounded-[8px] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-bold text-[var(--foreground)] hover:border-[var(--primary)] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
                             >
                               Ver vídeo
                             </button>
@@ -125,26 +125,26 @@ export function WorkoutBlockList({
 
                         <dl className="grid grid-cols-3 gap-2 text-[12px]">
                           <div>
-                            <dt className="text-[#A1A1AA]">Reps</dt>
-                            <dd className="font-semibold text-[#F4F4F5]">
+                            <dt className="text-[var(--muted)]">Reps</dt>
+                            <dd className="font-semibold text-[var(--foreground)]">
                               {item.reps ?? (isComplementary ? "Etapa" : "-")}
                             </dd>
                           </div>
                           <div>
-                            <dt className="text-[#A1A1AA]">Tempo</dt>
-                            <dd className="font-semibold text-[#F4F4F5]">
+                            <dt className="text-[var(--muted)]">Tempo</dt>
+                            <dd className="font-semibold text-[var(--foreground)]">
                               {item.time ?? "-"}
                             </dd>
                           </div>
                           <div>
-                            <dt className="text-[#A1A1AA]">PSE alvo</dt>
+                            <dt className="text-[var(--muted)]">PSE alvo</dt>
                             <dd className="mt-0.5">
                               {item.targetPse ? (
                                 <AppBadge variant="primary">
                                   {item.targetPse}
                                 </AppBadge>
                               ) : (
-                                <span className="text-[#A1A1AA]">-</span>
+                                <span className="text-[var(--muted)]">-</span>
                               )}
                             </dd>
                           </div>

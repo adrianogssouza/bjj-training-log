@@ -66,7 +66,7 @@ export function WeekSummarySection() {
     <section className="space-y-3" aria-labelledby="week-summary-heading">
       <h2
         id="week-summary-heading"
-        className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]"
+        className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]"
       >
         Resumo da semana
       </h2>

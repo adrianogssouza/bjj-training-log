@@ -25,7 +25,7 @@ export function AppSelect({
       {label && (
         <label
           htmlFor={selectId}
-          className="mb-2 block text-[14px] font-medium text-[#F4F4F5]"
+          className="mb-2 block text-[14px] font-medium text-[var(--foreground)]"
         >
           {label}
         </label>
@@ -36,14 +36,14 @@ export function AppSelect({
           disabled={disabled}
           aria-invalid={error ? "true" : undefined}
           aria-describedby={[errorId, helperId].filter(Boolean).join(" ") || undefined}
-          className={`w-full min-h-[48px] appearance-none rounded-[10px] border bg-[#27272A] px-3.5 py-2.5 pr-10 text-[16px] text-[#F4F4F5] transition-colors focus:border-[#93C5FD] focus:outline-none focus:ring-2 focus:ring-[#93C5FD] disabled:cursor-not-allowed disabled:opacity-50 ${
-            error ? "border-[#B91C1C]" : "border-[#3F3F46]"
+          className={`w-full min-h-[48px] appearance-none rounded-[10px] border bg-[var(--surface-elevated)] px-3.5 py-2.5 pr-10 text-[16px] text-[var(--foreground)] transition-colors focus:border-[var(--focus)] focus:outline-none focus:ring-2 focus:ring-[var(--focus)] disabled:cursor-not-allowed disabled:opacity-50 ${
+            error ? "border-[var(--primary-hover)]" : "border-[var(--border)]"
           } ${className}`}
           {...props}
         >
           {children}
         </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#A1A1AA]">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[var(--muted)]">
           <svg
             className="h-4 w-4"
             fill="none"
@@ -56,12 +56,12 @@ export function AppSelect({
         </div>
       </div>
       {error && (
-        <p id={errorId} className="mt-1.5 text-[13px] text-[#FCA5A5]" role="alert">
+        <p id={errorId} className="mt-1.5 text-[13px] text-[var(--primary-text)]" role="alert">
           {error}
         </p>
       )}
       {!error && helperText && (
-        <p id={helperId} className="mt-1.5 text-[13px] text-[#A1A1AA]">
+        <p id={helperId} className="mt-1.5 text-[13px] text-[var(--muted)]">
           {helperText}
         </p>
       )}

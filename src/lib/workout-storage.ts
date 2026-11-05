@@ -6,6 +6,7 @@ import {
 
 import { emptyTrainingState, parseTrainingState, type TrainingState } from "./training-state";
 import { BIKE_STORAGE_KEY, bindBikeStorage, newBikeData, sanitizeBikeData } from "./bike-cardio";
+import { PLAN_STORAGE_KEY, bindPlanStorage, emptyPlans, sanitizeWeeklyPlans } from "./weekly-plan";
 
 let account: { read: () => TrainingState; write: (data: TrainingState) => void } | null = null;
 export function bindAccountStorage(adapter: typeof account) {
@@ -13,6 +14,10 @@ export function bindAccountStorage(adapter: typeof account) {
   bindBikeStorage(adapter ? {
     read: () => sanitizeBikeData(adapter.read().bike ?? newBikeData()),
     write: bike => adapter.write({ ...adapter.read(), bike }),
+  } : null);
+  bindPlanStorage(adapter ? {
+    read: () => sanitizeWeeklyPlans(adapter.read().plans ?? emptyPlans()),
+    write: plans => adapter.write({ ...adapter.read(), plans }),
   } : null);
 }
 
@@ -32,6 +37,12 @@ export function readLegacyTrainingState(): TrainingState {
   }
   const bike = localStorage.getItem(BIKE_STORAGE_KEY);
   if (bike) state.bike = sanitizeBikeData(JSON.parse(bike));
+  try {
+    const plans = localStorage.getItem(PLAN_STORAGE_KEY);
+    if (plans) state.plans = sanitizeWeeklyPlans(JSON.parse(plans));
+  } catch {
+    // Um plano corrompido não deve impedir a importação do histórico.
+  }
   return parseTrainingState(state);
 }
 

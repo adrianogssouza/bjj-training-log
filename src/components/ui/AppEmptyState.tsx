@@ -27,19 +27,19 @@ export function AppEmptyState({
 }: AppEmptyStateProps) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-[16px] border border-[#3F3F46] bg-[#18181B] p-8 text-center text-[#F4F4F5] ${className}`}
+      className={`flex flex-col items-center justify-center rounded-[16px] border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--foreground)] ${className}`}
     >
       {icon && (
-        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#27272A] text-[#A1A1AA]">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-elevated)] text-[var(--muted)]">
           <AppIcon name={icon} size={24} />
         </div>
       )}
       {title && (
-        <h3 className="mb-1 text-[18px] font-bold leading-[25px] text-[#F4F4F5]">
+        <h3 className="mb-1 text-[18px] font-bold leading-[25px] text-[var(--foreground)]">
           {title}
         </h3>
       )}
-      <p className="max-w-md text-[14px] font-normal leading-[21px] text-[#A1A1AA]">
+      <p className="max-w-md text-[14px] font-normal leading-[21px] text-[var(--muted)]">
         {message}
       </p>
 

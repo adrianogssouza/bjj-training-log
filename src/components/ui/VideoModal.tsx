@@ -69,10 +69,10 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
       maxWidth="max-w-[640px]"
     >
       <div className="space-y-4">
-        <div className="aspect-video w-full overflow-hidden rounded-[12px] border border-[#3F3F46] bg-black">
+        <div className="aspect-video w-full overflow-hidden rounded-[12px] border border-[var(--border)] bg-black">
           {hasError ? (
             <div className="flex h-full min-h-48 items-center justify-center p-4 text-center">
-              <p className="text-[14px] font-medium leading-[21px] text-[#A1A1AA]">
+              <p className="text-[14px] font-medium leading-[21px] text-[var(--muted)]">
                 O vídeo integrado não carregou. Use a opção de abrir no YouTube.
               </p>
             </div>
@@ -99,7 +99,7 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[13px] text-[#A1A1AA]">
+          <p className="text-[13px] text-[var(--muted)]">
             Se o vídeo demorar a carregar, abra diretamente no YouTube.
           </p>
           {videoSource.externalUrl ? (
@@ -107,7 +107,7 @@ export function VideoModal({ title, videoUrl, onClose }: VideoModalProps) {
               href={videoSource.externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[12px] bg-[#27272A] border border-[#3F3F46] px-4 py-2 text-[14px] font-bold text-[#F4F4F5] hover:bg-[#3F3F46] transition-colors"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-[12px] bg-[var(--surface-elevated)] border border-[var(--border)] px-4 py-2 text-[14px] font-bold text-[var(--foreground)] hover:bg-[var(--border)] transition-colors"
             >
               Abrir no YouTube
             </a>

@@ -21,7 +21,7 @@ export function AppProgress({
   if (size === "sm") heightClass = "h-1.5"; // 6px
   if (size === "lg") heightClass = "h-3"; // 12px
 
-  const fillBg = color === "primary" ? "bg-[#DC2626]" : "bg-[#047857]";
+  const fillBg = color === "primary" ? "bg-[var(--primary)]" : "bg-[var(--success)]";
 
   return (
     <div
@@ -30,7 +30,7 @@ export function AppProgress({
       aria-valuenow={clampedValue}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={`w-full overflow-hidden rounded-full bg-[#27272A] ${heightClass} ${className}`}
+      className={`w-full overflow-hidden rounded-full bg-[var(--surface-elevated)] ${heightClass} ${className}`}
       {...props}
     >
       <div

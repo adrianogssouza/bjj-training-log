@@ -37,8 +37,8 @@ export function Login({ api }: { api: SupabaseClient }) {
     <main className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center py-12 px-4">
       <AppCard className="p-6 space-y-5">
         <div>
-          <h1 className="text-[24px] font-extrabold leading-[30px] text-[#F4F4F5]">MEU TREINO</h1>
-          <p className="mt-1 text-[14px] text-[#A1A1AA]">Treinamento e evolução</p>
+          <h1 className="text-[24px] font-extrabold leading-[30px] text-[var(--foreground)]">MEU TREINO</h1>
+          <p className="mt-1 text-[14px] text-[var(--muted)]">Treinamento e evolução</p>
         </div>
 
         <form onSubmit={submit} className="flex flex-col gap-4">
@@ -64,12 +64,12 @@ export function Login({ api }: { api: SupabaseClient }) {
         </form>
 
         {error && (
-          <p role="alert" className="text-[13px] text-[#FCA5A5] rounded-[10px] border border-[#B91C1C] bg-[#450A0A]/40 p-3">
+          <p role="alert" className="text-[13px] text-[var(--primary-text)] rounded-[10px] border border-[var(--primary-hover)] bg-[var(--primary-soft)]/40 p-3">
             {error}
           </p>
         )}
 
-        <p className="text-[13px] leading-[18px] text-[#A1A1AA]">
+        <p className="text-[13px] leading-[18px] text-[var(--muted)]">
           Use a conta criada em Authentication → Users no Supabase. Se utilizar o mesmo projeto do NutriPlan, pode usar o mesmo e-mail e senha.
         </p>
       </AppCard>
@@ -298,8 +298,8 @@ export function Account({ api, session, children }: { api: SupabaseClient; sessi
       {firstAccess && (
         <main className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center py-10 px-4">
           <AppCard className="p-6 space-y-4">
-            <h1 className="text-[20px] font-bold text-[#F4F4F5]">Primeiro acesso desta conta</h1>
-            <p className="text-[14px] leading-[21px] text-[#A1A1AA]">
+            <h1 className="text-[20px] font-bold text-[var(--foreground)]">Primeiro acesso desta conta</h1>
+            <p className="text-[14px] leading-[21px] text-[var(--muted)]">
               Se já treinou neste navegador, importe o histórico e as sessões em andamento. A cópia antiga será preservada.
             </p>
             <div className="space-y-2 pt-2">
@@ -318,7 +318,7 @@ export function Account({ api, session, children }: { api: SupabaseClient; sessi
       {error && !firstAccess && (
         <div
           role="alert"
-          className="my-3 space-y-3 rounded-[12px] border border-[#FBBF24]/50 bg-[#FBBF24]/10 p-4 text-[#F4F4F5]"
+          className="my-3 space-y-3 rounded-[12px] border border-[var(--warning)]/50 bg-[var(--warning)]/10 p-4 text-[var(--foreground)]"
         >
           <p className="text-[14px] leading-[21px]">{error}</p>
           <div className="flex flex-wrap gap-2">
@@ -353,7 +353,7 @@ export function Account({ api, session, children }: { api: SupabaseClient; sessi
       {view && (view.message || view.status === "error" || view.status === "conflict") && !firstAccess && (
         <div
           role="alert"
-          className="my-3 space-y-3 rounded-[12px] border border-[#FBBF24]/50 bg-[#FBBF24]/10 p-4 text-[#F4F4F5]"
+          className="my-3 space-y-3 rounded-[12px] border border-[var(--warning)]/50 bg-[var(--warning)]/10 p-4 text-[var(--foreground)]"
         >
           <p className="text-[14px] leading-[21px]">{view.message}</p>
           <div className="flex flex-wrap gap-2">
@@ -381,7 +381,7 @@ export function Account({ api, session, children }: { api: SupabaseClient; sessi
 
       {/* Loading state before view initializes */}
       {!view && !firstAccess && !error && (
-        <p role="status" className="py-10 text-center text-[14px] text-[#A1A1AA]">
+        <p role="status" className="py-10 text-center text-[14px] text-[var(--muted)]">
           Carregando sua conta…
         </p>
       )}
@@ -472,7 +472,7 @@ export function CloudWorkspace({ children }: { children: ReactNode }) {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center py-10 px-4">
         <AppCard className="p-6">
-          <p role="alert" className="text-[14px] text-[#FCA5A5]">{error}</p>
+          <p role="alert" className="text-[14px] text-[var(--primary-text)]">{error}</p>
         </AppCard>
       </main>
     );
@@ -480,7 +480,7 @@ export function CloudWorkspace({ children }: { children: ReactNode }) {
 
   if (!ready) {
     return (
-      <p role="status" className="py-10 text-center text-[14px] text-[#A1A1AA]">
+      <p role="status" className="py-10 text-center text-[14px] text-[var(--muted)]">
         Preparando aplicativo…
       </p>
     );
@@ -498,7 +498,7 @@ export function CloudWorkspace({ children }: { children: ReactNode }) {
 
     return (
       <AccountContext.Provider value={localContext}>
-        <div className="mb-4 rounded-[10px] border border-[#FBBF24]/40 bg-[#FBBF24]/10 p-3 text-[13px] text-[#FBBF24]" role="status">
+        <div className="mb-4 rounded-[10px] border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3 text-[13px] text-[var(--warning)]" role="status">
           Modo local · Configure as variáveis do Supabase na Vercel para ativar login e sincronização.
         </div>
         {children}

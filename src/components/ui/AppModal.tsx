@@ -119,15 +119,15 @@ export function AppModal({
         aria-describedby={description ? descId : undefined}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${maxWidth} rounded-t-[20px] sm:rounded-[20px] border border-[#3F3F46] bg-[#18181B] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:pb-5 text-[#F4F4F5] shadow-2xl focus:outline-none ${className}`}
+        className={`w-full ${maxWidth} rounded-t-[20px] sm:rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:pb-5 text-[var(--foreground)] shadow-2xl focus:outline-none ${className}`}
       >
-        <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#3F3F46] pb-3">
+        <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
           <div>
-            <h2 id={titleId} className="text-[20px] font-bold leading-[28px] text-[#F4F4F5]">
+            <h2 id={titleId} className="text-[20px] font-bold leading-[28px] text-[var(--foreground)]">
               {title}
             </h2>
             {description && (
-              <p id={descId} className="mt-1 text-[14px] font-normal leading-[21px] text-[#A1A1AA]">
+              <p id={descId} className="mt-1 text-[14px] font-normal leading-[21px] text-[var(--muted)]">
                 {description}
               </p>
             )}
@@ -136,7 +136,7 @@ export function AppModal({
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-[#A1A1AA] hover:bg-[#27272A] hover:text-[#F4F4F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD]"
+            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-[var(--muted)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
           >
             <AppIcon name="close" size={20} />
           </button>

@@ -20,7 +20,7 @@ export function AppCard({
 
   return (
     <Component
-      className={`border border-[#3F3F46] bg-[#18181B] p-4 text-[#F4F4F5] ${radiusClass} ${className}`}
+      className={`border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--foreground)] ${radiusClass} ${className}`}
       {...props}
     >
       {children}

@@ -338,7 +338,7 @@ export function BikeGuidedRunner({
         <button
           type="button"
           onClick={handleFinishWorkout}
-          className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-base font-black text-white shadow-lg shadow-red-700/30 transition hover:bg-red-500 active:scale-[0.98]"
+          className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-base font-black text-[var(--on-primary)] shadow-lg shadow-red-700/30 transition hover:bg-red-500 active:scale-[0.98]"
         >
           ✓ Encerrar e salvar ({Math.max(1, Math.round(elapsedSeconds / 60))} min)
         </button>

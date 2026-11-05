@@ -317,7 +317,7 @@ export function BikeSessionForm({
         {/* Botão de Envio com Touch Target Amplo */}
         <button
           type="submit"
-          className="min-h-12 w-full rounded-xl bg-red-600 px-5 py-3 text-base font-black text-white shadow-lg transition hover:bg-red-500 active:scale-[0.98]"
+          className="min-h-12 w-full rounded-xl bg-red-600 px-5 py-3 text-base font-black text-[var(--on-primary)] shadow-lg transition hover:bg-red-500 active:scale-[0.98]"
         >
           {editingId ? "Salvar alterações da sessão" : "Salvar treino"}
         </button>

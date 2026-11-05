@@ -179,3 +179,15 @@ O APP JIU está funcional para uso semanal real. A próxima ação técnica prev
 - Controle de revisão contra sobrescrita concorrente, reconexão e atualização das telas.
 - Retomada preserva sessão existente ao abrir um link de início. Reiniciar continua sendo uma ação explícita.
 - Testes automatizados de armazenamento, sincronização e interface da conta.
+
+## Redesign 2026 — Fase 1: plano semanal e temas
+
+Status: em revisão (pull request).
+
+- Planejador semanal em `/plano`: semana a semana, vários treinos por dia (ex.: Treino A + Cardio 3), copiar da semana anterior e limpar semana.
+- Home com **Plano de hoje** (todos os treinos do dia, cada um com Iniciar/Continuar e selo Feito) e faixa **Plano da semana** com o que foi feito.
+- Plano salvo no mesmo estado da conta (`bjj_training_states.data.plans`), sem migração SQL; no modo local fica em `bjj-training-log:weekly-plans:v1`.
+- "A" e "B" no plano seguem o Treino A/B do ciclo vigente.
+- Quatro temas escuros (Carvão · Vermelho, Preto · Verde-limão, Azul-noite · Ciano, Grafite · Dourado) no botão de aparência do cabeçalho, salvos por dispositivo.
+- Cores dos componentes passam a vir de variáveis CSS; vermelho de perigo e cores de status não mudam com o tema.
+- Fontes dos temas servidas pelo próprio app (`@fontsource`).

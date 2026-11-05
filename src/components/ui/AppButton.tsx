@@ -44,25 +44,25 @@ export function AppButton({
   switch (variant) {
     case "primary":
       variantClasses =
-        "bg-[#DC2626] text-white font-bold hover:bg-[#B91C1C] active:bg-[#991B1B] min-h-[48px]";
+        "bg-[var(--primary)] text-[var(--on-primary)] font-bold hover:bg-[var(--primary-hover)] active:bg-[var(--primary-active)] min-h-[48px]";
       break;
     case "secondary":
       variantClasses =
-        "bg-[#27272A] border border-[#3F3F46] text-[#F4F4F5] font-medium hover:bg-[#3F3F46] active:bg-[#52525B] min-h-[44px]";
+        "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--foreground)] font-medium hover:bg-[var(--border)] active:bg-[var(--border-strong)] min-h-[44px]";
       break;
     case "ghost":
       variantClasses =
-        "bg-transparent text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-[#27272A]/50 font-medium min-h-[44px]";
+        "bg-transparent text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)]/50 font-medium min-h-[44px]";
       break;
     case "danger":
       variantClasses =
-        "bg-[#B91C1C] text-white font-bold hover:bg-[#991B1B] active:bg-[#7F1D1D] min-h-[48px]";
+        "bg-[var(--danger)] text-white font-bold hover:bg-[var(--danger-hover)] active:bg-[var(--danger-active)] min-h-[48px]";
       break;
   }
 
   const baseClasses = [
     "inline-flex items-center justify-center gap-2 rounded-[12px] px-4 py-2.5 text-center text-base transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090B]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
     fullWidth ? "w-full" : "",
     variantClasses,
     isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
