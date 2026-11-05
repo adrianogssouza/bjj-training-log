@@ -494,13 +494,11 @@ export function CloudWorkspace({ children }: { children: ReactNode }) {
       syncStatus: "Sem sincronização",
       syncMessage: "Modo local · Configure as variáveis do Supabase para sincronizar em nuvem.",
       userEmail: null,
+      notice: "Modo local · Configure as variáveis do Supabase na Vercel para ativar login e sincronização.",
     };
 
     return (
       <AccountContext.Provider value={localContext}>
-        <div className="mb-4 rounded-[10px] border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3 text-[13px] text-[var(--warning)]" role="status">
-          Modo local · Configure as variáveis do Supabase na Vercel para ativar login e sincronização.
-        </div>
         {children}
         <AccountModal
           isOpen={isLocalAccountModalOpen}

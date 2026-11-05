@@ -10,6 +10,8 @@ export interface AccountContextType {
   syncMessage: string;
   userEmail: string | null;
   onLogout?: () => void;
+  /** Aviso fixo exibido abaixo do cabeçalho (ex.: modo local). */
+  notice?: string;
 }
 
 export const AccountContext = createContext<AccountContextType>({

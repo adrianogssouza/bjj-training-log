@@ -230,6 +230,11 @@ h3 {
   font-family: var(--font-heading);
 }
 
+html {
+  /* Âncoras e foco não ficam escondidos atrás do cabeçalho fixo. */
+  scroll-padding-top: calc(72px + env(safe-area-inset-top));
+}
+
 a {
   text-decoration: none;
 }

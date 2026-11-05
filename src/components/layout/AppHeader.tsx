@@ -19,8 +19,8 @@ export function AppHeader({ currentPath }: { currentPath?: string } = {}) {
   const { openAccountModal, syncStatus } = useAccount();
 
   return (
-    <header className="sticky top-0 z-30 flex h-[60px] md:h-[64px] w-full items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 sm:px-6">
-      <div className="mx-auto flex w-full max-w-[960px] items-center justify-between">
+    <header className="fixed inset-x-0 top-0 z-30 w-full border-b border-[var(--border)] bg-[var(--background-glass)] px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6">
+      <div className="mx-auto flex h-[60px] w-full max-w-[960px] items-center justify-between md:h-[64px]">
         {/* Brand */}
         <Link
           href="/"
