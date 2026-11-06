@@ -65,4 +65,10 @@ export type WorkoutHistoryEntry = WorkoutSession & {
   completedAt: string;
   durationSeconds: number;
   workoutTitle: string;
+  /** Sensação geral de 1 (Péssimo) a 5 (Ótimo). Opcional. */
+  feeling?: 1 | 2 | 3 | 4 | 5;
+  /** Incômodos marcados; [] quando "Nenhum". Ausente = não respondido. */
+  pains?: string[];
+  /** Observação livre da sessão. Opcional. */
+  note?: string;
 };

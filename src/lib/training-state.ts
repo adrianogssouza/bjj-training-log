@@ -2,6 +2,7 @@ import type { WorkoutHistoryEntry, WorkoutSession } from "../types/index";
 import { sanitizeWorkoutSessionPse } from "./workout-validation";
 import { mergeBikeData, sanitizeBikeData, type BikeData } from "./bike-cardio";
 import { mergeWeeklyPlans, sanitizeWeeklyPlans, type WeeklyPlans } from "./weekly-plan";
+import { parseSessionFeedbackFields } from "./session-feedback";
 
 export type TrainingState = {
   version: 1;
@@ -39,7 +40,11 @@ export function parseTrainingState(value: unknown): TrainingState {
   const history = value.history.map(entry => {
     const session = parseSession(entry);
     if (!record(entry) || typeof entry.id !== "string" || !date(entry.completedAt) || !nonNegative(entry.durationSeconds) || typeof entry.workoutTitle !== "string") throw Error("Histórico inválido.");
-    return { ...entry, ...session } as WorkoutHistoryEntry;
+    // Avaliação pós-treino: campos opcionais (histórico antigo não tem).
+    const feedback = parseSessionFeedbackFields(entry);
+    const { feeling: _feeling, pains: _pains, note: _note, ...rest } = entry;
+    void _feeling; void _pains; void _note;
+    return { ...rest, ...session, ...feedback } as WorkoutHistoryEntry;
   });
   const activeSessions = Object.fromEntries(Object.entries(value.activeSessions).map(([id, session]) => {
     const parsed = parseSession(session);

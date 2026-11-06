@@ -12,6 +12,8 @@ import {
   type BikeData,
 } from "@/lib/bike-cardio";
 import { getSaoPauloWeekRange } from "@/lib/date-utils";
+import { averageFeeling, feelingLabel } from "@/lib/session-feedback";
+import { formatNumber } from "@/lib/progress";
 import type { WorkoutHistoryEntry } from "@/types";
 
 export function WeekSummarySection() {
@@ -41,10 +43,13 @@ export function WeekSummarySection() {
   const endTime = end.getTime();
 
   // Musculação: sessões concluídas na semana (Seg-Dom em America/Sao_Paulo)
-  const weeklyWorkoutSessions = history.filter((entry) => {
+  const weeklyEntries = history.filter((entry) => {
     const timestamp = new Date(entry.completedAt || entry.startedAt).getTime();
     return Number.isFinite(timestamp) && timestamp >= startTime && timestamp <= endTime;
-  }).length;
+  });
+  const weeklyWorkoutSessions = weeklyEntries.length;
+  // Sensação média das sessões avaliadas na semana (avaliação é opcional).
+  const weeklyFeeling = averageFeeling(weeklyEntries);
 
   // Bike: minutos realizados na semana de calendário (Segunda a Domingo, America/Sao_Paulo)
   // Somar apenas sessões com status === "completed"
@@ -71,7 +76,7 @@ export function WeekSummarySection() {
         Resumo da semana
       </h2>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {/* Musculação */}
         <AppCard className="p-4">
           <AppStat
@@ -97,6 +102,30 @@ export function WeekSummarySection() {
                 : "Sem programa ativo"
             }
             color="success"
+          />
+        </AppCard>
+
+        {/* Sensação média (avaliação ao concluir o treino) */}
+        <AppCard className="col-span-2 p-4 sm:col-span-1">
+          <AppStat
+            label="Sensação média"
+            value={
+              weeklyFeeling ? (
+                <span>
+                  {formatNumber(weeklyFeeling.average)}
+                  <span className="ml-1.5 text-[16px] font-semibold text-[var(--muted)]">
+                    {feelingLabel(weeklyFeeling.average)}
+                  </span>
+                </span>
+              ) : (
+                "-"
+              )
+            }
+            subtext={
+              weeklyFeeling
+                ? `${weeklyFeeling.count} ${weeklyFeeling.count === 1 ? "treino avaliado" : "treinos avaliados"} de 1 a 5`
+                : "Avalie ao concluir o treino"
+            }
           />
         </AppCard>
       </div>

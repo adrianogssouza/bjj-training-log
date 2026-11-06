@@ -12,6 +12,7 @@ import { AppSelect } from "@/components/ui/AppSelect";
 import { readWorkoutHistory } from "@/lib/workout-storage";
 import { loadBikeData, readableDate, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { seedWorkouts } from "@/data/seed-workouts";
+import { feelingLabel } from "@/lib/session-feedback";
 import type { WorkoutHistoryEntry, WorkoutSessionLog } from "@/types";
 
 type CategoryFilter = "todos" | "principal" | "complementares" | "bike";
@@ -507,11 +508,35 @@ export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
                 </div>
 
                 {/* Duration & status metrics */}
-                <div className="flex items-center gap-4 text-[14px] text-[var(--muted)]">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-[var(--muted)]">
                   <span>
                     Duração: <strong className="text-[var(--foreground)]">{item.formattedDuration}</strong>
                   </span>
+                  {item.workoutEntry?.feeling !== undefined && (
+                    <span>
+                      Sensação:{" "}
+                      <strong className="text-[var(--foreground)]">
+                        {feelingLabel(item.workoutEntry.feeling)} ({item.workoutEntry.feeling}/5)
+                      </strong>
+                    </span>
+                  )}
                 </div>
+
+                {/* Avaliação pós-treino (opcional) */}
+                {item.workoutEntry?.pains && item.workoutEntry.pains.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5" aria-label="Incômodos">
+                    {item.workoutEntry.pains.map((pain) => (
+                      <AppBadge key={pain} variant="warning">
+                        {pain}
+                      </AppBadge>
+                    ))}
+                  </div>
+                )}
+                {item.workoutEntry?.note && (
+                  <p className="border-l-2 border-[var(--primary-line)] pl-3 text-[14px] italic leading-[20px] text-[var(--foreground-soft)]">
+                    “{item.workoutEntry.note}”
+                  </p>
+                )}
 
                 {/* Toggle details action */}
                 <div className="pt-1">

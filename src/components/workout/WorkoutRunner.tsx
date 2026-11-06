@@ -18,6 +18,12 @@ import { AppProgress } from "@/components/ui/AppProgress";
 import { VideoModal } from "@/components/ui/VideoModal";
 import { ExerciseListSheet } from "@/components/workout/ExerciseListSheet";
 import { RestPanel } from "@/components/workout/RestPanel";
+import { SessionWrapUp } from "@/components/workout/SessionWrapUp";
+import {
+  summarizeSession,
+  type SessionFeedback,
+  type SessionSummary,
+} from "@/lib/session-feedback";
 import {
   createWorkoutHistoryEntry,
   createWorkoutSession,
@@ -26,6 +32,7 @@ import {
   readWorkoutHistory,
   removeActiveWorkoutSession,
   saveActiveWorkoutSession,
+  saveWorkoutFeedback,
   saveWorkoutHistoryEntry,
 } from "@/lib/workout-storage";
 import {
@@ -75,10 +82,9 @@ type RestState = {
   roundLabel: string;
 };
 type CompletedSummary = {
+  entryId: string;
   workoutTitle: string;
-  durationSeconds: number;
-  completedCount: number;
-  skippedCount?: number;
+  summary: SessionSummary;
 };
 
 const skipReasons = [
@@ -159,14 +165,9 @@ function createCompletedSummary(
   historyEntry: WorkoutHistoryEntry,
 ): CompletedSummary {
   return {
+    entryId: historyEntry.id,
     workoutTitle: historyEntry.workoutTitle,
-    durationSeconds: historyEntry.durationSeconds,
-    completedCount: Object.values(historyEntry.logs).filter(
-      (log) => log.completed,
-    ).length,
-    skippedCount: Object.values(historyEntry.logs).filter(
-      (log) => log.skipped,
-    ).length,
+    summary: summarizeSession(historyEntry),
   };
 }
 
@@ -629,6 +630,20 @@ export function WorkoutRunner({
     resetUiState();
   }
 
+  function handleWrapUpSave(
+    feedback: SessionFeedback,
+    next: "home" | "history" | "repeat",
+  ) {
+    if (completedSummary && Object.keys(feedback).length > 0) {
+      saveWorkoutFeedback(completedSummary.entryId, feedback);
+    }
+    if (next === "repeat") {
+      startNewSession();
+      return;
+    }
+    router.push(next === "home" ? "/" : "/progresso?aba=historico");
+  }
+
   function completeAndGoNext() {
     if (!currentStep || isAdvancingRef.current) {
       return;
@@ -965,8 +980,10 @@ export function WorkoutRunner({
 
   if (runnerView === "overview" || runnerStatus !== "active") {
     return (
-      <main className="flex flex-1 flex-col gap-5 pb-8 pt-6">
-        <section className="flex flex-col gap-3">
+      <main className={`flex flex-1 flex-col gap-5 pb-8 ${runnerStatus === "completed" ? "pt-2" : "pt-6"}`}>
+        {/* Na conclusão o card já traz o título do treino; o cabeçalho sai
+            para o resumo e a avaliação caberem sem rolar no celular. */}
+        <section className={`flex flex-col gap-3 ${runnerStatus === "completed" ? "hidden" : ""}`}>
           <Link
             href={`/workouts/${workout.id}`}
             className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
@@ -1038,67 +1055,12 @@ export function WorkoutRunner({
             </div>
           ) : null}
 
-          {runnerStatus === "completed" ? (
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="text-[13px] font-semibold uppercase tracking-wide text-[var(--success-text)]">
-                  Sessão salva
-                </p>
-                <h2 className="mt-1 text-[24px] font-extrabold text-[var(--foreground)]">
-                  Treino concluído
-                </h2>
-                <p className="mt-1 text-[14px] text-[var(--muted)]">
-                  {completedSummary?.workoutTitle ?? workout.title}
-                </p>
-              </div>
-
-              <dl className="grid grid-cols-2 gap-3 text-[14px]">
-                <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
-                  <dt className="text-[12px] text-[var(--muted)]">Tempo total</dt>
-                  <dd className="mt-0.5 font-bold text-[var(--foreground)]">
-                    {formatDuration(completedSummary?.durationSeconds ?? 0)}
-                  </dd>
-                </div>
-                <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
-                  <dt className="text-[12px] text-[var(--muted)]">Concluídos</dt>
-                  <dd className="mt-0.5 font-bold text-[var(--success-text)]">
-                    {completedSummary?.completedCount ?? 0}
-                  </dd>
-                </div>
-                {Boolean(completedSummary?.skippedCount) && (
-                  <div className="col-span-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3">
-                    <dt className="text-[12px] text-[var(--muted)]">Pulados</dt>
-                    <dd className="mt-0.5 font-bold text-[var(--warning)]">
-                      {completedSummary?.skippedCount}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-
-              <div className="space-y-2 pt-2">
-                <AppButton
-                  href="/"
-                  variant="primary"
-                  fullWidth
-                >
-                  Voltar para Hoje
-                </AppButton>
-                <AppButton
-                  href="/progresso?aba=historico"
-                  variant="secondary"
-                  fullWidth
-                >
-                  Ver histórico
-                </AppButton>
-                <AppButton
-                  onClick={startNewSession}
-                  variant="ghost"
-                  fullWidth
-                >
-                  Repetir este treino
-                </AppButton>
-              </div>
-            </div>
+          {runnerStatus === "completed" && completedSummary ? (
+            <SessionWrapUp
+              workoutTitle={completedSummary.workoutTitle}
+              summary={completedSummary.summary}
+              onSave={handleWrapUpSave}
+            />
           ) : null}
         </AppCard>
       </main>
