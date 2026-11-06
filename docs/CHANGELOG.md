@@ -201,3 +201,4 @@ Status: em revisão (pull request).
 - Opções da série: Fazer depois, Pular esta série e Não farei hoje (pula as séries restantes do exercício).
 - Compatível com histórico e sessões em andamento anteriores: a 1ª série mantém o id antigo e o campo `set` dos registros é opcional (sem migração SQL).
 - Home conta o progresso em séries; Histórico agrupa as séries de cada exercício.
+- Ajuste pós-teste no celular: card do exercício compacto (vídeo ao lado do nome, meta e PSE em uma linha), reps e PSE lado a lado, última execução numa linha, aviso flutuante e "Cancelar treino" fora da barra fixa, para os campos da série aparecerem sem rolar.

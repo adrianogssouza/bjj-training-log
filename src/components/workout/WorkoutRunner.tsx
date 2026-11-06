@@ -14,7 +14,6 @@ import { AppCard } from "@/components/ui/AppCard";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppButton } from "@/components/ui/AppButton";
-import { AppBadge } from "@/components/ui/AppBadge";
 import { AppProgress } from "@/components/ui/AppProgress";
 import { VideoModal } from "@/components/ui/VideoModal";
 import { ExerciseListSheet } from "@/components/workout/ExerciseListSheet";
@@ -1137,7 +1136,7 @@ export function WorkoutRunner({
     "min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]";
 
   return (
-    <main className="flex flex-1 flex-col gap-3 pb-[calc(11rem+env(safe-area-inset-bottom))] pt-1 sm:pb-48">
+    <main className="flex flex-1 flex-col gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:pb-40">
       {/* Modo foco: só o essencial; a lista completa fica em "Ver lista". */}
       <section className="flex items-end justify-between gap-3">
         <div className="min-w-0">
@@ -1162,7 +1161,19 @@ export function WorkoutRunner({
         </button>
       </section>
 
-      <AppCard className="p-3">
+      {/* Aviso rápido flutuante: não empurra o conteúdo a cada série. */}
+      {actionFeedback ? (
+        <div
+          role="status"
+          className="pointer-events-none fixed inset-x-0 top-[calc(68px+env(safe-area-inset-top))] z-30 flex justify-center px-4"
+        >
+          <p className="rounded-full border border-[var(--success)]/60 bg-[var(--surface-elevated)] px-4 py-2 text-[14px] font-bold text-[var(--success-text)] shadow-lg">
+            {actionFeedback}
+          </p>
+        </div>
+      ) : null}
+
+      <AppCard className="px-3 pb-1 pt-2.5">
         <div className="flex items-center justify-between gap-4">
           <p className="text-[14px] text-[var(--muted)]">
             <span className="text-[18px] font-black text-[var(--foreground)]">
@@ -1177,25 +1188,23 @@ export function WorkoutRunner({
             {formatDuration(elapsedSeconds)}
           </p>
         </div>
-        <AppProgress value={progressPercent} color="primary" className="mt-2" />
+        <AppProgress value={progressPercent} color="primary" size="sm" className="mt-1.5" />
 
         <button
           type="button"
           role="switch"
           aria-checked={autoRest}
           onClick={toggleAutoRest}
-          className="mt-2 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
+          className="mt-0.5 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
         >
-          <span className="min-w-0">
-            <span className="block text-[14px] font-medium text-[var(--foreground)]">
-              Descanso automático
-            </span>
-            <span className="block text-[12px] text-[var(--muted)]">
+          <span className="min-w-0 truncate text-[14px] font-medium text-[var(--foreground)]">
+            Descanso automático
+            <span className="font-normal text-[var(--muted)]">
               {autoRest
                 ? currentRestSeconds
-                  ? `Ao terminar a rodada · ${formatRestDuration(currentRestSeconds)}`
-                  : "Ao terminar cada rodada"
-                : "Desligado"}
+                  ? ` · ${formatRestDuration(currentRestSeconds)} por rodada`
+                  : " · por rodada"
+                : " · desligado"}
             </span>
           </span>
           <span
@@ -1216,18 +1225,8 @@ export function WorkoutRunner({
           </span>
         </button>
 
-        {actionFeedback ? (
-          <div
-            role="status"
-            className="mt-2 rounded-lg border border-[var(--success)]/50 bg-[var(--success)]/15 px-3 py-2"
-          >
-            <p className="text-sm font-bold text-[var(--success-text)]">
-              {actionFeedback}
-            </p>
-          </div>
-        ) : null}
         {isPaused ? (
-          <div className="mt-2 rounded-lg border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-3 py-2">
+          <div className="mb-2 rounded-lg border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-3 py-2">
             <p className="text-sm font-bold text-[var(--warning)]">Treino pausado</p>
           </div>
         ) : null}
@@ -1243,146 +1242,139 @@ export function WorkoutRunner({
       ) : (
         <>
           <AppCard
-            className={`p-4 ${
+            className={`p-3.5 ${
               isCurrentCardio ? "border-cyan-500/50 bg-cyan-950/20" : ""
             }`}
           >
-            <div className="flex flex-col gap-3">
-              <div>
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wide ${
-                    isCurrentCardio ? "text-cyan-200" : "text-[var(--primary-text)]"
-                  }`}
-                >
-                  {currentBlockTypeLabel} · Bloco {currentStep.block.order}
-                </p>
-                <h2 className="mt-1 break-words text-[22px] font-bold leading-[28px] text-[var(--foreground)]">
+            <p
+              className={`text-xs font-semibold uppercase tracking-wide ${
+                isCurrentCardio ? "text-cyan-200" : "text-[var(--primary-text)]"
+              }`}
+            >
+              {currentBlockTypeLabel} · Bloco {currentStep.block.order}
+            </p>
+            <div className="mt-1 flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="break-words text-[21px] font-bold leading-[26px] text-[var(--foreground)]">
                   {currentStep.item.name}
                 </h2>
-                <p className="mt-1 break-words text-sm leading-5 text-[var(--muted)]">
-                  {currentStep.block.title}
-                </p>
-
-                {currentStep.totalSets > 1 ? (
-                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <p className="text-[16px] font-bold text-[var(--foreground)]">
-                      Série {currentStep.set}{" "}
-                      <span className="font-medium text-[var(--muted)]">
-                        de {currentStep.totalSets}
-                      </span>
-                    </p>
-                    <ol
-                      aria-label="Séries deste exercício"
-                      className="flex items-center gap-1.5"
-                    >
-                      {currentExerciseSteps.map((step) => {
-                        const status = getStepStatus(
-                          step,
-                          currentStep.id,
-                          session.logs,
-                        );
-                        const label = {
-                          done: "feita",
-                          skipped: "pulada",
-                          current: "agora",
-                          pending: "pendente",
-                        }[status];
-                        return (
-                          <li
-                            key={step.id}
-                            aria-label={`Série ${step.set}: ${label}`}
-                            className={`h-2.5 rounded-full ${
-                              status === "current" ? "w-8" : "w-5"
-                            } ${
-                              status === "done"
-                                ? "bg-[var(--success-text)]"
-                                : status === "skipped"
-                                  ? "border border-dashed border-[var(--warning)]"
-                                  : status === "current"
-                                    ? "bg-[var(--primary)]"
-                                    : "bg-[var(--border-strong)]"
-                            }`}
-                          />
-                        );
-                      })}
-                    </ol>
-                  </div>
-                ) : null}
-
-                {currentStep.item.notes ? (
-                  <p className="mt-2 break-words text-[13px] leading-5 text-[var(--foreground-soft)]">
-                    {currentStep.item.notes}
+                {currentStep.block.title !== currentStep.item.name ? (
+                  <p className="mt-0.5 truncate text-[13px] leading-[18px] text-[var(--muted)]">
+                    {currentStep.block.title}
                   </p>
                 ) : null}
-
-                {currentVideoUrl ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentVideo(true)}
-                    className="mt-3 min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm font-bold text-[var(--foreground)] transition-colors hover:border-[var(--primary-line)]"
-                  >
-                    Assistir execução
-                  </button>
-                ) : null}
               </div>
+              {currentVideoUrl ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentVideo(true)}
+                  aria-label={`Assistir execução de ${currentStep.item.name}`}
+                  className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-[13px] font-bold text-[var(--foreground)] transition-colors hover:border-[var(--primary-line)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
+                >
+                  <AppIcon name="play" size={16} />
+                  Vídeo
+                </button>
+              ) : null}
+            </div>
 
-              <dl className="grid grid-cols-3 gap-2 text-sm">
-                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
-                  <dt className="text-xs text-[var(--muted)]">Previsto</dt>
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+              {currentStep.totalSets > 1 ? (
+                <div className="flex items-center gap-2.5">
+                  <p className="text-[15px] font-bold text-[var(--foreground)]">
+                    Série {currentStep.set}{" "}
+                    <span className="font-medium text-[var(--muted)]">
+                      de {currentStep.totalSets}
+                    </span>
+                  </p>
+                  <ol
+                    aria-label="Séries deste exercício"
+                    className="flex items-center gap-1.5"
+                  >
+                    {currentExerciseSteps.map((step) => {
+                      const status = getStepStatus(
+                        step,
+                        currentStep.id,
+                        session.logs,
+                      );
+                      const label = {
+                        done: "feita",
+                        skipped: "pulada",
+                        current: "agora",
+                        pending: "pendente",
+                      }[status];
+                      return (
+                        <li
+                          key={step.id}
+                          aria-label={`Série ${step.set}: ${label}`}
+                          className={`h-2.5 rounded-full ${
+                            status === "current" ? "w-7" : "w-4"
+                          } ${
+                            status === "done"
+                              ? "bg-[var(--success-text)]"
+                              : status === "skipped"
+                                ? "border border-dashed border-[var(--warning)]"
+                                : status === "current"
+                                  ? "bg-[var(--primary)]"
+                                  : "bg-[var(--border-strong)]"
+                          }`}
+                        />
+                      );
+                    })}
+                  </ol>
+                </div>
+              ) : null}
+
+              {/* Meta da série numa linha só. */}
+              <dl className="flex flex-wrap items-center gap-1.5 text-[13px]">
+                <div className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1">
+                  <dt className="text-[var(--muted)]">Meta</dt>
                   <dd className="font-semibold text-[var(--foreground)]">
                     {currentStep.item.reps ?? currentStep.item.time ?? "-"}
                   </dd>
                 </div>
-                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
-                  <dt className="text-xs text-[var(--muted)]">Séries</dt>
-                  <dd className="font-semibold text-[var(--foreground)]">
-                    {currentStep.block.sets}
-                  </dd>
-                </div>
-                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
-                  <dt className="text-xs text-[var(--muted)]">PSE alvo</dt>
-                  <dd className="mt-0.5">
-                    <AppBadge variant="primary">
-                      {currentStep.item.targetPse ?? "-"}
-                    </AppBadge>
-                  </dd>
-                </div>
+                {currentStep.item.targetPse ? (
+                  <div className="flex gap-1 rounded-full border border-[var(--primary-line)] bg-[var(--primary-tint)] px-2.5 py-1">
+                    <dt className="text-[var(--muted)]">PSE</dt>
+                    <dd className="font-semibold text-[var(--primary-text)]">
+                      {currentStep.item.targetPse}
+                    </dd>
+                  </div>
+                ) : null}
+                {!/^\d+\s*x?$/i.test(currentStep.block.sets.trim()) ? (
+                  <div className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1">
+                    <dt className="text-[var(--muted)]">Séries</dt>
+                    <dd className="font-semibold text-[var(--foreground)]">
+                      {currentStep.block.sets}
+                    </dd>
+                  </div>
+                ) : null}
               </dl>
             </div>
+
+            {currentStep.item.notes ? (
+              <p className="mt-2 break-words text-[13px] leading-[18px] text-[var(--foreground-soft)]">
+                {currentStep.item.notes}
+              </p>
+            ) : null}
           </AppCard>
 
-          {previousExecutionLog && (
-            <AppCard variant="secondary" className="space-y-2 border-[var(--border)] bg-[var(--surface)] p-3">
-              <p className="text-[12px] font-bold text-[var(--muted)]">
-                Última execução
-                {currentStep.totalSets > 1 ? ` · série ${currentStep.set}` : ""}
+          <AppCard className="p-3.5">
+            {previousExecutionLog ? (
+              <p className="mb-3 text-[13px] text-[var(--muted)]">
+                Última vez
+                {currentStep.totalSets > 1 ? ` (série ${currentStep.set})` : ""}:{" "}
+                <span className="font-semibold text-[var(--foreground)]">
+                  {[
+                    previousExecutionLog.reps || "-",
+                    previousExecutionLog.load || "sem carga",
+                    `PSE ${previousExecutionLog.actualPse || "-"}`,
+                  ].join(" · ")}
+                </span>
               </p>
-              <dl className="grid grid-cols-3 gap-2 text-[13px]">
-                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-                  <dt className="text-[11px] text-[var(--muted)]">Reps / Tempo</dt>
-                  <dd className="font-semibold text-[var(--foreground)]">
-                    {previousExecutionLog.reps || "-"}
-                  </dd>
-                </div>
-                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-                  <dt className="text-[11px] text-[var(--muted)]">Carga</dt>
-                  <dd className="font-semibold text-[var(--foreground)]">
-                    {previousExecutionLog.load || "-"}
-                  </dd>
-                </div>
-                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-                  <dt className="text-[11px] text-[var(--muted)]">PSE</dt>
-                  <dd className="font-semibold text-[var(--foreground)]">
-                    {previousExecutionLog.actualPse || "-"}
-                  </dd>
-                </div>
-              </dl>
-            </AppCard>
-          )}
+            ) : null}
 
-          <AppCard className="p-4">
-            <div className="flex flex-col gap-4">
-              <label className="flex flex-col gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
+              <label className="flex min-w-0 flex-col justify-end gap-1.5">
                 <span className="text-[14px] font-medium text-[var(--foreground)]">
                   {primaryFieldLabel}
                 </span>
@@ -1400,23 +1392,7 @@ export function WorkoutRunner({
                 />
               </label>
 
-              <label className="flex flex-col gap-2">
-                <span className="text-[14px] font-medium text-[var(--foreground)]">
-                  {loadFieldLabel}
-                </span>
-                <input
-                  ref={loadInputRef}
-                  type="text"
-                  inputMode="text"
-                  autoComplete="off"
-                  value={currentLog?.load ?? ""}
-                  onChange={(event) => updateCurrentLog("load", event.target.value)}
-                  placeholder={loadFieldPlaceholder}
-                  className={inputClassName}
-                />
-              </label>
-
-              <label className="flex flex-col gap-2">
+              <label className="flex min-w-0 flex-col justify-end gap-1.5">
                 <span className="text-[14px] font-medium text-[var(--foreground)]">
                   {pseFieldLabel}
                 </span>
@@ -1430,6 +1406,22 @@ export function WorkoutRunner({
                     updateCurrentLog("actualPse", event.target.value)
                   }
                   placeholder="0 a 10"
+                  className={inputClassName}
+                />
+              </label>
+
+              <label className="col-span-2 flex min-w-0 flex-col gap-1.5">
+                <span className="text-[14px] font-medium text-[var(--foreground)]">
+                  {loadFieldLabel}
+                </span>
+                <input
+                  ref={loadInputRef}
+                  type="text"
+                  inputMode="text"
+                  autoComplete="off"
+                  value={currentLog?.load ?? ""}
+                  onChange={(event) => updateCurrentLog("load", event.target.value)}
+                  placeholder={loadFieldPlaceholder}
                   className={inputClassName}
                 />
               </label>
@@ -1455,6 +1447,15 @@ export function WorkoutRunner({
           <p className="text-[14px] font-medium text-[var(--primary-text)]">{validationMessage}</p>
         </div>
       ) : null}
+
+      {/* Fora da barra fixa: libera espaço para os campos da série. */}
+      <button
+        type="button"
+        onClick={() => setShowCancelConfirm(true)}
+        className="mx-auto min-h-[44px] rounded-[10px] px-3 text-[13px] font-bold text-[var(--muted)] transition-colors hover:text-[var(--primary-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
+      >
+        Cancelar treino
+      </button>
 
       <ExerciseListSheet
         isOpen={showList}
@@ -1696,13 +1697,6 @@ export function WorkoutRunner({
               </>
             )}
 
-            <button
-              type="button"
-              onClick={() => setShowCancelConfirm(true)}
-              className="min-h-[44px] rounded-[10px] px-3 text-[13px] font-bold text-[var(--muted)] transition-colors hover:text-[var(--primary-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
-            >
-              Cancelar treino
-            </button>
           </div>
         </div>
       )}
