@@ -9,7 +9,7 @@ import { AppEmptyState } from "@/components/ui/AppEmptyState";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppSelect } from "@/components/ui/AppSelect";
-import { readWorkoutHistory } from "@/lib/workout-storage";
+import { deleteWorkoutHistoryEntry, readWorkoutHistory } from "@/lib/workout-storage";
 import { loadBikeData, readableDate, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { seedWorkouts } from "@/data/seed-workouts";
 import { feelingLabel } from "@/lib/session-feedback";
@@ -373,6 +373,15 @@ export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
     });
   }
 
+  function handleDeleteSession(item: UnifiedHistoryItem) {
+    if (!item.workoutEntry) return;
+    const confirmed = window.confirm(
+      `Excluir "${item.title}" de ${item.formattedDate}? Isso não pode ser desfeito.`,
+    );
+    if (!confirmed) return;
+    deleteWorkoutHistoryEntry(item.workoutEntry.id);
+  }
+
   function handleClearFilters() {
     setSelectedCategory("todos");
     setSelectedPeriod("all");
@@ -574,6 +583,17 @@ export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
                           ))}
                         </div>
                       </div>
+                    )}
+
+                    {item.workoutEntry && (
+                      <AppButton
+                        type="button"
+                        variant="danger"
+                        fullWidth
+                        onClick={() => handleDeleteSession(item)}
+                      >
+                        Excluir esta sessão
+                      </AppButton>
                     )}
 
                     {/* Bike Details */}
