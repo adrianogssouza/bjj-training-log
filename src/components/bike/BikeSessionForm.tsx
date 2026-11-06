@@ -101,7 +101,7 @@ export function BikeSessionForm({
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5">
+            <label className="flex min-w-0 flex-col gap-1.5">
               <span className={labelClass}>Data do treino</span>
               <input
                 type="date"

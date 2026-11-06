@@ -239,6 +239,24 @@ a {
   text-decoration: none;
 }
 
+/* iPhone: o campo de data nativo tem largura mínima própria e vazava do
+   card. Ele passa a respeitar a largura do contêiner, com texto à esquerda. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value,
+input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
 /* Link acessível 'Pular para o conteúdo' */
 .skip-link {
   position: absolute;

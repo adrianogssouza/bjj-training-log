@@ -82,9 +82,22 @@ export function getBlockRestSeconds(block: WorkoutBlock): number | null {
   return parseSetCount(block.sets) > 1 ? DEFAULT_REST_SECONDS : null;
 }
 
+/**
+ * Complementares (mobilidade, core, cardio, anti-lesão) seguem um vídeo:
+ * registram uma etapa por exercício, e o "3x" fica só como informação.
+ */
+export function getTrackedSetCount(workout: Workout, block: WorkoutBlock) {
+  return workout.type === "complementary" ? 1 : parseSetCount(block.sets);
+}
+
+/** Descanso automático só existe nos treinos principais. */
+export function getWorkoutRestSeconds(workout: Workout, block: WorkoutBlock) {
+  return workout.type === "complementary" ? null : getBlockRestSeconds(block);
+}
+
 export function buildWorkoutSteps(workout: Workout): WorkoutStep[] {
   return getOrderedWorkoutBlocks(workout).flatMap((block) => {
-    const totalSets = parseSetCount(block.sets);
+    const totalSets = getTrackedSetCount(workout, block);
     const steps: WorkoutStep[] = [];
     for (let set = 1; set <= totalSets; set++) {
       for (const item of block.items) {
@@ -103,7 +116,7 @@ export function buildWorkoutSteps(workout: Workout): WorkoutStep[] {
 
 export function countWorkoutSteps(workout: Workout) {
   return getOrderedWorkoutBlocks(workout).reduce(
-    (total, block) => total + parseSetCount(block.sets) * block.items.length,
+    (total, block) => total + getTrackedSetCount(workout, block) * block.items.length,
     0,
   );
 }
@@ -124,6 +137,39 @@ export function orderSteps(steps: WorkoutStep[], stepOrder?: string[]) {
   }
 
   return [...ordered, ...steps.filter((step) => !seen.has(step.id))];
+}
+
+/**
+ * Sessão salva com etapas que não existem mais (ex.: séries extras de um
+ * complementar aberto antes deste ajuste): remove essas etapas e refaz a
+ * fila com as resolvidas primeiro, sem perder o que já foi registrado.
+ */
+export function normalizeSessionQueue<
+  T extends {
+    stepOrder?: string[];
+    currentStepIndex: number;
+    logs: Record<string, WorkoutSessionLog>;
+  },
+>(session: T, steps: WorkoutStep[]): T {
+  const knownIds = new Set(steps.map((step) => step.id));
+  const hasStale =
+    (session.stepOrder ?? []).some((id) => !knownIds.has(id)) ||
+    Object.keys(session.logs).some((id) => !knownIds.has(id));
+  if (!hasStale) return session;
+
+  const logs = Object.fromEntries(
+    Object.entries(session.logs).filter(([id]) => knownIds.has(id)),
+  );
+  const ordered = orderSteps(steps, session.stepOrder);
+  const resolved = ordered.filter((step) => isStepResolved(logs[step.id]));
+  const pending = ordered.filter((step) => !isStepResolved(logs[step.id]));
+
+  return {
+    ...session,
+    logs,
+    stepOrder: [...resolved, ...pending].map((step) => step.id),
+    currentStepIndex: Math.min(resolved.length, Math.max(steps.length - 1, 0)),
+  };
 }
 
 export function isStepResolved(log: WorkoutSessionLog | undefined) {

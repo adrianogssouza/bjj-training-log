@@ -42,12 +42,13 @@ import {
   buildWorkoutSteps,
   deferStep,
   findPreviousLog,
-  getBlockRestSeconds,
+  getWorkoutRestSeconds,
   getStepStatus,
   groupStepsByBlock,
   isRoundComplete,
   isStepResolved,
   moveStepToCurrent,
+  normalizeSessionQueue,
   orderSteps,
   skipSteps,
   type WorkoutStep,
@@ -285,9 +286,6 @@ export function WorkoutRunner({
     : isCurrentCardio
       ? "Ex: esteira, bike, corrida, remo"
       : "Ex: 24kg, BW ou elástico";
-  const pseFieldLabel = isComplementaryWorkout
-    ? "PSE real (opcional)"
-    : "PSE real";
   const progressUnitLabel = isComplementaryWorkout ? "etapas" : "séries";
   const progressRecordLabel = isComplementaryWorkout
     ? "etapas registradas"
@@ -299,11 +297,12 @@ export function WorkoutRunner({
           step.item.id === currentStep.item.id,
       )
     : [];
+  const canAutoRest = !isComplementaryWorkout;
   const currentRestSeconds = currentStep
-    ? getBlockRestSeconds(currentStep.block)
+    ? getWorkoutRestSeconds(workout, currentStep.block)
     : null;
   const restAfterCurrent = (() => {
-    if (!autoRest || !currentStep || !nextStep || !currentRestSeconds) {
+    if (!autoRest || !canAutoRest || !currentStep || !nextStep || !currentRestSeconds) {
       return null;
     }
     const logsIfDone = {
@@ -369,7 +368,7 @@ export function WorkoutRunner({
           storedSession.pausedAt ||
           storedSession.currentStepIndex === 0)
       ) {
-        setSession(storedSession);
+        setSession(normalizeSessionQueue(storedSession, steps));
         setRunnerStatus("active");
         if (shouldAutoStart) setRunnerView("running");
       } else if (storedSession) {
@@ -391,6 +390,7 @@ export function WorkoutRunner({
     createQueuedWorkoutSession,
     sessionValidationKey,
     shouldAutoStart,
+    steps,
     workout.id,
     workout.title,
   ]);
@@ -411,7 +411,9 @@ export function WorkoutRunner({
   useEffect(() => {
     const update = () => {
       const stored = readActiveWorkoutSession(workout.id);
-      setSession(stored ?? createQueuedWorkoutSession());
+      setSession(
+        stored ? normalizeSessionQueue(stored, steps) : createQueuedWorkoutSession(),
+      );
       setRunnerStatus(stored ? "active" : "idle");
       setRunnerView("overview");
       setCompletedSummary(null);
@@ -420,7 +422,7 @@ export function WorkoutRunner({
     };
     window.addEventListener("bjj-cloud-updated", update);
     return () => window.removeEventListener("bjj-cloud-updated", update);
-  }, [workout.id, createQueuedWorkoutSession]);
+  }, [workout.id, createQueuedWorkoutSession, steps]);
 
   useEffect(() => {
     function updateElapsedTime() {
@@ -707,7 +709,7 @@ export function WorkoutRunner({
       currentStep.set,
       completedLogs,
     );
-    const restSeconds = getBlockRestSeconds(currentStep.block);
+    const restSeconds = getWorkoutRestSeconds(workout, currentStep.block);
 
     if (autoRest && roundDone && restSeconds) {
       const nextRest = createRestState(
@@ -1190,40 +1192,45 @@ export function WorkoutRunner({
         </div>
         <AppProgress value={progressPercent} color="primary" size="sm" className="mt-1.5" />
 
-        <button
-          type="button"
-          role="switch"
-          aria-checked={autoRest}
-          onClick={toggleAutoRest}
-          className="mt-0.5 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
-        >
-          <span className="min-w-0 truncate text-[14px] font-medium text-[var(--foreground)]">
-            Descanso automático
-            <span className="font-normal text-[var(--muted)]">
-              {autoRest
-                ? currentRestSeconds
-                  ? ` · ${formatRestDuration(currentRestSeconds)} por rodada`
-                  : " · por rodada"
-                : " · desligado"}
-            </span>
-          </span>
-          <span
-            aria-hidden="true"
-            className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors ${
-              autoRest
-                ? "border-[var(--primary)] bg-[var(--primary)]"
-                : "border-[var(--border-strong)] bg-[var(--surface-elevated)]"
-            }`}
+        {/* Complementares seguem o vídeo: sem descanso automático. */}
+        {canAutoRest ? (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={autoRest}
+            onClick={toggleAutoRest}
+            className="mt-0.5 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
           >
+            <span className="min-w-0 truncate text-[14px] font-medium text-[var(--foreground)]">
+              Descanso automático
+              <span className="font-normal text-[var(--muted)]">
+                {autoRest
+                  ? currentRestSeconds
+                    ? ` · ${formatRestDuration(currentRestSeconds)} por rodada`
+                    : " · por rodada"
+                  : " · desligado"}
+              </span>
+            </span>
             <span
-              className={`absolute top-0.5 h-[22px] w-[22px] rounded-full transition-[left] ${
+              aria-hidden="true"
+              className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors ${
                 autoRest
-                  ? "left-[22px] bg-[var(--on-primary)]"
-                  : "left-0.5 bg-[var(--muted)]"
+                  ? "border-[var(--primary)] bg-[var(--primary)]"
+                  : "border-[var(--border-strong)] bg-[var(--surface-elevated)]"
               }`}
-            />
-          </span>
-        </button>
+            >
+              <span
+                className={`absolute top-0.5 h-[22px] w-[22px] rounded-full transition-[left] ${
+                  autoRest
+                    ? "left-[22px] bg-[var(--on-primary)]"
+                    : "left-0.5 bg-[var(--muted)]"
+                }`}
+              />
+            </span>
+          </button>
+        ) : (
+          <div className="h-2" aria-hidden="true" />
+        )}
 
         {isPaused ? (
           <div className="mb-2 rounded-lg border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-3 py-2">
@@ -1340,7 +1347,8 @@ export function WorkoutRunner({
                     </dd>
                   </div>
                 ) : null}
-                {!/^\d+\s*x?$/i.test(currentStep.block.sets.trim()) ? (
+                {isComplementaryWorkout ||
+                !/^\d+\s*x?$/i.test(currentStep.block.sets.trim()) ? (
                   <div className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1">
                     <dt className="text-[var(--muted)]">Séries</dt>
                     <dd className="font-semibold text-[var(--foreground)]">
@@ -1394,7 +1402,16 @@ export function WorkoutRunner({
 
               <label className="flex min-w-0 flex-col justify-end gap-1.5">
                 <span className="text-[14px] font-medium text-[var(--foreground)]">
-                  {pseFieldLabel}
+                  {isComplementaryWorkout ? (
+                    <>
+                      PSE{" "}
+                      <span className="text-[12px] font-normal text-[var(--muted)]">
+                        opcional
+                      </span>
+                    </>
+                  ) : (
+                    "PSE real"
+                  )}
                 </span>
                 <input
                   ref={pseInputRef}
@@ -1691,7 +1708,7 @@ export function WorkoutRunner({
                     onClick={() => setShowSkipOptions(true)}
                     disabled={isPaused}
                   >
-                    {currentStep.totalSets > 1 ? "Opções da série" : "Opções do exercício"}
+                    Opções
                   </AppButton>
                 </div>
               </>

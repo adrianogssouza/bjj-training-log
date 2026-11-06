@@ -25,7 +25,9 @@ import {
   getBlockRestSeconds,
   groupStepsByBlock,
   isRoundComplete,
+  getWorkoutRestSeconds,
   moveStepToCurrent,
+  normalizeSessionQueue,
   orderSteps,
   parseRestSeconds,
   parseSetCount,
@@ -86,7 +88,7 @@ function log(blockId: string, itemId: string, extra: Partial<WorkoutSessionLog> 
 async function fillAndComplete(reps: string, pse = "8") {
   const repsInput = await screen.findByLabelText(/realizad[oa]s?$/);
   fireEvent.change(repsInput, { target: { value: reps } });
-  fireEvent.change(screen.getByLabelText("PSE real"), { target: { value: pse } });
+  if (pse) fireEvent.change(screen.getByLabelText(/^PSE/), { target: { value: pse } });
   // Após cada conclusão o botão fica em "Salvando..." por um instante.
   fireEvent.click(await screen.findByRole("button", { name: /^Concluir/ }, { timeout: 2000 }));
 }
@@ -228,7 +230,7 @@ test("série pulada aparece na lista e pode ser feita depois", async () => {
   renderRunner(makeWorkout());
   await screen.findByRole("heading", { name: "Remada" });
 
-  fireEvent.click(screen.getByRole("button", { name: "Opções da série" }));
+  fireEvent.click(screen.getByRole("button", { name: "Opções" }));
   fireEvent.click(await screen.findByRole("button", { name: "Pular esta série" }));
   fireEvent.click(screen.getByRole("button", { name: "Pular série" }));
 
@@ -249,7 +251,7 @@ test("não farei hoje pula todas as séries restantes do exercício", async () =
   renderRunner(makeWorkout());
   await screen.findByRole("heading", { name: "Remada" });
 
-  fireEvent.click(screen.getByRole("button", { name: "Opções da série" }));
+  fireEvent.click(screen.getByRole("button", { name: "Opções" }));
   fireEvent.click(await screen.findByRole("button", { name: "Não farei hoje (2 séries)" }));
   fireEvent.click(screen.getByRole("button", { name: "Não farei hoje" }));
 
@@ -360,4 +362,79 @@ test("histórico junta as séries do mesmo exercício", async () => {
   // Registro de uma série só (ou antigo) continua no formato de antes.
   assert.ok(screen.getByText(second.name));
   assert.ok(screen.getByText("Concluído"));
+});
+
+function makeComplementary(): Workout {
+  return {
+    id: "mobilidade-teste",
+    title: "Mobilidade Teste",
+    month: "Nov",
+    year: 2026,
+    type: "complementary",
+    blocks: [
+      {
+        id: "seq",
+        title: "Sequência completa",
+        type: "mobility",
+        sets: "3x",
+        order: 1,
+        items: [
+          { id: "ombros", name: "Mobilidade Ombros", reps: "6 cada lado" },
+          { id: "quadril", name: "Mobilidade Quadril", reps: "6 cada lado" },
+        ],
+      },
+    ],
+  };
+}
+
+test("complementares contam uma etapa por exercício e não têm descanso", () => {
+  const workout = makeComplementary();
+  const steps = buildWorkoutSteps(workout);
+  assert.deepEqual(steps.map((step) => step.id), ["seq:ombros", "seq:quadril"]);
+  assert.equal(countWorkoutSteps(workout), 2);
+  assert.equal(getWorkoutRestSeconds(workout, workout.blocks[0]), null);
+  assert.equal(getWorkoutRestSeconds(makeWorkout(), makeWorkout().blocks[0]), 60);
+
+  const mobility = seedWorkouts.find((w) => w.id === "mobilidade-com-peso")!;
+  assert.equal(countWorkoutSteps(mobility), mobility.blocks.reduce((t, b) => t + b.items.length, 0));
+});
+
+test("complementar mostra o 3x como informação, sem séries nem descanso automático", async () => {
+  localStorage.setItem(AUTO_REST_STORAGE_KEY, "1");
+  renderRunner(makeComplementary());
+  await screen.findByRole("heading", { name: "Mobilidade Ombros" });
+
+  assert.ok(screen.getByText("0/2"));
+  assert.ok(!screen.queryByRole("switch", { name: /Descanso automático/ }));
+  assert.ok(!screen.queryByText(/Série 1/));
+  assert.ok(screen.getByText("3x"));
+  assert.ok(screen.getByLabelText("PSE opcional"));
+
+  await fillAndComplete("vídeo completo", "");
+  await screen.findByRole("heading", { name: "Mobilidade Quadril" });
+  assert.ok(!screen.queryByRole("region", { name: "Descanso" }));
+});
+
+test("complementar aberto com rodadas extras é ajustado sem perder o registrado", async () => {
+  const stale = {
+    workoutId: "mobilidade-teste",
+    startedAt: "2026-11-05T21:34:00.000Z",
+    currentStepIndex: 2,
+    stepOrder: ["seq:ombros", "seq:quadril", "seq:ombros#2", "seq:quadril#2"],
+    logs: {
+      "seq:ombros": log("seq", "ombros", { reps: "vídeo completo", completed: true, set: 1 }),
+      "seq:quadril": log("seq", "quadril", { skipped: true, set: 1 }),
+      "seq:ombros#2": log("seq", "ombros", { reps: "x", set: 2 }),
+    },
+  };
+  const steps = buildWorkoutSteps(makeComplementary());
+  const normalized = normalizeSessionQueue(stale, steps);
+  assert.deepEqual(normalized.stepOrder, ["seq:ombros", "seq:quadril"]);
+  assert.deepEqual(Object.keys(normalized.logs), ["seq:ombros", "seq:quadril"]);
+  assert.equal(normalized.currentStepIndex, 1);
+  assert.equal(normalized.logs["seq:ombros"].reps, "vídeo completo");
+
+  // Sessão que já está certa não muda.
+  const clean = { ...stale, stepOrder: ["seq:ombros", "seq:quadril"], currentStepIndex: 1, logs: { "seq:ombros": stale.logs["seq:ombros"] } };
+  assert.equal(normalizeSessionQueue(clean, steps), clean);
 });

@@ -716,7 +716,7 @@ export function BikeCardioDashboard() {
           <section className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 sm:p-5">
             <h2 className="text-lg font-black text-white">Configuração do Ciclo</h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex flex-col gap-1.5">
+              <label className="flex min-w-0 flex-col gap-1.5">
                 <span className={labelClass}>Data de início do ciclo</span>
                 <input
                   type="date"
@@ -985,7 +985,7 @@ export function BikeCardioDashboard() {
 
           <form className="space-y-3.5" onSubmit={saveMeasurement}>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <label className="flex flex-col gap-1.5">
+              <label className="flex min-w-0 flex-col gap-1.5">
                 <span className={labelClass}>Data da medição</span>
                 <input
                   type="date"

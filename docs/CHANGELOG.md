@@ -202,3 +202,6 @@ Status: em revisão (pull request).
 - Compatível com histórico e sessões em andamento anteriores: a 1ª série mantém o id antigo e o campo `set` dos registros é opcional (sem migração SQL).
 - Home conta o progresso em séries; Histórico agrupa as séries de cada exercício.
 - Ajuste pós-teste no celular: card do exercício compacto (vídeo ao lado do nome, meta e PSE em uma linha), reps e PSE lado a lado, última execução numa linha, aviso flutuante e "Cancelar treino" fora da barra fixa, para os campos da série aparecerem sem rolar.
+- Complementares voltam a registrar uma etapa por exercício (o "3x" aparece como informação) e não têm descanso automático; sessões abertas com rodadas extras são ajustadas sem perder o que foi registrado.
+- Campo de data da Bike não vaza mais do card no iPhone.
+- Rótulo "PSE opcional" e botão "Opções" curtos para caber em uma linha.
