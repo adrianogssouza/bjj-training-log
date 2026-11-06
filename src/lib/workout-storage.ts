@@ -6,6 +6,7 @@ import {
 
 import { emptyTrainingState, parseTrainingState, type TrainingState } from "./training-state";
 import { BIKE_STORAGE_KEY, bindBikeStorage, newBikeData, sanitizeBikeData } from "./bike-cardio";
+import type { SessionFeedback } from "./session-feedback";
 import { PLAN_STORAGE_KEY, bindPlanStorage, emptyPlans, sanitizeWeeklyPlans } from "./weekly-plan";
 
 let account: { read: () => TrainingState; write: (data: TrainingState) => void } | null = null;
@@ -156,6 +157,29 @@ export function saveWorkoutHistoryEntry(entry: WorkoutHistoryEntry) {
   notifyStorageUpdated();
 
   return nextHistory;
+}
+
+/**
+ * Grava a avaliação pós-treino na entrada já salva do histórico.
+ * Campos não respondidos são removidos; o resto da entrada não muda.
+ */
+export function saveWorkoutFeedback(entryId: string, feedback: SessionFeedback) {
+  const history = readWorkoutHistory();
+  const index = history.findIndex((entry) => entry.id === entryId);
+  if (index === -1) return false;
+
+  const { feeling: _feeling, pains: _pains, note: _note, ...base } = history[index];
+  void _feeling; void _pains; void _note;
+  const nextHistory = [...history];
+  nextHistory[index] = { ...base, ...feedback };
+
+  if (account) {
+    account.write({ ...account.read(), history: nextHistory });
+  } else {
+    window.localStorage.setItem(workoutStorageKeys.history, JSON.stringify(nextHistory));
+  }
+  notifyStorageUpdated();
+  return true;
 }
 
 export function clearWorkoutHistory() {

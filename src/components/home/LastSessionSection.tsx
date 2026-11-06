@@ -7,6 +7,7 @@ import { AppBadge } from "@/components/ui/AppBadge";
 import { readWorkoutHistory } from "@/lib/workout-storage";
 import { loadBikeData, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { formatShortDatePTBR } from "@/lib/date-utils";
+import { feelingLabel } from "@/lib/session-feedback";
 import type { WorkoutHistoryEntry } from "@/types";
 
 interface MostRecentSession {
@@ -15,6 +16,8 @@ interface MostRecentSession {
   formattedDate: string;
   formattedDuration: string;
   timestamp: number;
+  feeling?: number;
+  note?: string;
 }
 
 function formatDurationSeconds(totalSeconds: number): string {
@@ -62,6 +65,8 @@ export function LastSessionSection() {
       formattedDate: formatShortDatePTBR(latestWorkout.completedAt || latestWorkout.startedAt),
       formattedDuration: formatDurationSeconds(latestWorkout.durationSeconds),
       timestamp,
+      feeling: latestWorkout.feeling,
+      note: latestWorkout.note,
     };
   }
 
@@ -121,9 +126,25 @@ export function LastSessionSection() {
               </span>
             </div>
 
-            <div className="text-[14px] text-[var(--muted)]">
-              Duração: <strong className="text-[var(--foreground)]">{latestSession.formattedDuration}</strong>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-[var(--muted)]">
+              <span>
+                Duração: <strong className="text-[var(--foreground)]">{latestSession.formattedDuration}</strong>
+              </span>
+              {latestSession.feeling !== undefined && (
+                <span>
+                  Sensação:{" "}
+                  <strong className="text-[var(--foreground)]">
+                    {feelingLabel(latestSession.feeling)} ({latestSession.feeling}/5)
+                  </strong>
+                </span>
+              )}
             </div>
+
+            {latestSession.note && (
+              <p className="border-l-2 border-[var(--primary-line)] pl-3 text-[14px] italic leading-[20px] text-[var(--foreground-soft)]">
+                “{latestSession.note}”
+              </p>
+            )}
 
             <div className="pt-1">
               <AppButton href="/progresso?aba=historico" variant="secondary" fullWidth>

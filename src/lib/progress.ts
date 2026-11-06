@@ -267,3 +267,14 @@ export function getCycleWeeklyFrequency(
 
   return weeks;
 }
+
+/** Sessões concluídas dentro das datas do ciclo (fuso de São Paulo). */
+export function getCycleEntries(
+  history: WorkoutHistoryEntry[],
+  cycle: Pick<TrainingCycle, "startDate" | "endDate">,
+): WorkoutHistoryEntry[] {
+  return history.filter((entry) => {
+    const date = toSaoPauloIsoDate(entry.completedAt || entry.startedAt);
+    return Boolean(date && date >= cycle.startDate && date <= cycle.endDate);
+  });
+}

@@ -217,3 +217,13 @@ Status: em revisão (pull request).
 - Gráficos em SVG próprio (sem biblioteca nova), desenhados na largura real do card e com as cores do tema; estados vazios quando não há carga ou treino no ciclo.
 - **Histórico**: o mesmo componente (filtros, busca, paginação, Bike), sem título próprio e com indicadores e filtros compactos dentro da nova tela.
 - Testes novos: extração da carga, evolução por exercício, agregação semanal, tela Progresso, navegação e redirecionamento.
+
+## Redesign 2026 — Fase 4: fechamento do treino
+
+- Tela de conclusão com **tempo total, séries feitas, séries puladas e volume** (soma de reps × carga das séries feitas; registros de tempo e cargas sem número ficam fora; "6 c/lado" conta 6).
+- Avaliação rápida e opcional logo abaixo: **Sensação geral** de 1 a 5 (Péssimo, Ruim, Ok, Bom, Ótimo; tocar de novo desmarca), **Algum incômodo?** com chips de múltipla escolha (Nenhum, Ombro, Joelho, Lombar, Pescoço, Cotovelo, Punho; "Nenhum" desmarca os outros) e **Observações**.
+- **Salvar e voltar para Hoje** grava a avaliação; "Ver histórico" e "Repetir treino" também gravam antes de sair. A sessão continua sendo salva no histórico no momento da conclusão, então nada se perde se o app fechar antes da avaliação.
+- Na conclusão o cabeçalho da execução sai, para resumo, avaliação e botão caberem sem rolar em 390 px.
+- `WorkoutHistoryEntry` ganha os campos **opcionais** `feeling` (1–5), `pains` (lista; `[]` = "Nenhum") e `note`. São validados em `parseTrainingState` e aceitos ausentes: histórico antigo, backups e o estado da conta continuam válidos, sem migração SQL.
+- Onde aparece: Home > Última sessão (sensação e observação entre aspas), Home > Resumo da semana (novo card **Sensação média**), Histórico (sensação e observação no card, incômodos como etiqueta) e Progresso > Cargas (sensação média do ciclo no card de frequência).
+- Testes novos: resumo e volume, normalização e validação dos campos novos, gravação da avaliação, tela de conclusão, fluxo completo no executor e exibição na Home, Histórico e Progresso.

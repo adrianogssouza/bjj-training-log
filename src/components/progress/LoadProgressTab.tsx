@@ -10,12 +10,14 @@ import { readWorkoutHistory } from "@/lib/workout-storage";
 import {
   formatKgDelta,
   formatNumber,
+  getCycleEntries,
   getCycleWeeklyFrequency,
   getExerciseProgress,
   shortDayLabel,
   type CycleWorkout,
   type ExerciseProgress,
 } from "@/lib/progress";
+import { averageFeeling, feelingLabel } from "@/lib/session-feedback";
 import type { WorkoutHistoryEntry } from "@/types";
 import { LoadLineChart } from "./LoadLineChart";
 import { WeeklyFrequencyChart, WeeklyFrequencyLegend } from "./WeeklyFrequencyChart";
@@ -135,6 +137,11 @@ export function LoadProgressTab({ now }: { now?: Date } = {}) {
     [history, cycle, now],
   );
 
+  const cycleFeeling = useMemo(
+    () => (history ? averageFeeling(getCycleEntries(history, cycle)) : null),
+    [history, cycle],
+  );
+
   if (!history) {
     return <AppLoadingState message="Carregando progresso..." rows={2} />;
   }
@@ -201,6 +208,18 @@ export function LoadProgressTab({ now }: { now?: Date } = {}) {
           <>
             <WeeklyFrequencyChart weeks={weeks} />
             <WeeklyFrequencyLegend />
+            {cycleFeeling && (
+              <p
+                data-testid="cycle-feeling"
+                className="border-t border-[var(--border)] pt-3 text-[14px] text-[var(--muted)]"
+              >
+                Sensação média no ciclo:{" "}
+                <strong className="text-[var(--foreground)]">
+                  {formatNumber(cycleFeeling.average)} ({feelingLabel(cycleFeeling.average)})
+                </strong>
+                {" "}em {cycleFeeling.count} {cycleFeeling.count === 1 ? "treino avaliado" : "treinos avaliados"}
+              </p>
+            )}
           </>
         ) : (
           <p className="rounded-[10px] border border-dashed border-[var(--border)] p-4 text-center text-[13px] text-[var(--muted)]">
