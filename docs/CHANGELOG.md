@@ -233,3 +233,10 @@ Status: em revisão (pull request).
 - Em Progresso > Histórico, cada sessão de treino (Principal e Complementar) ganha **Excluir esta sessão** dentro de "Ver detalhes", com confirmação. Só aquela sessão é removida; as demais, a Bike e o resto do estado da conta não mudam.
 - Pedaladas da Bike continuam sendo excluídas na própria tela da Bike (aba Histórico).
 - Testes: exclusão de uma sessão e fluxo de confirmação/cancelamento.
+
+## Ajustes: detalhe do treino, Última sessão e pedaladas
+
+- **Detalhe do treino (`/workouts/[id]`)**: o botão "Iniciar treino"/"Continuar treino" fica acima da barra de navegação no celular (antes ficava escondido atrás dela); "Sets" virou "Séries"; o "(guiado)" repetido em cada etapa dos complementares saiu; e campos vazios ("Tempo: -", "PSE alvo: -", "Reps: Etapa") deixam de aparecer: cada exercício mostra só o que tem.
+- **Home > Última sessão**: a etiqueta segue o tipo do treino: Musculação (Treino A/B), Cardio, Core, Mobilidade ou Anti-lesão, em vez de "Musculação" para tudo.
+- **Progresso > Histórico**: cada pedalada ganha **Excluir esta pedalada** em "Ver detalhes", com confirmação (`deleteBikeSession`). Só aquela pedalada é removida; o programa da Bike não muda. A exclusão pela tela da Bike continua igual.
+- Testes novos: textos e campos do detalhe, posição do botão fixo, rótulos da Última sessão e exclusão de pedalada.

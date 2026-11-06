@@ -47,7 +47,8 @@ export function WorkoutDetailPageActions({ workoutId }: WorkoutDetailPageActions
 
   return (
     <>
-      <div className="sticky bottom-0 -mx-4 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:-mx-6 sm:px-6">
+      <div data-testid="workout-sticky-action"
+        className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 -mx-4 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 pb-3 pt-3 backdrop-blur sm:-mx-6 sm:px-6 md:bottom-0 md:pb-4">
         <div className="mx-auto flex max-w-[960px] flex-col gap-2">
           {activeSession ? (
             <>
