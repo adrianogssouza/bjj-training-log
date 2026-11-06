@@ -6,17 +6,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   Workout,
-  WorkoutBlock,
-  WorkoutBlockItem,
   WorkoutHistoryEntry,
   WorkoutSession,
+  WorkoutSessionLog,
 } from "@/types";
 import { AppCard } from "@/components/ui/AppCard";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppButton } from "@/components/ui/AppButton";
 import { AppBadge } from "@/components/ui/AppBadge";
 import { AppProgress } from "@/components/ui/AppProgress";
 import { VideoModal } from "@/components/ui/VideoModal";
+import { ExerciseListSheet } from "@/components/workout/ExerciseListSheet";
+import { RestPanel } from "@/components/workout/RestPanel";
 import {
   createWorkoutHistoryEntry,
   createWorkoutSession,
@@ -34,16 +36,29 @@ import {
 } from "@/lib/workout-validation";
 import {
   getBlockTypeLabel,
-  getOrderedWorkoutBlocks,
   getWorkoutCategoryLabel,
   getWorkoutFormatLabel,
 } from "@/lib/workouts";
+import {
+  buildWorkoutSteps,
+  deferStep,
+  findPreviousLog,
+  getBlockRestSeconds,
+  getStepStatus,
+  groupStepsByBlock,
+  isRoundComplete,
+  isStepResolved,
+  moveStepToCurrent,
+  orderSteps,
+  skipSteps,
+  type WorkoutStep,
+} from "@/lib/workout-steps";
+import {
+  readAutoRestPreference,
+  saveAutoRestPreference,
+} from "@/lib/rest-preference";
 
-type RunnerStep = {
-  id: string;
-  block: WorkoutBlock;
-  item: WorkoutBlockItem;
-};
+type RunnerStep = WorkoutStep;
 
 type WorkoutRunnerProps = {
   workout: Workout;
@@ -53,7 +68,12 @@ type WorkoutRunnerProps = {
 type FieldName = "reps" | "load" | "actualPse";
 type RunnerStatus = "idle" | "active" | "completed";
 type RunnerView = "overview" | "running";
-type SkipAction = "defer" | "skip";
+type SkipAction = "skip-set" | "skip-exercise";
+type RestState = {
+  endsAt: number;
+  totalSeconds: number;
+  roundLabel: string;
+};
 type CompletedSummary = {
   workoutTitle: string;
   durationSeconds: number;
@@ -78,6 +98,61 @@ function formatDuration(totalSeconds: number) {
     2,
     "0",
   )}`;
+}
+
+function formatRestDuration(totalSeconds: number) {
+  if (totalSeconds < 60) return `${totalSeconds}s`;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return seconds ? `${minutes}min${String(seconds).padStart(2, "0")}` : `${minutes} min`;
+}
+
+function emptyLog(step: RunnerStep): WorkoutSessionLog {
+  return {
+    blockId: step.block.id,
+    itemId: step.item.id,
+    reps: "",
+    load: "",
+    actualPse: "",
+    completed: false,
+    set: step.set,
+  };
+}
+
+/**
+ * Ao chegar numa nova série do mesmo exercício, repete a carga usada na
+ * série anterior desta sessão (o usuário pode trocar).
+ */
+function carryLoadInto(
+  logs: Record<string, WorkoutSessionLog>,
+  step: RunnerStep | undefined,
+  allSteps: RunnerStep[],
+) {
+  if (!step || logs[step.id] || step.set <= 1) return logs;
+  const previousLoad = allSteps
+    .filter(
+      (candidate) =>
+        candidate.block.id === step.block.id &&
+        candidate.item.id === step.item.id &&
+        candidate.set < step.set,
+    )
+    .map((candidate) => logs[candidate.id])
+    .reverse()
+    .find((log) => log?.completed && log.load.trim())?.load;
+
+  return previousLoad
+    ? { ...logs, [step.id]: { ...emptyLog(step), load: previousLoad } }
+    : logs;
+}
+
+function createRestState(totalSeconds: number, roundLabel: string): RestState {
+  return { endsAt: Date.now() + totalSeconds * 1000, totalSeconds, roundLabel };
+}
+
+function describeStep(step: RunnerStep) {
+  return step.totalSets > 1
+    ? `${step.item.name} · série ${step.set} de ${step.totalSets}`
+    : step.item.name;
 }
 
 function createCompletedSummary(
@@ -105,15 +180,9 @@ export function WorkoutRunner({
   const pseInputRef = useRef<HTMLInputElement>(null);
   const isAdvancingRef = useRef(false);
 
-  const steps = useMemo<RunnerStep[]>(() => {
-    return getOrderedWorkoutBlocks(workout).flatMap((block) =>
-      block.items.map((item) => ({
-        id: `${block.id}:${item.id}`,
-        block,
-        item,
-      })),
-    );
-  }, [workout]);
+  const steps = useMemo<RunnerStep[]>(() => buildWorkoutSteps(workout), [
+    workout,
+  ]);
 
   const createQueuedWorkoutSession = useCallback(() => {
     return {
@@ -140,23 +209,20 @@ export function WorkoutRunner({
   const [isAdvancing, setIsAdvancing] = useState(false);
   const [completedSummary, setCompletedSummary] =
     useState<CompletedSummary | null>(null);
+  const [showList, setShowList] = useState(false);
+  const [autoRest, setAutoRest] = useState(false);
+  const [rest, setRest] = useState<RestState | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
-  const orderedSteps = useMemo(() => {
-    const stepById = new Map(steps.map((step) => [step.id, step]));
-    const sessionStepIds = session.stepOrder ?? steps.map((step) => step.id);
-    const orderedSessionSteps = sessionStepIds
-      .map((stepId) => stepById.get(stepId))
-      .filter((step): step is RunnerStep => Boolean(step));
-    const missingSteps = steps.filter(
-      (step) => !sessionStepIds.includes(step.id),
-    );
-
-    return [...orderedSessionSteps, ...missingSteps];
-  }, [session.stepOrder, steps]);
+  const orderedSteps = useMemo(
+    () => orderSteps(steps, session.stepOrder),
+    [session.stepOrder, steps],
+  );
+  const blockGroups = useMemo(() => groupStepsByBlock(steps), [steps]);
 
   const currentStep = orderedSteps[session.currentStepIndex];
-  const progressedCount = Object.values(session.logs).filter(
-    (log) => log.completed || log.skipped,
+  const progressedCount = orderedSteps.filter((step) =>
+    isStepResolved(session.logs[step.id]),
   ).length;
   const progressPercent =
     orderedSteps.length > 0
@@ -165,16 +231,7 @@ export function WorkoutRunner({
 
   const previousExecutionLog = useMemo(() => {
     if (!currentStep) return null;
-    const history = readWorkoutHistory();
-    for (const entry of history) {
-      if (entry.workoutId === workout.id && entry.logs) {
-        const log = entry.logs[currentStep.id];
-        if (log && !log.skipped && (log.reps || log.load || log.actualPse)) {
-          return log;
-        }
-      }
-    }
-    return null;
+    return findPreviousLog(readWorkoutHistory(), workout.id, currentStep);
   }, [workout.id, currentStep]);
 
   const nextStepIndex = session.currentStepIndex + 1;
@@ -182,11 +239,16 @@ export function WorkoutRunner({
     nextStepIndex < orderedSteps.length ? orderedSteps[nextStepIndex] : null;
   const isPaused = Boolean(session.pausedAt) && runnerStatus === "active";
   const currentLog = currentStep ? session.logs[currentStep.id] : undefined;
+  const restRemainingSeconds = rest
+    ? Math.max(0, Math.ceil((rest.endsAt - now) / 1000))
+    : 0;
+  const isResting = Boolean(rest);
   const canPauseSession =
     runnerStatus === "active" &&
     runnerView === "running" &&
     Boolean(currentStep) &&
-    !isPaused;
+    !isPaused &&
+    !isResting;
   const isComplementaryWorkout = workout.type === "complementary";
   const isCurrentCardio = currentStep?.block.type === "cardio";
   const complementaryWorkoutCategory = isComplementaryWorkout
@@ -227,10 +289,37 @@ export function WorkoutRunner({
   const pseFieldLabel = isComplementaryWorkout
     ? "PSE real (opcional)"
     : "PSE real";
-  const progressUnitLabel = isComplementaryWorkout ? "etapas" : "exercícios";
+  const progressUnitLabel = isComplementaryWorkout ? "etapas" : "séries";
   const progressRecordLabel = isComplementaryWorkout
     ? "etapas registradas"
-    : "exercícios registrados";
+    : "séries registradas";
+  const currentExerciseSteps = currentStep
+    ? steps.filter(
+        (step) =>
+          step.block.id === currentStep.block.id &&
+          step.item.id === currentStep.item.id,
+      )
+    : [];
+  const currentRestSeconds = currentStep
+    ? getBlockRestSeconds(currentStep.block)
+    : null;
+  const restAfterCurrent = (() => {
+    if (!autoRest || !currentStep || !nextStep || !currentRestSeconds) {
+      return null;
+    }
+    const logsIfDone = {
+      ...session.logs,
+      [currentStep.id]: { ...emptyLog(currentStep), completed: true },
+    };
+    return isRoundComplete(
+      steps,
+      currentStep.block.id,
+      currentStep.set,
+      logsIfDone,
+    )
+      ? currentRestSeconds
+      : null;
+  })();
   const currentVideoUrl = currentStep?.item.videoUrl?.trim();
   const shouldAutoStart = autoStart;
   const sessionValidationKey = `${workout.id}:${
@@ -327,6 +416,8 @@ export function WorkoutRunner({
       setRunnerStatus(stored ? "active" : "idle");
       setRunnerView("overview");
       setCompletedSummary(null);
+      setRest(null);
+      setShowList(false);
     };
     window.addEventListener("bjj-cloud-updated", update);
     return () => window.removeEventListener("bjj-cloud-updated", update);
@@ -366,6 +457,37 @@ export function WorkoutRunner({
   ]);
 
   useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setAutoRest(readAutoRestPreference());
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (!rest) {
+      return;
+    }
+
+    const tick = () => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= rest.endsAt) {
+        setRest(null);
+        setActionFeedback("Descanso terminado. Bora!");
+        try {
+          navigator.vibrate?.([200, 100, 200]);
+        } catch {
+          // Vibração não suportada (ex.: iPhone).
+        }
+      }
+    };
+
+    tick();
+    const interval = window.setInterval(tick, 250);
+    return () => window.clearInterval(interval);
+  }, [rest]);
+
+  useEffect(() => {
     if (!actionFeedback) {
       return;
     }
@@ -382,6 +504,8 @@ export function WorkoutRunner({
       runnerStatus !== "active" ||
       runnerView !== "running" ||
       isPaused ||
+      isResting ||
+      showList ||
       showSkipOptions ||
       showCancelConfirm ||
       showCurrentVideo
@@ -399,8 +523,10 @@ export function WorkoutRunner({
   }, [
     currentStep?.id,
     isPaused,
+    isResting,
     runnerStatus,
     runnerView,
+    showList,
     showCancelConfirm,
     showCurrentVideo,
     showSkipOptions,
@@ -417,6 +543,8 @@ export function WorkoutRunner({
     setIsAdvancing(false);
     setSelectedSkipReason("");
     setCustomSkipReason("");
+    setShowList(false);
+    setRest(null);
   }
 
   function showActionFeedback(message: string) {
@@ -468,6 +596,7 @@ export function WorkoutRunner({
             completed: existingLog?.completed ?? false,
             skipped: existingLog?.skipped,
             skipReason: existingLog?.skipReason,
+            set: currentStep.set,
             [field]: value,
           },
         },
@@ -538,24 +667,29 @@ export function WorkoutRunner({
 
     const existingLog = session.logs[currentStep.id];
     const isLastStep = session.currentStepIndex >= orderedSteps.length - 1;
+    const nextIndex = isLastStep
+      ? session.currentStepIndex
+      : session.currentStepIndex + 1;
+    const completedLogs = {
+      ...session.logs,
+      [currentStep.id]: {
+        blockId: currentStep.block.id,
+        itemId: currentStep.item.id,
+        reps: existingLog?.reps ?? "",
+        load: existingLog?.load ?? "",
+        actualPse: existingLog?.actualPse ?? "",
+        completed: true,
+        skipped: false,
+        skipReason: undefined,
+        set: currentStep.set,
+      },
+    };
     const nextSession = {
       ...session,
-      currentStepIndex: isLastStep
-        ? session.currentStepIndex
-        : session.currentStepIndex + 1,
-      logs: {
-        ...session.logs,
-        [currentStep.id]: {
-          blockId: currentStep.block.id,
-          itemId: currentStep.item.id,
-          reps: existingLog?.reps ?? "",
-          load: existingLog?.load ?? "",
-          actualPse: existingLog?.actualPse ?? "",
-          completed: true,
-          skipped: false,
-          skipReason: undefined,
-        },
-      },
+      currentStepIndex: nextIndex,
+      logs: isLastStep
+        ? completedLogs
+        : carryLoadInto(completedLogs, orderedSteps[nextIndex], steps),
     };
 
     setValidationMessage("");
@@ -567,7 +701,30 @@ export function WorkoutRunner({
     }
 
     setSession(nextSession);
-    showActionFeedback("Próximo exercício.");
+
+    const roundDone = isRoundComplete(
+      steps,
+      currentStep.block.id,
+      currentStep.set,
+      completedLogs,
+    );
+    const restSeconds = getBlockRestSeconds(currentStep.block);
+
+    if (autoRest && roundDone && restSeconds) {
+      const nextRest = createRestState(
+        restSeconds,
+        currentStep.totalSets > 1
+          ? `rodada ${currentStep.set} de ${currentStep.totalSets} feita`
+          : `bloco ${currentStep.block.order} feito`,
+      );
+      setNow(nextRest.endsAt - restSeconds * 1000);
+      setRest(nextRest);
+    } else {
+      showActionFeedback(
+        currentStep.totalSets > 1 ? "Série registrada." : "Próximo exercício.",
+      );
+    }
+
     window.setTimeout(() => {
       isAdvancingRef.current = false;
       setIsAdvancing(false);
@@ -646,28 +803,30 @@ export function WorkoutRunner({
     if (session.currentStepIndex >= orderedSteps.length - 1) {
       resetUiState();
       setValidationMessage(
-        "Este exercício já está no final da fila. Faça agora ou escolha Não farei hoje.",
+        currentStep.totalSets > 1
+          ? "Esta série já é a última da fila. Faça agora ou pule."
+          : "Este exercício já está no final da fila. Faça agora ou escolha Não farei hoje.",
       );
       return;
     }
 
-    const currentStepId = currentStep.id;
-    const nextStepOrder = orderedSteps
-      .map((step) => step.id)
-      .filter((stepId) => stepId !== currentStepId);
-
-    nextStepOrder.push(currentStepId);
+    const nextStepOrder = deferStep(
+      orderedSteps.map((step) => step.id),
+      currentStep.id,
+    );
+    const nextCurrent = orderSteps(steps, nextStepOrder)[session.currentStepIndex];
 
     setSession({
       ...session,
       stepOrder: nextStepOrder,
+      logs: carryLoadInto(session.logs, nextCurrent, steps),
     });
     resetUiState();
-    showActionFeedback("Exercício movido para o final.");
+    showActionFeedback("Série movida para o final.");
   }
 
   function skipCurrentExercise() {
-    if (!currentStep) {
+    if (!currentStep || !skipAction) {
       return;
     }
 
@@ -675,38 +834,122 @@ export function WorkoutRunner({
       selectedSkipReason === "Outro"
         ? customSkipReason.trim()
         : selectedSkipReason;
+    const orderedIds = orderedSteps.map((step) => step.id);
+    const pendingIds = orderedSteps
+      .slice(session.currentStepIndex)
+      .filter((step) => !isStepResolved(session.logs[step.id]));
+    const idsToSkip =
+      skipAction === "skip-exercise"
+        ? pendingIds
+            .filter(
+              (step) =>
+                step.block.id === currentStep.block.id &&
+                step.item.id === currentStep.item.id,
+            )
+            .map((step) => step.id)
+        : [currentStep.id];
+    const { stepOrder, currentStepIndex } = skipSteps(
+      orderedIds,
+      session.currentStepIndex,
+      idsToSkip,
+    );
+    const stepById = new Map(steps.map((step) => [step.id, step]));
+    const skippedLogs = { ...session.logs };
 
-    const existingLog = session.logs[currentStep.id];
-    const isLastStep = session.currentStepIndex >= orderedSteps.length - 1;
+    for (const stepId of idsToSkip) {
+      const step = stepById.get(stepId);
+      if (!step) continue;
+      const existingLog = session.logs[stepId];
+      skippedLogs[stepId] = {
+        blockId: step.block.id,
+        itemId: step.item.id,
+        reps: existingLog?.reps ?? "",
+        load: existingLog?.load ?? "",
+        actualPse: existingLog?.actualPse ?? "",
+        completed: false,
+        skipped: true,
+        skipReason: skipReason || undefined,
+        set: step.set,
+      };
+    }
+
+    const isFinished = currentStepIndex >= orderedIds.length;
     const nextSession = {
       ...session,
-      currentStepIndex: isLastStep
-        ? session.currentStepIndex
-        : session.currentStepIndex + 1,
-      logs: {
-        ...session.logs,
-        [currentStep.id]: {
-          blockId: currentStep.block.id,
-          itemId: currentStep.item.id,
-          reps: existingLog?.reps ?? "",
-          load: existingLog?.load ?? "",
-          actualPse: existingLog?.actualPse ?? "",
-          completed: false,
-          skipped: true,
-          skipReason: skipReason || undefined,
-        },
-      },
+      stepOrder,
+      currentStepIndex: isFinished ? orderedIds.length - 1 : currentStepIndex,
+      logs: isFinished
+        ? skippedLogs
+        : carryLoadInto(
+            skippedLogs,
+            orderSteps(steps, stepOrder)[currentStepIndex],
+            steps,
+          ),
     };
 
     resetUiState();
 
-    if (isLastStep) {
+    if (isFinished) {
       finishSession(nextSession);
       return;
     }
 
     setSession(nextSession);
-    showActionFeedback("Exercício pulado.");
+    showActionFeedback(
+      idsToSkip.length > 1
+        ? `${idsToSkip.length} séries puladas.`
+        : currentStep.totalSets > 1
+          ? "Série pulada."
+          : "Exercício pulado.",
+    );
+  }
+
+  function doStepNow(stepId: string) {
+    const moved = moveStepToCurrent(
+      orderedSteps.map((step) => step.id),
+      session.currentStepIndex,
+      stepId,
+      session.logs,
+    );
+    const target = steps.find((step) => step.id === stepId);
+
+    if (!moved || !target) {
+      setShowList(false);
+      return;
+    }
+
+    setSession({
+      ...session,
+      stepOrder: moved.stepOrder,
+      currentStepIndex: moved.currentStepIndex,
+      logs: carryLoadInto(moved.logs, target, steps),
+    });
+    resetUiState();
+    showActionFeedback(`Agora: ${describeStep(target)}.`);
+  }
+
+  function toggleAutoRest() {
+    const enabled = !autoRest;
+    setAutoRest(enabled);
+    saveAutoRestPreference(enabled);
+    if (!enabled) setRest(null);
+  }
+
+  function addRestTime(seconds: number) {
+    setRest((current) =>
+      current
+        ? {
+            ...current,
+            endsAt: current.endsAt + seconds * 1000,
+            totalSeconds: current.totalSeconds + seconds,
+          }
+        : current,
+    );
+  }
+
+  function skipRest() {
+    setRest(null);
+    showActionFeedback("Descanso encerrado.");
   }
 
   if (!isLoaded || !isSessionValidated) {
@@ -874,209 +1117,338 @@ export function WorkoutRunner({
     );
   }
 
+  const isLastInQueue = session.currentStepIndex >= orderedSteps.length - 1;
+  const primaryActionLabel = isAdvancing
+    ? "Salvando..."
+    : isLastInQueue
+      ? "Concluir treino"
+      : currentStep.totalSets > 1
+        ? "Concluir série"
+        : "Concluir e próximo";
+  const remainingSetsOfExercise = orderedSteps
+    .slice(session.currentStepIndex)
+    .filter(
+      (step) =>
+        step.block.id === currentStep.block.id &&
+        step.item.id === currentStep.item.id &&
+        !isStepResolved(session.logs[step.id]),
+    ).length;
+  const inputClassName =
+    "min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]";
+
   return (
-    <main className="flex flex-1 flex-col gap-3 pb-[calc(11rem+env(safe-area-inset-bottom))] pt-4 sm:pb-48">
-      <section className="flex flex-col gap-2">
-        <Link
-          href={`/workouts/${workout.id}`}
-          className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
-        >
-          Voltar ao treino
-        </Link>
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-red-300">
-            Execução
-          </p>
-          <h1 className="mt-1 break-words text-2xl font-black leading-8 text-white">
+    <main className="flex flex-1 flex-col gap-3 pb-[calc(11rem+env(safe-area-inset-bottom))] pt-1 sm:pb-48">
+      {/* Modo foco: só o essencial; a lista completa fica em "Ver lista". */}
+      <section className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            href={`/workouts/${workout.id}`}
+            className="text-[13px] font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+          >
+            Voltar ao treino
+          </Link>
+          <h1 className="mt-0.5 truncate text-[17px] font-bold leading-6 text-[var(--foreground)]">
             {workout.title}
           </h1>
         </div>
+        <button
+          type="button"
+          onClick={() => setShowList(true)}
+          aria-haspopup="dialog"
+          className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-[12px] border border-[var(--border-strong)] bg-[var(--surface-elevated)] px-3.5 text-[14px] font-bold text-[var(--foreground)] transition-colors hover:border-[var(--primary-line)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
+        >
+          <AppIcon name="list" size={18} />
+          Ver lista
+        </button>
       </section>
 
       <AppCard className="p-3">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              Progresso
-            </p>
-            <p className="mt-0.5 text-base font-black text-white">
-              {progressedCount}/{orderedSteps.length} {progressUnitLabel}
-            </p>
-          </div>
-          <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-right">
-            <p className="text-xs font-semibold uppercase tracking-wide text-red-200">
-              Tempo
-            </p>
-            <p className="font-mono text-lg font-black text-white">
-              {formatDuration(elapsedSeconds)}
-            </p>
-          </div>
+          <p className="text-[14px] text-[var(--muted)]">
+            <span className="text-[18px] font-black text-[var(--foreground)]">
+              {progressedCount}/{orderedSteps.length}
+            </span>{" "}
+            {progressUnitLabel}
+          </p>
+          <p
+            className="text-[20px] font-black tabular-nums text-[var(--foreground)]"
+            aria-label={`Tempo de treino ${formatDuration(elapsedSeconds)}`}
+          >
+            {formatDuration(elapsedSeconds)}
+          </p>
         </div>
-        <AppProgress value={progressPercent} color="primary" className="mt-3" />
+        <AppProgress value={progressPercent} color="primary" className="mt-2" />
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={autoRest}
+          onClick={toggleAutoRest}
+          className="mt-2 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)]"
+        >
+          <span className="min-w-0">
+            <span className="block text-[14px] font-medium text-[var(--foreground)]">
+              Descanso automático
+            </span>
+            <span className="block text-[12px] text-[var(--muted)]">
+              {autoRest
+                ? currentRestSeconds
+                  ? `Ao terminar a rodada · ${formatRestDuration(currentRestSeconds)}`
+                  : "Ao terminar cada rodada"
+                : "Desligado"}
+            </span>
+          </span>
+          <span
+            aria-hidden="true"
+            className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors ${
+              autoRest
+                ? "border-[var(--primary)] bg-[var(--primary)]"
+                : "border-[var(--border-strong)] bg-[var(--surface-elevated)]"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-[22px] w-[22px] rounded-full transition-[left] ${
+                autoRest
+                  ? "left-[22px] bg-[var(--on-primary)]"
+                  : "left-0.5 bg-[var(--muted)]"
+              }`}
+            />
+          </span>
+        </button>
+
         {actionFeedback ? (
-          <div className="mt-3 rounded-lg border border-emerald-300/30 bg-emerald-300/10 px-3 py-2">
-            <p className="text-sm font-bold text-emerald-100">
+          <div
+            role="status"
+            className="mt-2 rounded-lg border border-[var(--success)]/50 bg-[var(--success)]/15 px-3 py-2"
+          >
+            <p className="text-sm font-bold text-[var(--success-text)]">
               {actionFeedback}
             </p>
           </div>
         ) : null}
         {isPaused ? (
-          <div className="mt-3 rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-2">
-            <p className="text-sm font-bold text-amber-100">Treino pausado</p>
+          <div className="mt-2 rounded-lg border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-3 py-2">
+            <p className="text-sm font-bold text-[var(--warning)]">Treino pausado</p>
           </div>
         ) : null}
       </AppCard>
 
-      <AppCard
-        className={`p-3 ${
-          isCurrentCardio ? "border-cyan-500/50 bg-cyan-950/20" : ""
-        }`}
-      >
-        <div className="flex flex-col gap-3">
-          <div>
-            <p
-              className={`text-xs font-semibold uppercase tracking-wide ${
-                isCurrentCardio ? "text-cyan-200" : "text-red-300"
-              }`}
-            >
-              {currentBlockTypeLabel} · Bloco {currentStep.block.order}
-            </p>
-            <h2 className="mt-1 break-words text-[20px] font-bold leading-[28px] text-white">
-              {currentStep.item.name}
-            </h2>
-            <p className="mt-1 break-words text-sm leading-5 text-zinc-400">
-              {currentStep.block.title}
-            </p>
-            {currentVideoUrl ? (
-              <button
-                type="button"
-                onClick={() => setShowCurrentVideo(true)}
-                className="mt-3 min-h-10 rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm font-bold text-zinc-100 transition-colors hover:border-red-400 hover:text-red-100"
-              >
-                Assistir execução
-              </button>
+      {rest ? (
+        <RestPanel
+          remainingSeconds={restRemainingSeconds}
+          totalSeconds={rest.totalSeconds}
+          roundLabel={rest.roundLabel}
+          nextLabel={describeStep(currentStep)}
+        />
+      ) : (
+        <>
+          <AppCard
+            className={`p-4 ${
+              isCurrentCardio ? "border-cyan-500/50 bg-cyan-950/20" : ""
+            }`}
+          >
+            <div className="flex flex-col gap-3">
+              <div>
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wide ${
+                    isCurrentCardio ? "text-cyan-200" : "text-[var(--primary-text)]"
+                  }`}
+                >
+                  {currentBlockTypeLabel} · Bloco {currentStep.block.order}
+                </p>
+                <h2 className="mt-1 break-words text-[22px] font-bold leading-[28px] text-[var(--foreground)]">
+                  {currentStep.item.name}
+                </h2>
+                <p className="mt-1 break-words text-sm leading-5 text-[var(--muted)]">
+                  {currentStep.block.title}
+                </p>
+
+                {currentStep.totalSets > 1 ? (
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <p className="text-[16px] font-bold text-[var(--foreground)]">
+                      Série {currentStep.set}{" "}
+                      <span className="font-medium text-[var(--muted)]">
+                        de {currentStep.totalSets}
+                      </span>
+                    </p>
+                    <ol
+                      aria-label="Séries deste exercício"
+                      className="flex items-center gap-1.5"
+                    >
+                      {currentExerciseSteps.map((step) => {
+                        const status = getStepStatus(
+                          step,
+                          currentStep.id,
+                          session.logs,
+                        );
+                        const label = {
+                          done: "feita",
+                          skipped: "pulada",
+                          current: "agora",
+                          pending: "pendente",
+                        }[status];
+                        return (
+                          <li
+                            key={step.id}
+                            aria-label={`Série ${step.set}: ${label}`}
+                            className={`h-2.5 rounded-full ${
+                              status === "current" ? "w-8" : "w-5"
+                            } ${
+                              status === "done"
+                                ? "bg-[var(--success-text)]"
+                                : status === "skipped"
+                                  ? "border border-dashed border-[var(--warning)]"
+                                  : status === "current"
+                                    ? "bg-[var(--primary)]"
+                                    : "bg-[var(--border-strong)]"
+                            }`}
+                          />
+                        );
+                      })}
+                    </ol>
+                  </div>
+                ) : null}
+
+                {currentStep.item.notes ? (
+                  <p className="mt-2 break-words text-[13px] leading-5 text-[var(--foreground-soft)]">
+                    {currentStep.item.notes}
+                  </p>
+                ) : null}
+
+                {currentVideoUrl ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentVideo(true)}
+                    className="mt-3 min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm font-bold text-[var(--foreground)] transition-colors hover:border-[var(--primary-line)]"
+                  >
+                    Assistir execução
+                  </button>
+                ) : null}
+              </div>
+
+              <dl className="grid grid-cols-3 gap-2 text-sm">
+                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
+                  <dt className="text-xs text-[var(--muted)]">Previsto</dt>
+                  <dd className="font-semibold text-[var(--foreground)]">
+                    {currentStep.item.reps ?? currentStep.item.time ?? "-"}
+                  </dd>
+                </div>
+                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
+                  <dt className="text-xs text-[var(--muted)]">Séries</dt>
+                  <dd className="font-semibold text-[var(--foreground)]">
+                    {currentStep.block.sets}
+                  </dd>
+                </div>
+                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-2">
+                  <dt className="text-xs text-[var(--muted)]">PSE alvo</dt>
+                  <dd className="mt-0.5">
+                    <AppBadge variant="primary">
+                      {currentStep.item.targetPse ?? "-"}
+                    </AppBadge>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </AppCard>
+
+          {previousExecutionLog && (
+            <AppCard variant="secondary" className="space-y-2 border-[var(--border)] bg-[var(--surface)] p-3">
+              <p className="text-[12px] font-bold text-[var(--muted)]">
+                Última execução
+                {currentStep.totalSets > 1 ? ` · série ${currentStep.set}` : ""}
+              </p>
+              <dl className="grid grid-cols-3 gap-2 text-[13px]">
+                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+                  <dt className="text-[11px] text-[var(--muted)]">Reps / Tempo</dt>
+                  <dd className="font-semibold text-[var(--foreground)]">
+                    {previousExecutionLog.reps || "-"}
+                  </dd>
+                </div>
+                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+                  <dt className="text-[11px] text-[var(--muted)]">Carga</dt>
+                  <dd className="font-semibold text-[var(--foreground)]">
+                    {previousExecutionLog.load || "-"}
+                  </dd>
+                </div>
+                <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
+                  <dt className="text-[11px] text-[var(--muted)]">PSE</dt>
+                  <dd className="font-semibold text-[var(--foreground)]">
+                    {previousExecutionLog.actualPse || "-"}
+                  </dd>
+                </div>
+              </dl>
+            </AppCard>
+          )}
+
+          <AppCard className="p-4">
+            <div className="flex flex-col gap-4">
+              <label className="flex flex-col gap-2">
+                <span className="text-[14px] font-medium text-[var(--foreground)]">
+                  {primaryFieldLabel}
+                </span>
+                <input
+                  ref={firstInputRef}
+                  type="text"
+                  inputMode={
+                    isComplementaryWorkout || isCurrentCardio ? "text" : "numeric"
+                  }
+                  autoComplete="off"
+                  value={currentLog?.reps ?? ""}
+                  onChange={(event) => updateCurrentLog("reps", event.target.value)}
+                  placeholder={primaryFieldPlaceholder}
+                  className={inputClassName}
+                />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <span className="text-[14px] font-medium text-[var(--foreground)]">
+                  {loadFieldLabel}
+                </span>
+                <input
+                  ref={loadInputRef}
+                  type="text"
+                  inputMode="text"
+                  autoComplete="off"
+                  value={currentLog?.load ?? ""}
+                  onChange={(event) => updateCurrentLog("load", event.target.value)}
+                  placeholder={loadFieldPlaceholder}
+                  className={inputClassName}
+                />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <span className="text-[14px] font-medium text-[var(--foreground)]">
+                  {pseFieldLabel}
+                </span>
+                <input
+                  ref={pseInputRef}
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  value={currentLog?.actualPse ?? ""}
+                  onChange={(event) =>
+                    updateCurrentLog("actualPse", event.target.value)
+                  }
+                  placeholder="0 a 10"
+                  className={inputClassName}
+                />
+              </label>
+            </div>
+          </AppCard>
+
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3 text-[14px]">
+            <p className="text-[12px] text-[var(--muted)]">Próximo</p>
+            {restAfterCurrent ? (
+              <p className="mt-0.5 text-[13px] font-semibold text-[var(--primary-text)]">
+                Descanso de {formatRestDuration(restAfterCurrent)} antes
+              </p>
             ) : null}
+            <p className="mt-0.5 font-bold text-[var(--foreground)]">
+              {nextStep ? describeStep(nextStep) : "Último do treino"}
+            </p>
           </div>
-
-          <dl className="grid grid-cols-3 gap-2 text-sm">
-            <div className="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-2">
-              <dt className="text-xs text-zinc-500">Previsto</dt>
-              <dd className="font-semibold text-zinc-100">
-                {currentStep.item.reps ?? currentStep.item.time ?? "-"}
-              </dd>
-            </div>
-            <div className="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-2">
-              <dt className="text-xs text-zinc-500">Sets</dt>
-              <dd className="font-semibold text-zinc-100">
-                {currentStep.block.sets}
-              </dd>
-            </div>
-            <div className="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-2">
-              <dt className="text-xs text-zinc-500">PSE alvo</dt>
-              <dd className="mt-0.5">
-                <AppBadge variant="primary">
-                  {currentStep.item.targetPse ?? "-"}
-                </AppBadge>
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </AppCard>
-
-      {/* Referência anterior (Última execução) */}
-      {previousExecutionLog && (
-        <AppCard variant="secondary" className="p-3 border-[var(--border)] bg-[var(--surface)] space-y-2">
-          <p className="text-[12px] font-bold uppercase tracking-wider text-[var(--muted)]">
-            Última execução
-          </p>
-          <dl className="grid grid-cols-3 gap-2 text-[13px]">
-            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[var(--muted)]">Reps / Tempo</dt>
-              <dd className="font-semibold text-[var(--foreground)]">
-                {previousExecutionLog.reps || "-"}
-              </dd>
-            </div>
-            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[var(--muted)]">Carga</dt>
-              <dd className="font-semibold text-[var(--foreground)]">
-                {previousExecutionLog.load || "-"}
-              </dd>
-            </div>
-            <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2.5 py-1.5">
-              <dt className="text-[11px] text-[var(--muted)]">PSE</dt>
-              <dd className="font-semibold text-[var(--foreground)]">
-                {previousExecutionLog.actualPse || "-"}
-              </dd>
-            </div>
-          </dl>
-        </AppCard>
+        </>
       )}
-
-      <AppCard className="p-4">
-        <div className="flex flex-col gap-4">
-          <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[var(--foreground)]">
-              {primaryFieldLabel}
-            </span>
-            <input
-              ref={firstInputRef}
-              type="text"
-              inputMode={
-                isComplementaryWorkout || isCurrentCardio ? "text" : "numeric"
-              }
-              autoComplete="off"
-              value={currentLog?.reps ?? ""}
-              onChange={(event) => updateCurrentLog("reps", event.target.value)}
-              placeholder={primaryFieldPlaceholder}
-              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
-            />
-          </label>
-
-          <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[var(--foreground)]">
-              {loadFieldLabel}
-            </span>
-            <input
-              ref={loadInputRef}
-              type="text"
-              inputMode="text"
-              autoComplete="off"
-              value={currentLog?.load ?? ""}
-              onChange={(event) => updateCurrentLog("load", event.target.value)}
-              placeholder={loadFieldPlaceholder}
-              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
-            />
-          </label>
-
-          <label className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-[var(--foreground)]">
-              {pseFieldLabel}
-            </span>
-            <input
-              ref={pseInputRef}
-              type="text"
-              inputMode="decimal"
-              autoComplete="off"
-              value={currentLog?.actualPse ?? ""}
-              onChange={(event) =>
-                updateCurrentLog("actualPse", event.target.value)
-              }
-              placeholder="0 a 10"
-              className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
-            />
-          </label>
-        </div>
-      </AppCard>
-
-      {/* Próximo exercício */}
-      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3 text-[14px]">
-        <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-          Próximo exercício
-        </p>
-        <p className="mt-0.5 font-bold text-[var(--foreground)]">
-          {nextStep ? nextStep.item.name : "Último exercício do treino"}
-        </p>
-      </div>
 
       {validationMessage ? (
         <div className="rounded-[10px] border border-[var(--primary-hover)] bg-[var(--primary-soft)]/40 p-3">
@@ -1084,14 +1456,27 @@ export function WorkoutRunner({
         </div>
       ) : null}
 
+      <ExerciseListSheet
+        isOpen={showList}
+        onClose={() => setShowList(false)}
+        groups={blockGroups}
+        currentStepId={currentStep.id}
+        logs={session.logs}
+        onDoNow={doStepNow}
+      />
+
       <AppModal
         isOpen={showSkipOptions}
         onClose={() => {
           setShowSkipOptions(false);
           setSkipAction(null);
         }}
-        title="Opções do exercício"
-        description="Escolha se este exercício volta no fim da sessão ou se não será feito hoje."
+        title={currentStep.totalSets > 1 ? "Opções da série" : "Opções do exercício"}
+        description={
+          currentStep.totalSets > 1
+            ? "Mova esta série para o fim, pule só ela ou deixe o exercício para outro dia."
+            : "Escolha se este exercício volta no fim da sessão ou se não será feito hoje."
+        }
         maxWidth="max-w-[460px]"
       >
         <div className="space-y-4">
@@ -1105,13 +1490,25 @@ export function WorkoutRunner({
               >
                 Fazer depois
               </AppButton>
+              {currentStep.totalSets > 1 ? (
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setSkipAction("skip-set")}
+                  fullWidth
+                >
+                  Pular esta série
+                </AppButton>
+              ) : null}
               <AppButton
                 type="button"
                 variant="secondary"
-                onClick={() => setSkipAction("skip")}
+                onClick={() => setSkipAction("skip-exercise")}
                 fullWidth
               >
-                Não farei hoje
+                {remainingSetsOfExercise > 1
+                  ? `Não farei hoje (${remainingSetsOfExercise} séries)`
+                  : "Não farei hoje"}
               </AppButton>
               <AppButton
                 type="button"
@@ -1165,7 +1562,7 @@ export function WorkoutRunner({
                       setCustomSkipReason(event.target.value)
                     }
                     placeholder="Ex: agenda apertada, equipamento ocupado"
-                    className="min-h-[48px] rounded-[10px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3.5 py-2.5 text-[16px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--focus)] focus:ring-2 focus:ring-[var(--focus)]"
+                    className={inputClassName}
                   />
                 </label>
               )}
@@ -1187,7 +1584,7 @@ export function WorkoutRunner({
                   variant="primary"
                   onClick={skipCurrentExercise}
                 >
-                  Não farei hoje
+                  {skipAction === "skip-set" ? "Pular série" : "Não farei hoje"}
                 </AppButton>
               </div>
             </div>
@@ -1207,7 +1604,7 @@ export function WorkoutRunner({
           <p className="text-[14px] leading-[21px] text-[var(--muted)]">
             Tem certeza que deseja cancelar este treino? O progresso desta sessão será perdido.
           </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-2">
+          <div className="grid grid-cols-1 gap-2 pt-2 sm:grid-cols-2">
             <AppButton
               type="button"
               variant="secondary"
@@ -1234,51 +1631,70 @@ export function WorkoutRunner({
         />
       )}
 
-      {!showSkipOptions && (
+      {!showSkipOptions && !showList && (
         <div className="sticky bottom-0 -mx-4 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur sm:-mx-6 sm:px-6 sm:pb-3">
           <div className="mx-auto flex max-w-[960px] flex-col gap-2">
-            <AppButton
-              type="button"
-              variant="primary"
-              onClick={completeAndGoNext}
-              disabled={isPaused || isAdvancing}
-              fullWidth
-            >
-              {isAdvancing
-                ? "Salvando..."
-                : session.currentStepIndex >= orderedSteps.length - 1
-                  ? "Concluir treino"
-                  : "Concluir e próximo"}
-            </AppButton>
+            {rest ? (
+              <>
+                <AppButton
+                  type="button"
+                  variant="primary"
+                  onClick={skipRest}
+                  fullWidth
+                >
+                  Pular descanso
+                </AppButton>
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  onClick={() => addRestTime(30)}
+                  fullWidth
+                >
+                  Mais 30 segundos
+                </AppButton>
+              </>
+            ) : (
+              <>
+                <AppButton
+                  type="button"
+                  variant="primary"
+                  onClick={completeAndGoNext}
+                  disabled={isPaused || isAdvancing}
+                  fullWidth
+                >
+                  {primaryActionLabel}
+                </AppButton>
 
-            <div className="grid grid-cols-2 gap-2">
-              {isPaused ? (
-                <AppButton
-                  type="button"
-                  variant="secondary"
-                  onClick={resumeSession}
-                >
-                  Retomar treino
-                </AppButton>
-              ) : (
-                <AppButton
-                  type="button"
-                  variant="secondary"
-                  onClick={pauseSession}
-                  disabled={!canPauseSession}
-                >
-                  Pausar treino
-                </AppButton>
-              )}
-              <AppButton
-                type="button"
-                variant="secondary"
-                onClick={() => setShowSkipOptions(true)}
-                disabled={isPaused}
-              >
-                Opções do exercício
-              </AppButton>
-            </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {isPaused ? (
+                    <AppButton
+                      type="button"
+                      variant="secondary"
+                      onClick={resumeSession}
+                    >
+                      Retomar treino
+                    </AppButton>
+                  ) : (
+                    <AppButton
+                      type="button"
+                      variant="secondary"
+                      onClick={pauseSession}
+                      disabled={!canPauseSession}
+                    >
+                      Pausar treino
+                    </AppButton>
+                  )}
+                  <AppButton
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setShowSkipOptions(true)}
+                    disabled={isPaused}
+                  >
+                    {currentStep.totalSets > 1 ? "Opções da série" : "Opções do exercício"}
+                  </AppButton>
+                </div>
+              </>
+            )}
 
             <button
               type="button"

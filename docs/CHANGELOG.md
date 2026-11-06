@@ -191,3 +191,13 @@ Status: em revisão (pull request).
 - Quatro temas escuros (Carvão · Vermelho, Preto · Verde-limão, Azul-noite · Ciano, Grafite · Dourado) no botão de aparência do cabeçalho, salvos por dispositivo.
 - Cores dos componentes passam a vir de variáveis CSS; vermelho de perigo e cores de status não mudam com o tema.
 - Fontes dos temas servidas pelo próprio app (`@fontsource`).
+
+## Redesign 2026 — Fase 2: modo foco na execução
+
+- Execução guiada passa a andar série por série; em bi-set, tri-set e circuito as séries são intercaladas por rodada.
+- Modo foco: topo enxuto (tempo e progresso em séries), card com "Série X de Y" e indicadores de cada série, notas do exercício e última execução da mesma série. A carga da série anterior vem preenchida.
+- Botão **Ver lista**: todos os exercícios agrupados por bloco, com séries feitas, puladas, atual e pendentes; tocar numa série pendente ou pulada a faz agora.
+- **Descanso automático** (opcional, salvo por aparelho, desligado por padrão): ao terminar a rodada abre uma contagem regressiva com o tempo das notas do bloco (menor valor da faixa; 60s quando não informado), com "Pular descanso" e "Mais 30 segundos".
+- Opções da série: Fazer depois, Pular esta série e Não farei hoje (pula as séries restantes do exercício).
+- Compatível com histórico e sessões em andamento anteriores: a 1ª série mantém o id antigo e o campo `set` dos registros é opcional (sem migração SQL).
+- Home conta o progresso em séries; Histórico agrupa as séries de cada exercício.

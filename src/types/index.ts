@@ -45,6 +45,8 @@ export type WorkoutSessionLog = {
   completed: boolean;
   skipped?: boolean;
   skipReason?: string;
+  /** Número da série (1, 2, 3...). Registros antigos não têm. */
+  set?: number;
 };
 
 export type WorkoutSession = {

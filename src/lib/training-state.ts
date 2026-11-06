@@ -28,7 +28,8 @@ function parseSession(value: unknown): WorkoutSession {
   for (const log of Object.values(value.logs)) {
     if (!record(log) || ![log.blockId, log.itemId, log.reps, log.load, log.actualPse].every(x => typeof x === "string") ||
         typeof log.completed !== "boolean" || (log.skipped !== undefined && typeof log.skipped !== "boolean") ||
-        (log.skipReason !== undefined && typeof log.skipReason !== "string")) throw Error("Registro de exercício inválido.");
+        (log.skipReason !== undefined && typeof log.skipReason !== "string") ||
+        (log.set !== undefined && (!Number.isSafeInteger(log.set) || Number(log.set) < 1))) throw Error("Registro de exercício inválido.");
   }
   return sanitizeWorkoutSessionPse(value as unknown as WorkoutSession);
 }

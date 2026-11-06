@@ -7,6 +7,7 @@ import { AppCard } from "@/components/ui/AppCard";
 import { AppButton } from "@/components/ui/AppButton";
 import { AppProgress } from "@/components/ui/AppProgress";
 import { AppBadge } from "@/components/ui/AppBadge";
+import { countWorkoutSteps } from "@/lib/workout-steps";
 
 export interface ActiveWorkoutSectionProps {
   sessions: WorkoutSession[];
@@ -32,10 +33,13 @@ export function ActiveWorkoutSection({ sessions }: ActiveWorkoutSectionProps) {
   function renderSessionCard(session: WorkoutSession) {
     const workout = seedWorkouts.find((w) => w.id === session.workoutId);
     const workoutTitle = workout?.title || session.workoutId;
-    const totalItems = workout
-      ? workout.blocks.reduce((acc, b) => acc + b.items.length, 0)
-      : Object.keys(session.logs || {}).length;
-    const registeredCount = Object.keys(session.logs || {}).length;
+    const logs = Object.values(session.logs || {});
+    const registeredCount = logs.filter((log) => log.completed || log.skipped).length;
+    // Conta séries (bi-set 3x = 6 etapas), como na execução guiada.
+    const totalItems = Math.max(
+      workout ? countWorkoutSteps(workout) : logs.length,
+      registeredCount,
+    );
     const progressPercent =
       totalItems > 0 ? (registeredCount / totalItems) * 100 : 0;
 

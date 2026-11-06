@@ -76,6 +76,119 @@ function resolveExercise(entry: WorkoutHistoryEntry, log: WorkoutSessionLog) {
   };
 }
 
+const plural = (count: number, one: string, many: string) =>
+  `${count} ${count === 1 ? one : many}`;
+
+type HistoryLogGroup = { key: string; logs: WorkoutSessionLog[] };
+
+/** Junta as séries do mesmo exercício (registros antigos ficam sozinhos). */
+function groupHistoryLogs(logs: Record<string, WorkoutSessionLog>): HistoryLogGroup[] {
+  const groups = new Map<string, HistoryLogGroup>();
+  for (const [logKey, log] of Object.entries(logs)) {
+    const key = log.blockId && log.itemId ? `${log.blockId}:${log.itemId}` : logKey;
+    const group = groups.get(key) ?? { key, logs: [] };
+    group.logs.push(log);
+    groups.set(key, group);
+  }
+  return [...groups.values()].map((group) => ({
+    ...group,
+    logs: [...group.logs].sort((a, b) => (a.set ?? 1) - (b.set ?? 1)),
+  }));
+}
+
+function HistoryExerciseCard({
+  entry,
+  logs,
+}: {
+  entry: WorkoutHistoryEntry;
+  logs: WorkoutSessionLog[];
+}) {
+  const { blockTitle, exerciseName } = resolveExercise(entry, logs[0]);
+  const doneCount = logs.filter((log) => log.completed).length;
+  const skippedCount = logs.filter((log) => log.skipped).length;
+  const allSkipped = skippedCount === logs.length;
+  const isSingle = logs.length === 1;
+  const status = isSingle
+    ? allSkipped
+      ? "Pulado"
+      : "Concluído"
+    : skippedCount > 0
+      ? `${plural(doneCount, "feita", "feitas")} · ${plural(skippedCount, "pulada", "puladas")}`
+      : plural(doneCount, "série", "séries");
+
+  return (
+    <div
+      className={`rounded-[10px] border p-3 text-[13px] ${
+        allSkipped
+          ? "border-[var(--warning)]/40 bg-[var(--warning)]/10"
+          : "border-[var(--border)] bg-[var(--surface-elevated)]"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <p className="text-[11px] text-[var(--muted)] uppercase">{blockTitle}</p>
+          <p className="font-bold text-[var(--foreground)]">{exerciseName}</p>
+        </div>
+        <span
+          className={`shrink-0 text-[12px] font-medium ${
+            allSkipped ? "text-[var(--warning)]" : "text-[var(--success-text)]"
+          }`}
+        >
+          {status}
+        </span>
+      </div>
+
+      {isSingle ? (
+        !logs[0].skipped ? (
+          <div className="mt-2 grid grid-cols-3 gap-2 text-[12px]">
+            <div>
+              <span className="text-[var(--muted)]">Realizado: </span>
+              <strong className="text-[var(--foreground)]">{logs[0].reps || "-"}</strong>
+            </div>
+            <div>
+              <span className="text-[var(--muted)]">Carga: </span>
+              <strong className="text-[var(--foreground)]">{logs[0].load || "-"}</strong>
+            </div>
+            <div>
+              <span className="text-[var(--muted)]">PSE: </span>
+              <strong className="text-[var(--foreground)]">{logs[0].actualPse || "-"}</strong>
+            </div>
+          </div>
+        ) : (
+          logs[0].skipReason && (
+            <p className="mt-1.5 text-[12px] text-[var(--warning)]">
+              Motivo: {logs[0].skipReason}
+            </p>
+          )
+        )
+      ) : (
+        <ol className="mt-2 space-y-1 text-[12px]">
+          {logs.map((log, index) => (
+            <li key={`${log.set ?? index + 1}`} className="flex gap-2">
+              <span className="w-14 shrink-0 text-[var(--muted)]">
+                Série {log.set ?? index + 1}
+              </span>
+              {log.skipped ? (
+                <span className="text-[var(--warning)]">
+                  Pulada{log.skipReason ? ` · ${log.skipReason}` : ""}
+                </span>
+              ) : (
+                <span className="text-[var(--foreground)]">
+                  <strong>{log.reps || "-"}</strong>
+                  {" · "}
+                  {log.load || "sem carga"}
+                  {" · PSE "}
+                  {log.actualPse || "-"}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
+
 export function WorkoutHistory() {
   const [history, setHistory] = useState<WorkoutHistoryEntry[]>([]);
   const [bikeData, setBikeData] = useState<BikeData | null>(null);
@@ -412,61 +525,13 @@ export function WorkoutHistory() {
                           Exercícios registrados
                         </h3>
                         <div className="space-y-2">
-                          {Object.entries(item.workoutEntry.logs).map(([logKey, log]) => {
-                            const { blockTitle, exerciseName } = resolveExercise(
-                              item.workoutEntry!,
-                              log
-                            );
-                            return (
-                              <div
-                                key={logKey}
-                                className={`rounded-[10px] border p-3 text-[13px] ${
-                                  log.skipped
-                                    ? "border-[var(--warning)]/40 bg-[var(--warning)]/10"
-                                    : "border-[var(--border)] bg-[var(--surface-elevated)]"
-                                }`}
-                              >
-                                <div className="flex items-center justify-between gap-2">
-                                  <div>
-                                    <p className="text-[11px] text-[var(--muted)] uppercase">
-                                      {blockTitle}
-                                    </p>
-                                    <p className="font-bold text-[var(--foreground)]">{exerciseName}</p>
-                                  </div>
-                                  <span
-                                    className={`text-[12px] font-medium ${
-                                      log.skipped ? "text-[var(--warning)]" : "text-[var(--success-text)]"
-                                    }`}
-                                  >
-                                    {log.skipped ? "Pulado" : "Concluído"}
-                                  </span>
-                                </div>
-
-                                {!log.skipped ? (
-                                  <div className="mt-2 grid grid-cols-3 gap-2 text-[12px]">
-                                    <div>
-                                      <span className="text-[var(--muted)]">Realizado: </span>
-                                      <strong className="text-[var(--foreground)]">{log.reps || "-"}</strong>
-                                    </div>
-                                    <div>
-                                      <span className="text-[var(--muted)]">Carga: </span>
-                                      <strong className="text-[var(--foreground)]">{log.load || "-"}</strong>
-                                    </div>
-                                    <div>
-                                      <span className="text-[var(--muted)]">PSE: </span>
-                                      <strong className="text-[var(--foreground)]">{log.actualPse || "-"}</strong>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  log.skipReason && (
-                                    <p className="mt-1.5 text-[12px] text-[var(--warning)]">
-                                      Motivo: {log.skipReason}
-                                    </p>
-                                  )
-                                )}
-                              </div>
-                            );
-                          })}
+                          {groupHistoryLogs(item.workoutEntry.logs).map((group) => (
+                            <HistoryExerciseCard
+                              key={group.key}
+                              entry={item.workoutEntry!}
+                              logs={group.logs}
+                            />
+                          ))}
                         </div>
                       </div>
                     )}
