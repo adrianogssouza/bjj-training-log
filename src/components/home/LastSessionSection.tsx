@@ -126,7 +126,7 @@ export function LastSessionSection() {
             </div>
 
             <div className="pt-1">
-              <AppButton href="/history" variant="secondary" fullWidth>
+              <AppButton href="/progresso?aba=historico" variant="secondary" fullWidth>
                 Ver histórico
               </AppButton>
             </div>
@@ -137,7 +137,7 @@ export function LastSessionSection() {
               Nenhum treino concluído ainda
             </p>
             <div>
-              <AppButton href="/history" variant="ghost">
+              <AppButton href="/progresso?aba=historico" variant="ghost">
                 Ver histórico
               </AppButton>
             </div>

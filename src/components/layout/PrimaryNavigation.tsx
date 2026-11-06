@@ -32,10 +32,12 @@ const NAV_ITEMS: NavItem[] = [
     isActive: (pathname: string) => pathname.startsWith("/bike"),
   },
   {
-    name: "Histórico",
-    href: "/history",
-    icon: "history",
-    isActive: (pathname: string) => pathname.startsWith("/history"),
+    name: "Progresso",
+    href: "/progresso",
+    icon: "chart",
+    // /history é o endereço antigo do Histórico, hoje uma aba de Progresso.
+    isActive: (pathname: string) =>
+      pathname.startsWith("/progresso") || pathname.startsWith("/history"),
   },
 ];
 

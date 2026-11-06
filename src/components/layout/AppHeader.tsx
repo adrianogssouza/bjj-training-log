@@ -10,7 +10,7 @@ const DESKTOP_LINKS = [
   { name: "Hoje", href: "/" },
   { name: "Treinos", href: "/workouts" },
   { name: "Bike", href: "/bike" },
-  { name: "Histórico", href: "/history" },
+  { name: "Progresso", href: "/progresso" },
 ];
 
 export function AppHeader({ currentPath }: { currentPath?: string } = {}) {
@@ -39,7 +39,8 @@ export function AppHeader({ currentPath }: { currentPath?: string } = {}) {
             const isActive =
               link.href === "/"
                 ? pathname === "/"
-                : pathname.startsWith(link.href);
+                : pathname.startsWith(link.href) ||
+                  (link.href === "/progresso" && pathname.startsWith("/history"));
             return (
               <Link
                 key={link.href}

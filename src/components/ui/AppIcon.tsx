@@ -17,7 +17,8 @@ export type IconName =
   | "close"
   | "contrast"
   | "list"
-  | "plus";
+  | "plus"
+  | "chart";
 
 export interface AppIconProps extends SVGProps<SVGSVGElement> {
   name: IconName;
@@ -196,6 +197,14 @@ export function AppIcon({
         <svg {...commonProps}>
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      );
+
+    case "chart":
+      return (
+        <svg {...commonProps}>
+          <path d="M3 3v18h18" />
+          <path d="M7 15l4-5 3 3 5-7" />
         </svg>
       );
 

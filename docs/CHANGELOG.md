@@ -205,3 +205,15 @@ Status: em revisão (pull request).
 - Complementares voltam a registrar uma etapa por exercício (o "3x" aparece como informação) e não têm descanso automático; sessões abertas com rodadas extras são ajustadas sem perder o que foi registrado.
 - Campo de data da Bike não vaza mais do card no iPhone.
 - Rótulo "PSE opcional" e botão "Opções" curtos para caber em uma linha.
+
+## Redesign 2026 — Fase 3: Progresso
+
+- Navegação (inferior e do topo) passa a ser **Hoje · Treinos · Bike · Progresso**.
+- Nova tela `/progresso` com as abas **Cargas** e **Histórico**; a aba fica no endereço (`/progresso?aba=historico`).
+- `/history` continua funcionando: redireciona (307, no servidor) para Progresso > Histórico. Links internos já apontam para o endereço novo.
+- **Cargas**: chips com os exercícios do Treino A e B do ciclo vigente que têm carga registrada; card com a última carga em destaque, variação no ciclo (verde quando subiu), gráfico de linha da carga por sessão (data e valor em cada ponto, últimas 8 sessões) e três números: sessões, melhor carga e PSE médio.
+- A carga sai do texto livre do registro: "24 kg", "24kg", "24,5 kg" viram número; com "kg" no texto só os números com unidade contam ("2x12kg" → 12, "BW + 10kg" → 10); sem número ("BW", "elástico") fica de fora. Em cada sessão vale a maior carga entre as séries feitas (puladas não contam).
+- **Frequência semanal** do ciclo: barras por semana (seg–dom, horário de São Paulo), empilhando Principal e Complementar, com total, legenda e a semana atual destacada.
+- Gráficos em SVG próprio (sem biblioteca nova), desenhados na largura real do card e com as cores do tema; estados vazios quando não há carga ou treino no ciclo.
+- **Histórico**: o mesmo componente (filtros, busca, paginação, Bike), sem título próprio e com indicadores e filtros compactos dentro da nova tela.
+- Testes novos: extração da carga, evolução por exercício, agregação semanal, tela Progresso, navegação e redirecionamento.

@@ -1,5 +1,7 @@
-import { WorkoutHistory } from "@/components/history/WorkoutHistory";
+import { redirect } from "next/navigation";
+import { PROGRESS_HISTORY_PATH } from "@/lib/progress-tab";
 
+/** Endereço antigo: o Histórico agora é uma aba de Progresso. */
 export default function HistoryPage() {
-  return <WorkoutHistory />;
+  redirect(PROGRESS_HISTORY_PATH);
 }
