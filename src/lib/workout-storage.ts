@@ -182,6 +182,24 @@ export function saveWorkoutFeedback(entryId: string, feedback: SessionFeedback) 
   return true;
 }
 
+/**
+ * Exclui uma única sessão do histórico (as demais não mudam).
+ * Devolve false quando a sessão não existe.
+ */
+export function deleteWorkoutHistoryEntry(entryId: string) {
+  const history = readWorkoutHistory();
+  const nextHistory = history.filter((entry) => entry.id !== entryId);
+  if (nextHistory.length === history.length) return false;
+
+  if (account) {
+    account.write({ ...account.read(), history: nextHistory });
+  } else {
+    window.localStorage.setItem(workoutStorageKeys.history, JSON.stringify(nextHistory));
+  }
+  notifyStorageUpdated();
+  return true;
+}
+
 export function clearWorkoutHistory() {
   if (account) {
     account.write({ ...account.read(), history: [] });

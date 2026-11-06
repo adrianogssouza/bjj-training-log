@@ -227,3 +227,9 @@ Status: em revisão (pull request).
 - `WorkoutHistoryEntry` ganha os campos **opcionais** `feeling` (1–5), `pains` (lista; `[]` = "Nenhum") e `note`. São validados em `parseTrainingState` e aceitos ausentes: histórico antigo, backups e o estado da conta continuam válidos, sem migração SQL.
 - Onde aparece: Home > Última sessão (sensação e observação entre aspas), Home > Resumo da semana (novo card **Sensação média**), Histórico (sensação e observação no card, incômodos como etiqueta) e Progresso > Cargas (sensação média do ciclo no card de frequência).
 - Testes novos: resumo e volume, normalização e validação dos campos novos, gravação da avaliação, tela de conclusão, fluxo completo no executor e exibição na Home, Histórico e Progresso.
+
+## Excluir sessão do histórico
+
+- Em Progresso > Histórico, cada sessão de treino (Principal e Complementar) ganha **Excluir esta sessão** dentro de "Ver detalhes", com confirmação. Só aquela sessão é removida; as demais, a Bike e o resto do estado da conta não mudam.
+- Pedaladas da Bike continuam sendo excluídas na própria tela da Bike (aba Histórico).
+- Testes: exclusão de uma sessão e fluxo de confirmação/cancelamento.
