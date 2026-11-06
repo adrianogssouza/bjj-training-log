@@ -189,7 +189,12 @@ function HistoryExerciseCard({
   );
 }
 
-export function WorkoutHistory() {
+export interface WorkoutHistoryProps {
+  /** Dentro da tela Progresso, o título fica por conta da tela. */
+  embedded?: boolean;
+}
+
+export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
   const [history, setHistory] = useState<WorkoutHistoryEntry[]>([]);
   const [bikeData, setBikeData] = useState<BikeData | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("todos");
@@ -374,38 +379,44 @@ export function WorkoutHistory() {
   }
 
   const isGlobalEmpty = unifiedItems.length === 0;
+  const statCardClass = embedded
+    ? "rounded-[12px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 space-y-0.5"
+    : "rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1";
+  const statValueClass = embedded ? "text-[18px] font-extrabold" : "text-[22px] font-extrabold";
   const isBikeEmpty = selectedCategory === "bike" && filteredItems.length === 0;
 
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className={`flex flex-1 flex-col ${embedded ? "gap-4" : "gap-6"}`}>
       {/* Header */}
-      <header className="space-y-1">
-        <h1 className="text-[28px] font-extrabold leading-[34px] text-[var(--foreground)]">
-          Histórico
-        </h1>
-        <p className="text-[16px] font-normal leading-[24px] text-[var(--muted)]">
-          Suas sessões registradas
-        </p>
-      </header>
+      {!embedded && (
+        <header className="space-y-1">
+          <h1 className="text-[28px] font-extrabold leading-[34px] text-[var(--foreground)]">
+            Histórico
+          </h1>
+          <p className="text-[16px] font-normal leading-[24px] text-[var(--muted)]">
+            Suas sessões registradas
+          </p>
+        </header>
+      )}
 
       {/* Aggregate Stats (Section 11.6: separate Treinos vs Bike) */}
       {!isGlobalEmpty && (
-        <section aria-label="Indicadores do histórico" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+        <section aria-label="Indicadores do histórico" className={`grid grid-cols-2 sm:grid-cols-4 ${embedded ? "gap-2" : "gap-3"}`}>
+          <div className={statCardClass}>
             <span className="text-[12px] font-medium text-[var(--muted)]">Treinos concluídos</span>
-            <p className="text-[22px] font-extrabold text-[var(--foreground)]">{stats.workoutSessionsCount}</p>
+            <p className={`${statValueClass} text-[var(--foreground)]`}>{stats.workoutSessionsCount}</p>
           </div>
-          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+          <div className={statCardClass}>
             <span className="text-[12px] font-medium text-[var(--muted)]">Tempo em treino</span>
-            <p className="text-[22px] font-extrabold text-[var(--foreground)]">{stats.workoutTotalTime}</p>
+            <p className={`${statValueClass} text-[var(--foreground)]`}>{stats.workoutTotalTime}</p>
           </div>
-          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+          <div className={statCardClass}>
             <span className="text-[12px] font-medium text-[var(--muted)]">Pedaladas</span>
-            <p className="text-[22px] font-extrabold text-[var(--success-text)]">{stats.bikeSessionsCount}</p>
+            <p className={`${statValueClass} text-[var(--success-text)]`}>{stats.bikeSessionsCount}</p>
           </div>
-          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-3.5 space-y-1">
+          <div className={statCardClass}>
             <span className="text-[12px] font-medium text-[var(--muted)]">Minutos na Bike</span>
-            <p className="text-[22px] font-extrabold text-[var(--success-text)]">{stats.bikeTotalMinutes} min</p>
+            <p className={`${statValueClass} text-[var(--success-text)]`}>{stats.bikeTotalMinutes} min</p>
           </div>
         </section>
       )}
@@ -413,7 +424,11 @@ export function WorkoutHistory() {
       {/* Filters (Section 11.2) */}
       <section aria-label="Filtros do histórico" className="space-y-3">
         {/* Category Filter Pills */}
-        <div role="group" aria-label="Filtro por categoria" className="flex flex-wrap gap-2">
+        <div
+          role="group"
+          aria-label="Filtro por categoria"
+          className={embedded ? "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0" : "flex flex-wrap gap-2"}
+        >
           {(
             [
               { id: "todos", label: "Todos" },
@@ -429,7 +444,7 @@ export function WorkoutHistory() {
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => handleCategoryChange(cat.id)}
-                className={`min-h-[44px] rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
+                className={`min-h-[44px] shrink-0 whitespace-nowrap rounded-[10px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] ${
                   isActive
                     ? "bg-[var(--primary-soft)] border border-[var(--primary-hover)] text-[var(--primary-text)]"
                     : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]"

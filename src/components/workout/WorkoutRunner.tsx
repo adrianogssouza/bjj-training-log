@@ -1084,7 +1084,7 @@ export function WorkoutRunner({
                   Voltar para Hoje
                 </AppButton>
                 <AppButton
-                  href="/history"
+                  href="/progresso?aba=historico"
                   variant="secondary"
                   fullWidth
                 >

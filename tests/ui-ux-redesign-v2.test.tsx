@@ -63,7 +63,7 @@ test("Navegação principal: 4 abas, acessibilidade e ocultação na execução 
   assert.equal(links.length, 4);
 
   // Check 4 tabs
-  const tabNames = ["Hoje", "Treinos", "Bike", "Histórico"];
+  const tabNames = ["Hoje", "Treinos", "Bike", "Progresso"];
   tabNames.forEach((name) => {
     assert.ok(screen.getByText(name));
   });

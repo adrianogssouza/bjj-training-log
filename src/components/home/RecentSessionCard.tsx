@@ -75,7 +75,7 @@ export function RecentSessionCard() {
             <h2 className="mt-1 text-xl font-black text-white">Histórico</h2>
           </div>
           <Link
-            href="/history"
+            href="/progresso?aba=historico"
             className="min-h-10 shrink-0 rounded-lg border border-zinc-700 px-3 text-sm font-bold leading-10 text-zinc-100 transition-colors hover:border-zinc-500 hover:bg-zinc-900"
           >
             Abrir
