@@ -83,7 +83,7 @@ export function WorkoutBlockList({
 
                 <div className="grid grid-cols-2 gap-2 text-[13px]">
                   <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5">
-                    <span className="text-[var(--muted)]">Sets: </span>
+                    <span className="text-[var(--muted)]">Séries: </span>
                     <strong className="text-[var(--foreground)]">{block.sets}</strong>
                   </div>
                   <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5">
@@ -105,7 +105,7 @@ export function WorkoutBlockList({
                       >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                           <h4 className="text-[15px] font-bold text-[var(--foreground)]">
-                            {isComplementary ? `${item.name} (guiado)` : item.name}
+                            {item.name}
                           </h4>
                           {videoUrl && (
                             <button
@@ -123,32 +123,34 @@ export function WorkoutBlockList({
                           )}
                         </div>
 
-                        <dl className="grid grid-cols-3 gap-2 text-[12px]">
-                          <div>
-                            <dt className="text-[var(--muted)]">Reps</dt>
-                            <dd className="font-semibold text-[var(--foreground)]">
-                              {item.reps ?? (isComplementary ? "Etapa" : "-")}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt className="text-[var(--muted)]">Tempo</dt>
-                            <dd className="font-semibold text-[var(--foreground)]">
-                              {item.time ?? "-"}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt className="text-[var(--muted)]">PSE alvo</dt>
-                            <dd className="mt-0.5">
-                              {item.targetPse ? (
-                                <AppBadge variant="primary">
-                                  {item.targetPse}
-                                </AppBadge>
-                              ) : (
-                                <span className="text-[var(--muted)]">-</span>
-                              )}
-                            </dd>
-                          </div>
-                        </dl>
+                        {(item.reps || item.time || item.targetPse) && (
+                          <dl className="flex flex-wrap gap-x-6 gap-y-2 text-[12px]">
+                            {item.reps && (
+                              <div>
+                                <dt className="text-[var(--muted)]">Reps</dt>
+                                <dd className="font-semibold text-[var(--foreground)]">
+                                  {item.reps}
+                                </dd>
+                              </div>
+                            )}
+                            {item.time && (
+                              <div>
+                                <dt className="text-[var(--muted)]">Tempo</dt>
+                                <dd className="font-semibold text-[var(--foreground)]">
+                                  {item.time}
+                                </dd>
+                              </div>
+                            )}
+                            {item.targetPse && (
+                              <div>
+                                <dt className="text-[var(--muted)]">PSE alvo</dt>
+                                <dd className="mt-0.5">
+                                  <AppBadge variant="primary">{item.targetPse}</AppBadge>
+                                </dd>
+                              </div>
+                            )}
+                          </dl>
+                        )}
                       </li>
                     );
                   })}

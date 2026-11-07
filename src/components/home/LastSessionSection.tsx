@@ -5,13 +5,25 @@ import { AppCard } from "@/components/ui/AppCard";
 import { AppButton } from "@/components/ui/AppButton";
 import { AppBadge } from "@/components/ui/AppBadge";
 import { readWorkoutHistory } from "@/lib/workout-storage";
+import { seedWorkouts } from "@/data/seed-workouts";
+import { getWorkoutCategoryLabel } from "@/lib/workouts";
 import { loadBikeData, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { formatShortDatePTBR } from "@/lib/date-utils";
 import { feelingLabel } from "@/lib/session-feedback";
 import type { WorkoutHistoryEntry } from "@/types";
 
+/** Treino A/B é musculação; os complementares mostram a própria categoria. */
+function getSessionTypeLabel(workoutId: string): string {
+  const workout = seedWorkouts.find((w) => w.id === workoutId);
+  if (workout) {
+    return workout.type === "monthly" ? "Musculação" : getWorkoutCategoryLabel(workout);
+  }
+  return workoutId.startsWith("treino-") ? "Musculação" : "Complementar";
+}
+
 interface MostRecentSession {
-  type: "Musculação" | "Cardio na Bike";
+  type: string;
+  isBike: boolean;
   title: string;
   formattedDate: string;
   formattedDuration: string;
@@ -60,7 +72,8 @@ export function LastSessionSection() {
 
     const timestamp = new Date(latestWorkout.completedAt || latestWorkout.startedAt).getTime() || 0;
     mostRecentWorkout = {
-      type: "Musculação",
+      type: getSessionTypeLabel(latestWorkout.workoutId),
+      isBike: false,
       title: latestWorkout.workoutTitle,
       formattedDate: formatShortDatePTBR(latestWorkout.completedAt || latestWorkout.startedAt),
       formattedDuration: formatDurationSeconds(latestWorkout.durationSeconds),
@@ -84,6 +97,7 @@ export function LastSessionSection() {
       const timestamp = new Date(latestBike.date).getTime() || 0;
       mostRecentBike = {
         type: "Cardio na Bike",
+        isBike: true,
         title: "Cardio na Bike",
         formattedDate: formatShortDatePTBR(latestBike.date),
         formattedDuration: `${latestBike.minutes} min`,
@@ -114,7 +128,7 @@ export function LastSessionSection() {
           <>
             <div className="flex items-start justify-between gap-2">
               <div className="space-y-1">
-                <AppBadge variant={latestSession.type === "Cardio na Bike" ? "success" : "primary"}>
+                <AppBadge variant={latestSession.isBike ? "success" : "primary"}>
                   {latestSession.type}
                 </AppBadge>
                 <h3 className="text-[18px] font-bold leading-[25px] text-[var(--foreground)]">

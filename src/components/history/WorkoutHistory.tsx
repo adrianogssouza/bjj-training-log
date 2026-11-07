@@ -10,7 +10,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppSelect } from "@/components/ui/AppSelect";
 import { deleteWorkoutHistoryEntry, readWorkoutHistory } from "@/lib/workout-storage";
-import { loadBikeData, readableDate, type BikeData, type BikeSession } from "@/lib/bike-cardio";
+import { deleteBikeSession, loadBikeData, readableDate, type BikeData, type BikeSession } from "@/lib/bike-cardio";
 import { seedWorkouts } from "@/data/seed-workouts";
 import { feelingLabel } from "@/lib/session-feedback";
 import type { WorkoutHistoryEntry, WorkoutSessionLog } from "@/types";
@@ -382,6 +382,15 @@ export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
     deleteWorkoutHistoryEntry(item.workoutEntry.id);
   }
 
+  function handleDeleteBike(item: UnifiedHistoryItem) {
+    if (!item.bikeSession) return;
+    const confirmed = window.confirm(
+      `Excluir a pedalada de ${item.formattedDate} (${item.formattedDuration})? Isso não pode ser desfeito.`,
+    );
+    if (!confirmed) return;
+    deleteBikeSession(item.bikeSession.id);
+  }
+
   function handleClearFilters() {
     setSelectedCategory("todos");
     setSelectedPeriod("all");
@@ -652,6 +661,15 @@ export function WorkoutHistory({ embedded = false }: WorkoutHistoryProps = {}) {
                             <span className="text-[var(--foreground)]">{item.bikeSession.notes}</span>
                           </div>
                         )}
+
+                        <AppButton
+                          type="button"
+                          variant="danger"
+                          fullWidth
+                          onClick={() => handleDeleteBike(item)}
+                        >
+                          Excluir esta pedalada
+                        </AppButton>
                       </div>
                     )}
                   </div>

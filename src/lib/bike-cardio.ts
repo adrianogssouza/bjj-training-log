@@ -241,6 +241,15 @@ export function storeBikeData(data: BikeData) {
   }
 }
 
+/** Exclui uma única pedalada (as demais e os ajustes do programa não mudam). */
+export function deleteBikeSession(id: string): boolean {
+  const data = loadBikeData();
+  const sessions = data.sessions.filter((session) => session.id !== id);
+  if (sessions.length === data.sessions.length) return false;
+  storeBikeData({ ...data, sessions });
+  return true;
+}
+
 export function getEffectiveWeek(data: BikeData, dateStr: string = localDate()): number {
   if (data.activeWeekOverride && data.activeWeekOverride >= 1 && data.activeWeekOverride <= 6) {
     return data.activeWeekOverride;
